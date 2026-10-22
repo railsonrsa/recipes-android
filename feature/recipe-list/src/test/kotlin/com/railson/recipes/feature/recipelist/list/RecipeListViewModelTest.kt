@@ -39,7 +39,9 @@ class RecipeListViewModelTest {
 
         viewModel.uiState.test {
             assertThat(awaitItem().recipes).isEmpty()
+
             repository.saved.value = SearchResult(recipes = listOf(recipe("Greek Salad")), hasMore = false)
+
             assertThat(awaitItem().recipes.map { it.title }).containsExactly("Greek Salad")
         }
     }

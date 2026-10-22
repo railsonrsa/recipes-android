@@ -50,13 +50,13 @@ internal fun RecipeListLayout(
             )
         },
     ) { padding ->
-        RecipeListTitles(recipes = uiState.recipes, contentPadding = padding)
+        RecipeListList(recipes = uiState.recipes, contentPadding = padding)
     }
 }
 
 /** A plain list of titles. The cards come with issue #20. */
 @Composable
-internal fun RecipeListTitles(
+internal fun RecipeListList(
     recipes: List<Recipe>,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
@@ -89,9 +89,9 @@ private fun RecipeListLayoutPreview() {
 
 @ThemePreviews
 @Composable
-private fun RecipeListTitlesPreview() {
+private fun RecipeListListPreview() {
     RecipesTheme {
-        RecipeListTitles(recipes = listOf(previewRecipe("1", "Greek Salad")), contentPadding = PaddingValues())
+        RecipeListList(recipes = listOf(previewRecipe("1", "Greek Salad")), contentPadding = PaddingValues())
     }
 }
 
