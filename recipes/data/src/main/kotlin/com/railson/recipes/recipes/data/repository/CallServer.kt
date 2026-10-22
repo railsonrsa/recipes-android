@@ -1,4 +1,4 @@
-package com.railson.recipes.recipes.data.mapper
+package com.railson.recipes.recipes.data.repository
 
 import com.railson.recipes.recipes.domain.model.CallOutcome
 import kotlinx.serialization.SerializationException

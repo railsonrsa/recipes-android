@@ -7,11 +7,10 @@ import com.google.common.truth.Truth.assertThat
 import com.railson.recipes.core.network.client.createJson
 import com.railson.recipes.core.network.client.createOkHttpClient
 import com.railson.recipes.core.network.client.createRetrofit
-import com.railson.recipes.recipes.data.di.ASSET
-import com.railson.recipes.recipes.data.fake.FakeRecipesInterceptor
+import com.railson.recipes.recipes.data.di.createRecipesApi
 import com.railson.recipes.recipes.data.local.database.RecipesDatabase
-import com.railson.recipes.recipes.data.remote.RecipesApi
 import com.railson.recipes.recipes.domain.model.CallOutcome
+import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -20,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.time.Duration.Companion.minutes
 
 @RunWith(RobolectricTestRunner::class)
 class OfflineFirstRecipeRepositoryTest {
@@ -34,11 +34,8 @@ class OfflineFirstRecipeRepositoryTest {
             .allowMainThreadQueries()
             .build()
         val json = createJson()
-        val fakeServer = FakeRecipesInterceptor(json) {
-            context.assets.open(ASSET).bufferedReader().use { it.readText() }
-        }
-        val client = createOkHttpClient(logBodies = true).newBuilder().addInterceptor(fakeServer).build()
-        val api = createRetrofit(client, json).create(RecipesApi::class.java)
+        val client = createOkHttpClient(logBodies = true)
+        val api = createRecipesApi(context, client, createRetrofit(client, json), json)
         repository = OfflineFirstRecipeRepository(api = api, dao = database.searchDao())
     }
 
@@ -62,6 +59,19 @@ class OfflineFirstRecipeRepositoryTest {
         assertThat(outcome).isEqualTo(CallOutcome.Success)
         assertThat(result.recipes.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
         assertThat(result.hasMore).isFalse()
+    }
+
+    @Test
+    fun `saved recipes keep their times and dietary tags`() = runTest {
+        repository.refresh(SearchQuery)
+
+        val recipes = repository.observeSearch(SearchQuery).first().recipes
+        val curry = recipes.single { it.title == "Chickpea Coconut Curry" }
+        assertThat(curry.prepTime).isEqualTo(10.minutes)
+        assertThat(curry.cookTime).isEqualTo(20.minutes)
+        assertThat(curry.dietaryTags).containsExactly(
+            DietaryTag.Vegetarian, DietaryTag.Vegan, DietaryTag.GlutenFree, DietaryTag.DairyFree, DietaryTag.NutFree,
+        )
     }
 
     @Test

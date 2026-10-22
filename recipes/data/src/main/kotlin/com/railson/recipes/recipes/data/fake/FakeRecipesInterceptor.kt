@@ -9,6 +9,7 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import java.io.IOException
 
 /**
  * The fake server: answers `GET /recipes` from the asset and never calls `chain.proceed()`.
@@ -23,6 +24,12 @@ internal class FakeRecipesInterceptor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
+        val catalog = try {
+            catalog
+        } catch (e: IllegalArgumentException) {
+            // Only IOExceptions may leave an interceptor. Anything else crashes OkHttp's dispatcher.
+            throw IOException("The fake catalog asset doesn't parse", e)
+        }
         val params = request.searchParams()
         return when {
             request.method != "GET" || request.url.encodedPath != "/recipes" ->

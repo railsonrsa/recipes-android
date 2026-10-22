@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 /** The fake server's host. No socket is ever opened to it: the fake interceptors answer first. */
-const val BASE_URL = "https://api.recipes.fake/"
+private const val BASE_URL = "https://api.recipes.fake/"
 
 fun createJson(): Json = Json { ignoreUnknownKeys = true }
 

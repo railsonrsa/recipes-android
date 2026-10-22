@@ -3,7 +3,6 @@ package com.railson.recipes.recipes.data.repository
 import com.railson.recipes.recipes.data.local.dao.SearchDao
 import com.railson.recipes.recipes.data.local.entity.RecipeEntity
 import com.railson.recipes.recipes.data.local.entity.SearchRemoteKeyEntity
-import com.railson.recipes.recipes.data.mapper.callServer
 import com.railson.recipes.recipes.data.mapper.toDomain
 import com.railson.recipes.recipes.data.mapper.toEntity
 import com.railson.recipes.recipes.data.remote.RecipesApi
@@ -19,7 +18,6 @@ import kotlin.time.Clock
 internal class OfflineFirstRecipeRepository(
     private val api: RecipesApi,
     private val dao: SearchDao,
-    private val clock: Clock = Clock.System,
 ) : RecipeRepository {
 
     override fun observeSearch(query: SearchQuery): Flow<SearchResult> = combine(
@@ -36,7 +34,7 @@ internal class OfflineFirstRecipeRepository(
                 searchKey = query.searchKey,
                 nextPage = page.pagination.nextPage,
                 totalItems = page.pagination.totalItems,
-                lastUpdated = clock.now().toEpochMilliseconds(),
+                lastUpdated = Clock.System.now().toEpochMilliseconds(),
             ),
             recipes = page.data.map { it.toEntity() },
         )
