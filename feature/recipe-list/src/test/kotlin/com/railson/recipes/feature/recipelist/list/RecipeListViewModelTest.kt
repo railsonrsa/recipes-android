@@ -94,6 +94,18 @@ class RecipeListViewModelTest {
     }
 
     @Test
+    fun `a saved catalog with no recipes and no connection shows offline`() = runTest {
+        repository.saved.value = saved()
+        val viewModel = viewModel()
+
+        viewModel.uiState.test {
+            repository.endRefresh(CallOutcome.NoConnection)
+
+            assertThat(expectMostRecentItem()).isEqualTo(RecipeListUiState.Offline)
+        }
+    }
+
+    @Test
     fun `saved recipes and the call running show the list while it refreshes`() = runTest {
         repository.saved.value = saved(recipe("Greek Salad"))
 

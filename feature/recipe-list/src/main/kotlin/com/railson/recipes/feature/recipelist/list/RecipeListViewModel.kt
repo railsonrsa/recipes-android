@@ -87,6 +87,7 @@ private fun screenState(saved: SearchResult?, lastCall: LastCall): RecipeListUiS
     val recipes = saved?.recipes.orEmpty()
     return when {
         recipes.isNotEmpty() -> RecipeListUiState.Content(recipes, isRefreshing = lastCall == LastCall.Running)
+        // A saved result with no recipes shows the failure like an unsaved one (data.md, Screen states).
         lastCall == LastCall.Offline -> RecipeListUiState.Offline
         lastCall == LastCall.Failed -> RecipeListUiState.Error
         // Until Room shows the saved search, the call that saved it still counts as running.

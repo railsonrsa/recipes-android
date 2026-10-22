@@ -202,9 +202,13 @@ interface RecipeRepository {
 | No | Generic | Error (DESIGN 3.6) |
 | Yes, 0 recipes, catalog | `Success` | Empty catalogue (DESIGN 3.7) |
 | Yes, 0 recipes, with filters or text | `Success` | No results (DESIGN 3.5) |
+| Yes, 0 recipes | Offline | Same as "No": the offline message + "Retry" |
+| Yes, 0 recipes | Generic | Error (DESIGN 3.6) |
 | Yes, has recipes | Running | List |
 | Yes, has recipes | Offline | List + snackbar "You're offline. Showing saved recipes." · "Retry" |
 | Yes, has recipes | Generic | List + snackbar "Couldn't refresh recipes." · "Retry" |
+
+A saved result with 0 recipes counts as not saved when the call fails, since there is nothing to show. This also keeps the Offline and Error screens easy to show with the debug menu: pick Empty catalogue and refresh, then pick No network or Server error and refresh again.
 
 Load more failing: the "Loading more recipes…" row becomes "Couldn't load more" + "Retry". The cards stay.
 
