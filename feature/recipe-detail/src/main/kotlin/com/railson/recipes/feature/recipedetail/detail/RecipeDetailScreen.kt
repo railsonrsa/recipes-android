@@ -36,7 +36,10 @@ import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipedetail.R
+import com.railson.recipes.feature.recipedetail.components.Description
+import com.railson.recipes.feature.recipedetail.components.DetailDietTags
 import com.railson.recipes.feature.recipedetail.components.PreviewRecipes
+import com.railson.recipes.feature.recipedetail.components.StatBoxes
 import com.railson.recipes.recipes.domain.model.scaledIngredients
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -102,6 +105,17 @@ internal fun RecipeDetailContent(
                     )
                 }
                 Text(text = recipe.title, style = MaterialTheme.typography.headlineSmall)
+            }
+        }
+        item(key = "stats") { StatBoxes(recipe = recipe, modifier = panelPadding.padding(top = Spacing.lg)) }
+        if (recipe.dietaryTags.isNotEmpty()) {
+            item(key = "tags") {
+                DetailDietTags(tags = recipe.dietaryTags, modifier = panelPadding.padding(top = Spacing.lg))
+            }
+        }
+        if (recipe.description.isNotBlank()) {
+            item(key = "description") {
+                Description(text = recipe.description, modifier = panelPadding.padding(top = Spacing.lg))
             }
         }
     }

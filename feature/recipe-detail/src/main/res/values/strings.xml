@@ -2,4 +2,13 @@
     <string name="recipe_detail_back">Back</string>
     <string name="recipe_detail_not_available_title">Recipe not available</string>
     <string name="recipe_detail_not_available_body">This recipe isn\'t saved on this device yet.</string>
+
+    <string name="recipe_detail_prep">Prep</string>
+    <string name="recipe_detail_cook">Cook</string>
+    <string name="recipe_detail_level">Level</string>
+    <string name="recipe_detail_rating">Rating</string>
+    <string name="recipe_detail_no_cook_time">None</string>
+    <string name="recipe_detail_unknown">–</string>
+
+    <string name="recipe_detail_read_more">Read more</string>
 </resources>
