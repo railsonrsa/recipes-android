@@ -1,0 +1,8 @@
+# Default rules, plus the two Compose changes the detekt docs suggest.
+# https://detekt.dev/docs/introduction/compose/
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+style:
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview', 'ThemePreviews']

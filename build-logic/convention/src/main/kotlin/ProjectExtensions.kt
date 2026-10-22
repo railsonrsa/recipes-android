@@ -59,6 +59,7 @@ private fun Project.configureDetekt() {
     pluginManager.apply("io.gitlab.arturbosch.detekt")
     extensions.configure<DetektExtension> {
         buildUponDefaultConfig = true
+        config.setFrom(rootProject.file("config/detekt/detekt.yml"))
         // Every source set, so the debug-only code is checked too.
         source.setFrom(files("src"))
     }
