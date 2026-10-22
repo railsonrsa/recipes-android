@@ -1,6 +1,6 @@
 # Data spec
 
-How the app gets recipes: the fake endpoint's contract, the offline-first cache, and how loading, paging, refresh and errors behave. Terms are in [GLOSSARY.md](../../GLOSSARY.md), domain rules in [domain.md](domain.md). Decided in issue #4. Research: `docs/research/fake-endpoint-offline-first.md` on branch `research/fake-endpoint`.
+How the app gets recipes: the fake endpoint's contract, the offline-first cache, and how loading, paging, refresh and errors behave. Terms are in [GLOSSARY.md](../../GLOSSARY.md), domain rules in [domain.md](domain.md). Decided in issue #4. The fake endpoint split into two interceptors comes from issue #5. Research: `docs/research/fake-endpoint-offline-first.md` on branch `research/fake-endpoint`.
 
 ## The picture
 
@@ -101,28 +101,37 @@ The UI only tells **Offline** from **Generic**. `Retry-After` is logged, never a
 
 ## Fake endpoint
 
-- `FakeRecipesInterceptor` is an OkHttp application interceptor added **after** `HttpLoggingInterceptor`. It never calls `chain.proceed()`. So Retrofit, the converter and the logger all run for real.
+Two OkHttp application interceptors, added **after** `HttpLoggingInterceptor`, in this order:
+
+```
+HttpLoggingInterceptor → FakeNetworkModeInterceptor → FakeRecipesInterceptor → asset JSON
+                         (:core:network)               (:recipes:data)
+                         "is the network bad?"         "what is the answer?"
+```
+
+- `FakeNetworkModeInterceptor` knows nothing about recipes. It applies the current fake network mode: it waits, throws, or answers an error. In **Normal**, **Slow** and **Empty catalogue** it waits and passes the call on.
+- `FakeRecipesInterceptor` never calls `chain.proceed()`. So Retrofit, the converter and the logger all run for real.
 - It parses the URL and calls a pure function, `FakeRecipeSearch.run(recipes, params)`, which can be tested without OkHttp. The asset is parsed once and kept in memory.
-- It only throws `IOException` subclasses. Any other exception crashes OkHttp's dispatcher.
+- Both only throw `IOException` subclasses. Any other exception crashes OkHttp's dispatcher.
 - `HttpLoggingInterceptor` logs `BODY` in debug builds and `NONE` in release builds.
 
 ### Fake network modes
 
-`FakeNetworkConfig` lives in memory and goes back to **Normal** when the app restarts. A ⋮ "Network" menu on the list screen switches it. The menu exists only in debug builds.
+`FakeNetworkConfig` (in `:core:network`) lives in memory and goes back to **Normal** when the app restarts. A ⋮ "Network" menu on the list screen switches it. The menu exists only in debug builds. See [architecture.md](architecture.md#debug-network-menu).
 
-| Mode | The interceptor | Outcome |
-|---|---|---|
-| Normal | Waits ~600 ms, answers 200 | `Success` |
-| Slow | Waits 3 s, answers 200 | `Success` |
-| Empty catalogue | Answers 200 with `data: []`, total 0 | `Success` |
-| No network | Throws `UnknownHostException` | `NoConnection` |
-| Timeout | Throws `SocketTimeoutException` | `Timeout` |
-| Rate limited | Answers 429 | `RateLimited` |
-| Server error | Answers 500 | `ServerError` |
-| Unavailable | Answers 503 | `Unavailable` |
-| Bad data | Answers 200 with broken JSON | `BadData` |
+| Mode | Handled by | What happens | Outcome |
+|---|---|---|---|
+| Normal | both | Waits ~600 ms, answers 200 | `Success` |
+| Slow | both | Waits 3 s, answers 200 | `Success` |
+| Empty catalogue | `FakeRecipesInterceptor` | Answers 200 with `data: []`, total 0 | `Success` |
+| No network | `FakeNetworkModeInterceptor` | Throws `UnknownHostException` | `NoConnection` |
+| Timeout | `FakeNetworkModeInterceptor` | Throws `SocketTimeoutException` | `Timeout` |
+| Rate limited | `FakeNetworkModeInterceptor` | Answers 429 | `RateLimited` |
+| Server error | `FakeNetworkModeInterceptor` | Answers 500 | `ServerError` |
+| Unavailable | `FakeNetworkModeInterceptor` | Answers 503 | `Unavailable` |
+| Bad data | `FakeNetworkModeInterceptor` | Answers 200 with broken JSON | `BadData` |
 
-Every mode waits the Normal latency first, so loading states are visible. After waiting, the interceptor throws `IOException("Canceled")` if the call was canceled.
+`FakeNetworkModeInterceptor` waits the Normal latency first in every mode, so loading states are visible. After waiting, it throws `IOException("Canceled")` if the call was canceled.
 
 ## Cache (Room)
 
