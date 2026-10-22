@@ -21,4 +21,11 @@
         <item quantity="other">Scaled from %1$d servings ·</item>
     </plurals>
     <string name="recipe_detail_reset">Reset</string>
+
+    <string name="recipe_detail_instructions">Instructions</string>
+    <plurals name="recipe_detail_steps">
+        <item quantity="one">%1$d step</item>
+        <item quantity="other">%1$d steps</item>
+    </plurals>
+    <string name="recipe_detail_steps_time">%1$s · %2$s</string>
 </resources>
