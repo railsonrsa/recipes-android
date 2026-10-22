@@ -16,12 +16,7 @@ data class Recipe(
     val dietaryTags: Set<DietaryTag>,
     val ingredients: List<Ingredient>,
     val instructions: List<Step>,
-) {
-    val totalTime: Duration get() = prepTime + cookTime
-
-    val instructionsTime: Duration
-        get() = instructions.mapNotNull { it.duration }.fold(Duration.ZERO, Duration::plus)
-}
+)
 
 data class Ingredient(
     val name: String,

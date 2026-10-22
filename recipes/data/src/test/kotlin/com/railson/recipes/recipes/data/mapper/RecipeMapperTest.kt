@@ -64,6 +64,18 @@ class RecipeMapperTest {
 
         assertThat(recipe.instructions.map { it.duration }).containsExactly(30.seconds, null).inOrder()
     }
+
+    @Test
+    fun `steps are ordered by their number`() {
+        val steps = listOf(
+            StepDto(step = 2, description = "Serve", durationSeconds = null),
+            StepDto(step = 1, description = "Stir", durationSeconds = null),
+        )
+
+        val recipe = entity(instructions = steps).toDomain()
+
+        assertThat(recipe.instructions.map { it.number }).containsExactly(1, 2).inOrder()
+    }
 }
 
 private fun entity(

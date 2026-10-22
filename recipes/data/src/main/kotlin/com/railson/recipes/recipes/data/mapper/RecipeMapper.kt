@@ -26,7 +26,7 @@ internal fun RecipeEntity.toDomain(): Recipe = Recipe(
     imageUrl = imageUrl,
     dietaryTags = dietaryTags.mapNotNull(dietaryTagsByKey::get).toSet(),
     ingredients = ingredients.map { Ingredient(name = it.name, quantity = it.quantity, unit = it.unit) },
-    instructions = instructions.map {
+    instructions = instructions.sortedBy { it.step }.map {
         Step(number = it.step, description = it.description, duration = it.durationSeconds?.seconds)
     },
 )
