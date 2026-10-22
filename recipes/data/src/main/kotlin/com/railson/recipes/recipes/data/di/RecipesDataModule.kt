@@ -8,6 +8,7 @@ import com.railson.recipes.recipes.data.local.database.RecipesDatabase
 import com.railson.recipes.recipes.data.remote.RecipesApi
 import com.railson.recipes.recipes.data.repository.OfflineFirstRecipeRepository
 import com.railson.recipes.recipes.domain.repository.RecipeRepository
+import com.railson.recipes.recipes.domain.usecase.ObserveRecipeUseCase
 import com.railson.recipes.recipes.domain.usecase.ObserveSearchUseCase
 import com.railson.recipes.recipes.domain.usecase.RefreshSearchUseCase
 import kotlinx.serialization.json.Json
@@ -22,6 +23,7 @@ val recipesDataModule = module {
         Room.databaseBuilder(androidContext(), RecipesDatabase::class.java, "recipes.db").build()
     }
     single { get<RecipesDatabase>().searchDao() }
+    single { get<RecipesDatabase>().recipeDao() }
     single {
         createRecipesApi(
             context = androidContext(),
@@ -31,8 +33,9 @@ val recipesDataModule = module {
             networkConfig = get(),
         )
     }
-    single<RecipeRepository> { OfflineFirstRecipeRepository(api = get(), dao = get()) }
+    single<RecipeRepository> { OfflineFirstRecipeRepository(api = get(), searchDao = get(), recipeDao = get()) }
     factoryOf(::ObserveSearchUseCase)
+    factoryOf(::ObserveRecipeUseCase)
     factoryOf(::RefreshSearchUseCase)
 }
 

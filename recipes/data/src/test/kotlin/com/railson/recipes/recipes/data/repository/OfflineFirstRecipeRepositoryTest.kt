@@ -40,7 +40,11 @@ class OfflineFirstRecipeRepositoryTest {
         val json = createJson()
         val client = createOkHttpClient(logBodies = true, FakeNetworkModeInterceptor(networkConfig, wait = {}))
         val api = createRecipesApi(context, client, createRetrofit(client, json), json, networkConfig)
-        repository = OfflineFirstRecipeRepository(api = api, dao = database.searchDao())
+        repository = OfflineFirstRecipeRepository(
+            api = api,
+            searchDao = database.searchDao(),
+            recipeDao = database.recipeDao(),
+        )
     }
 
     @After
@@ -116,6 +120,27 @@ class OfflineFirstRecipeRepositoryTest {
 
         assertThat(outcomes).containsExactlyEntriesIn(failingModes)
         assertThat(repository.observeSearch(SearchQuery).first()?.recipes).hasSize(catalogTitles.size)
+    }
+
+    @Test
+    fun `a saved recipe is read by its id with no network`() = runTest {
+        repository.refresh(SearchQuery)
+        val curry = repository.observeSearch(SearchQuery).first()?.recipes.orEmpty()
+            .single { it.title == "Chickpea Coconut Curry" }
+        networkConfig.mode = FakeNetworkMode.NoNetwork
+
+        val recipe = repository.observeRecipe(curry.id).first()
+
+        assertThat(recipe).isEqualTo(curry)
+    }
+
+    @Test
+    fun `a recipe that was never saved reads as null`() = runTest {
+        repository.refresh(SearchQuery)
+
+        val recipe = repository.observeRecipe("never-saved").first()
+
+        assertThat(recipe).isNull()
     }
 }
 
