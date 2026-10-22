@@ -11,4 +11,14 @@
     <string name="recipe_detail_unknown">–</string>
 
     <string name="recipe_detail_read_more">Read more</string>
+
+    <string name="recipe_detail_ingredients">Ingredients</string>
+    <string name="recipe_detail_serves">Serves %1$d</string>
+    <string name="recipe_detail_fewer_servings">Fewer servings</string>
+    <string name="recipe_detail_more_servings">More servings</string>
+    <plurals name="recipe_detail_scaled_from">
+        <item quantity="one">Scaled from %1$d serving ·</item>
+        <item quantity="other">Scaled from %1$d servings ·</item>
+    </plurals>
+    <string name="recipe_detail_reset">Reset</string>
 </resources>
