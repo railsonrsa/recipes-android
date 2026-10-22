@@ -169,7 +169,7 @@ Images are not in Room. Coil loads them from `:core:ui` (`RecipeImage`) with its
 
 ```kotlin
 interface RecipeRepository {
-    fun observeSearch(query: SearchQuery): Flow<SearchResult>     // reads Room only
+    fun observeSearch(query: SearchQuery): Flow<SearchResult?>    // reads Room only, null if never saved
     fun observeRecipe(id: String): Flow<Recipe?>              // reads Room only
     suspend fun refresh(query: SearchQuery): CallOutcome          // page 1, always hits the network
     suspend fun loadNextPage(query: SearchQuery): CallOutcome     // uses the stored nextPage
@@ -179,6 +179,7 @@ interface RecipeRepository {
 
 - Paging is manual. No Paging 3 `RemoteMediator`.
 - `SearchResult.hasMore` comes from the stored remote key.
+- `observeSearch` emits `null` while the search has no remote key: it was never saved. This is the "Room has this search?" column in [Screen states](#screen-states).
 - `count` calls `page=1&pageSize=1`, reads `totalItems` and writes nothing to Room.
 
 ## Flow

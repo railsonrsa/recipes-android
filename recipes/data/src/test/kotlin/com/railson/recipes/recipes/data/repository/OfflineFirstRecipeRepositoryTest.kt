@@ -52,7 +52,7 @@ class OfflineFirstRecipeRepositoryTest {
     fun `nothing is saved before the first refresh`() = runTest {
         val result = repository.observeSearch(SearchQuery).first()
 
-        assertThat(result.recipes).isEmpty()
+        assertThat(result).isNull()
     }
 
     @Test
@@ -61,15 +61,15 @@ class OfflineFirstRecipeRepositoryTest {
 
         val result = repository.observeSearch(SearchQuery).first()
         assertThat(outcome).isEqualTo(CallOutcome.Success)
-        assertThat(result.recipes.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
-        assertThat(result.hasMore).isFalse()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
+        assertThat(result?.hasMore).isFalse()
     }
 
     @Test
     fun `saved recipes keep their times and dietary tags`() = runTest {
         repository.refresh(SearchQuery)
 
-        val recipes = repository.observeSearch(SearchQuery).first().recipes
+        val recipes = repository.observeSearch(SearchQuery).first()?.recipes.orEmpty()
         val curry = recipes.single { it.title == "Chickpea Coconut Curry" }
         assertThat(curry.prepTime).isEqualTo(10.minutes)
         assertThat(curry.cookTime).isEqualTo(20.minutes)
@@ -84,7 +84,7 @@ class OfflineFirstRecipeRepositoryTest {
 
         repository.refresh(SearchQuery)
 
-        assertThat(repository.observeSearch(SearchQuery).first().recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).hasSize(catalogTitles.size)
     }
 
     @Test
@@ -92,7 +92,7 @@ class OfflineFirstRecipeRepositoryTest {
         networkConfig.mode = FakeNetworkMode.Slow
 
         assertThat(repository.refresh(SearchQuery)).isEqualTo(CallOutcome.Success)
-        assertThat(repository.observeSearch(SearchQuery).first().recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).hasSize(catalogTitles.size)
     }
 
     @Test
@@ -103,7 +103,7 @@ class OfflineFirstRecipeRepositoryTest {
         val outcome = repository.refresh(SearchQuery)
 
         assertThat(outcome).isEqualTo(CallOutcome.Success)
-        assertThat(repository.observeSearch(SearchQuery).first().recipes).isEmpty()
+        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).isEmpty()
     }
 
     @Test
@@ -115,7 +115,7 @@ class OfflineFirstRecipeRepositoryTest {
         }
 
         assertThat(outcomes).containsExactlyEntriesIn(failingModes)
-        assertThat(repository.observeSearch(SearchQuery).first().recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).hasSize(catalogTitles.size)
     }
 }
 
