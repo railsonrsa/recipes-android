@@ -39,6 +39,7 @@ How code is written and changed in this repo. What to build is in [specs/](specs
 - The repo does not delete merged branches. Before merging a part, retarget its PR to `main` if the part below it is already merged.
 - The same goes across tickets: a ticket that starts before the previous one is merged stacks on it.
 - Commits follow Conventional Commits: `feat:`, `fix:`, `test:`, `refactor:`, `build:`, `ci:`, `docs:`.
+- When a PR changes the UI in a way a reviewer would want to see, ask the human before opening it whether it needs evidence: screenshots, a video, or none. When it does, record it on the emulator (`adb exec-out screencap -p > shot.png`, `adb shell screenrecord /sdcard/demo.mp4`), light and dark when colors changed, and give the human the files to attach to the PR. Keep them out of the repo.
 - The PR body says what changed and how it was checked. Parts end with `Part of #<issue>`, and only the last part ends with `Closes #<issue>`.
 
 ## Done
