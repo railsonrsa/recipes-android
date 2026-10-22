@@ -1,0 +1,4 @@
+<resources>
+    <!-- The dark `background` token from DESIGN.md 1.1, shown before Compose draws. -->
+    <color name="window_background">#17140F</color>
+</resources>

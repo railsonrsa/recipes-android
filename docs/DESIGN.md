@@ -49,7 +49,7 @@ Mapped to M3 `ColorScheme` roles. Roles not listed keep the M3 defaults and must
 | `actionText` | `#BA4D01` | `#FF9A52` | `TextButton` content ("Clear all", "Clear all filters"). The `primary` orange fails contrast as text. |
 | `hairline` | `#F0EDE5` | `#2F2A23` | 1 dp dividers between rows and sections, skeleton blocks, progress track |
 | `ratingStar` | `#FFD91B` | `#FFD91B` | Filled star in list cards only (the detail screen uses an outlined `onSurface` star) |
-| `dietTag(tag)` | see 1.2 | see 1.2 | Diet tag container colors |
+| `dietTags` | see 1.2 | see 1.2 | Diet tag container colors, one per tag (`dietTags.vegan`, …). `:core:ui` does not see the domain, so features pick the color for each `DietaryTag` |
 | `spinner` | `#4E8DDF`, `#FE6F0C`, `#80C532`, `#A259CC` | same | The loading arc cycles through these four, in order |
 
 ### 1.2 Diet tag colors

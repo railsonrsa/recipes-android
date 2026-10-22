@@ -6,7 +6,7 @@ The checks every change must pass, and how the code is tested. Modules are in [a
 
 | Check | Rules | Fails the build |
 |---|---|---|
-| detekt | Default rules | Yes, on any issue |
+| detekt | Default rules, plus the two Compose changes from the detekt docs ([config/detekt/detekt.yml](../../config/detekt/detekt.yml)) | Yes, on any issue |
 | Android lint | Default rules | Yes, on any issue |
 | Unit tests | `./gradlew test` | Yes |
 
