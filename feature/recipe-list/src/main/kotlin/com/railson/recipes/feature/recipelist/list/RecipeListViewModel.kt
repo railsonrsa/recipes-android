@@ -41,6 +41,7 @@ internal class RecipeListViewModel(
     fun onAction(action: RecipeListAction) {
         when (action) {
             RecipeListAction.Refresh -> refresh()
+            is RecipeListAction.OpenRecipe -> effectChannel.trySend(RecipeListEffect.OpenRecipe(action.id))
         }
     }
 

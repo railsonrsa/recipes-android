@@ -39,9 +39,11 @@ import com.railson.recipes.core.ui.R as CoreUiR
 @Composable
 internal fun RecipeCard(
     recipe: Recipe,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
     ) {
@@ -165,7 +167,7 @@ private val Difficulty.bars: Int
 @Composable
 private fun RecipeCardPreview() {
     RecipesTheme {
-        RecipeCard(recipe = PreviewRecipes.margherita)
+        RecipeCard(recipe = PreviewRecipes.margherita, onClick = {})
     }
 }
 
@@ -174,7 +176,7 @@ private fun RecipeCardPreview() {
 private fun RecipeCardEdgeCasesPreview() {
     RecipesTheme {
         Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-            PreviewRecipes.edgeCases.forEach { RecipeCard(recipe = it) }
+            PreviewRecipes.edgeCases.forEach { RecipeCard(recipe = it, onClick = {}) }
         }
     }
 }

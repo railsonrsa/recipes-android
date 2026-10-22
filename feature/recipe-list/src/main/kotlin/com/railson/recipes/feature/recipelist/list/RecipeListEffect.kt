@@ -7,4 +7,7 @@ internal sealed interface RecipeListEffect {
 
     /** "Couldn't refresh recipes." · "Retry" */
     data object ShowRefreshFailedSnackbar : RecipeListEffect
+
+    /** Leaves for the recipe's detail. The list doesn't know that screen, `:app` does. */
+    data class OpenRecipe(val id: String) : RecipeListEffect
 }

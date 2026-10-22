@@ -4,4 +4,7 @@ package com.railson.recipes.feature.recipelist.list
 internal sealed interface RecipeListAction {
     /** Pull-to-refresh, "Try again", "Refresh" and every "Retry". */
     data object Refresh : RecipeListAction
+
+    /** Taps a recipe card. */
+    data class OpenRecipe(val id: String) : RecipeListAction
 }

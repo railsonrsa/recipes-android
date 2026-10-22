@@ -7,9 +7,12 @@ import androidx.navigation.compose.composable
 import com.railson.recipes.feature.recipelist.list.RecipeListScreen
 import kotlinx.serialization.Serializable
 
-fun NavGraphBuilder.recipeListScreen(topBarActions: @Composable RowScope.() -> Unit) {
+fun NavGraphBuilder.recipeListScreen(
+    onRecipeClick: (String) -> Unit,
+    topBarActions: @Composable RowScope.() -> Unit,
+) {
     composable<RecipeListRoute> {
-        RecipeListScreen(topBarActions = topBarActions)
+        RecipeListScreen(onRecipeClick = onRecipeClick, topBarActions = topBarActions)
     }
 }
 
