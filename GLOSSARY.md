@@ -70,6 +70,10 @@ The number of servings the reader chose; every ingredient quantity grows or shri
 Everything the reader asked for at once: the search text plus the filters. An empty search means the whole catalog.
 _Avoid_: Query (for the text alone)
 
+**Catalog**:
+Every recipe the server has. It is what the empty search returns.
+_Avoid_: All recipes, feed
+
 **Search text**:
 Free text the reader types to find recipes by their words.
 _Avoid_: Query, keyword

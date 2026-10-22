@@ -211,7 +211,7 @@ Load more failing: the "Loading more recipes…" row becomes "Couldn't load more
 
 - Room **2.8.5** (`androidx.room`), not Room 3.
 - kotlinx.serialization 1.12.0, because the build uses Kotlin 2.4.
-- Retrofit 3.0.0 with the kotlinx converter, OkHttp and logging-interceptor 5.5.0.
+- Retrofit 3.0.0 with the kotlinx converter, OkHttp and logging-interceptor 5.4.0. OkHttp 5.5 needs `compileSdk 37`, so it waits like the AndroidX libraries in [architecture.md](architecture.md#build).
 
 ## Not in this version
 
