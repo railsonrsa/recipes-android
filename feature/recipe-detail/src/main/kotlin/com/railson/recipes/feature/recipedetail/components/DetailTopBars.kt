@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,11 +48,11 @@ internal fun Hero(imageUrl: String?, onBack: () -> Unit) {
         )
         Surface(
             color = MaterialTheme.colorScheme.surfaceContainerLowest,
-            shape = RoundedCornerShape(topStart = PanelRadius, topEnd = PanelRadius),
+            shape = MaterialTheme.shapes.extraLarge.copy(bottomStart = ZeroCornerSize, bottomEnd = ZeroCornerSize),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(PanelRadius),
+                .height(PanelOverlap),
         ) {}
     }
 }
@@ -76,7 +76,8 @@ internal fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
-private val PanelRadius = 28.dp
+/** How far the content panel overlaps the image (DESIGN.md 3.9). */
+private val PanelOverlap = 28.dp
 
 /** Back and the title on one line (DESIGN.md 2, Screen title). */
 @OptIn(ExperimentalMaterial3Api::class)

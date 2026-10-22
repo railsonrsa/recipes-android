@@ -71,8 +71,7 @@ internal fun RecipeDetailLayout(
     ) { padding ->
         val stateModifier = Modifier.padding(padding)
         when (uiState) {
-            // Room answers in a moment. An empty panel avoids a spinner flash.
-            RecipeDetailUiState.Loading -> Box(stateModifier.fillMaxSize())
+            RecipeDetailUiState.Loading -> RecipeDetailLoading(modifier = stateModifier)
             RecipeDetailUiState.NotAvailable -> RecipeDetailNotAvailable(onBack = onBack, modifier = stateModifier)
             is RecipeDetailUiState.Content -> RecipeDetailContent(
                 content = uiState,
