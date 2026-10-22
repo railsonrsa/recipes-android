@@ -10,7 +10,7 @@
       "difficulty": 2,
       "cuisine": "Italian",
       "rating": 4.7,
-      "imageUrl": "https://picsum.photos/seed/margherita/600/400",
+      "imageUrl": "https://images.pexels.com/photos/14590497/pexels-photo-14590497.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [
         "vegetarian"
       ],
@@ -84,7 +84,7 @@
       "difficulty": 1,
       "cuisine": "Indian",
       "rating": 4.5,
-      "imageUrl": "https://picsum.photos/seed/chickpea-curry/600/400",
+      "imageUrl": "https://images.pexels.com/photos/9287035/pexels-photo-9287035.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [
         "vegetarian",
         "vegan",
@@ -230,7 +230,7 @@
       "difficulty": 3,
       "cuisine": "Italian",
       "rating": null,
-      "imageUrl": "https://picsum.photos/seed/mushroom-risotto/600/400",
+      "imageUrl": "https://images.pexels.com/photos/11190139/pexels-photo-11190139.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [
         "vegetarian",
         "gluten-free",
@@ -311,7 +311,7 @@
       "difficulty": 1,
       "cuisine": "Mexican",
       "rating": 4.1,
-      "imageUrl": "https://picsum.photos/seed/beef-tacos/600/400",
+      "imageUrl": "https://images.pexels.com/photos/12261167/pexels-photo-12261167.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [],
       "ingredients": [
         {
@@ -378,7 +378,7 @@
       "difficulty": 2,
       "cuisine": "Japanese",
       "rating": 4.8,
-      "imageUrl": "https://picsum.photos/seed/salmon-teriyaki/600/400",
+      "imageUrl": "https://images.pexels.com/photos/27672770/pexels-photo-27672770.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [
         "pescatarian",
         "dairy-free",
@@ -449,7 +449,7 @@
       "difficulty": 1,
       "cuisine": "French",
       "rating": 4.6,
-      "imageUrl": "https://picsum.photos/seed/avocado-mousse/600/400",
+      "imageUrl": "https://images.pexels.com/photos/14090813/pexels-photo-14090813.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [
         "vegetarian",
         "vegan",
@@ -584,7 +584,7 @@
       "difficulty": 2,
       "cuisine": "Brazilian",
       "rating": 4.9,
-      "imageUrl": "https://picsum.photos/seed/pao-de-queijo/600/400",
+      "imageUrl": "https://images.pexels.com/photos/34259860/pexels-photo-34259860.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [
         "vegetarian",
         "gluten-free",
@@ -655,7 +655,7 @@
       "difficulty": 3,
       "cuisine": "Moroccan",
       "rating": 4.4,
-      "imageUrl": "https://picsum.photos/seed/moroccan-lamb/600/400",
+      "imageUrl": "https://images.pexels.com/photos/31372375/pexels-photo-31372375.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
       "dietaryAttributes": [
         "dairy-free",
         "nut-free",
