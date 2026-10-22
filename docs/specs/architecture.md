@@ -126,8 +126,9 @@ Koin. Each module that provides objects has a Koin module in `di/`. `:app` start
 
 ## Build
 
-- Version catalog and convention plugins in `build-logic`: `android-library`, `android-feature`, `jvm-library`.
+- Version catalog and convention plugins in `build-logic`: `android-library`, `android-feature`, `jvm-library`, plus `android-compose` (used by `:core:ui` and the features) and `android-application` (used by `:app`).
 - `minSdk 26`, `compileSdk 36`, `targetSdk 36`. JDK 17.
+- AGP 8.13 and Kotlin 2.4. AGP 9 waits for a detekt release that supports it. AndroidX libraries stay on the last versions that build with AGP 8 and `compileSdk 36` (Compose BOM 2026.06.01, lifecycle 2.10, navigation 2.9).
 - No product flavors.
 
 ## Not in this version

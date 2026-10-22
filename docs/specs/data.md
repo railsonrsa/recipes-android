@@ -210,7 +210,7 @@ Load more failing: the "Loading more recipes…" row becomes "Couldn't load more
 ## Versions
 
 - Room **2.8.5** (`androidx.room`), not Room 3.
-- kotlinx.serialization follows the Kotlin version of the build: 1.12.0 with Kotlin 2.4.x, otherwise 1.11.0. The foundation slice picks it.
+- kotlinx.serialization 1.12.0, because the build uses Kotlin 2.4.
 - Retrofit 3.0.0 with the kotlinx converter, OkHttp and logging-interceptor 5.5.0.
 
 ## Not in this version
