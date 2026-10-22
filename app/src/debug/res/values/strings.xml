@@ -1,0 +1,12 @@
+<resources>
+    <string name="network_menu">Network</string>
+    <string name="network_mode_normal">Normal</string>
+    <string name="network_mode_slow">Slow</string>
+    <string name="network_mode_empty_catalogue">Empty catalogue</string>
+    <string name="network_mode_no_network">No network</string>
+    <string name="network_mode_timeout">Timeout</string>
+    <string name="network_mode_rate_limited">Rate limited</string>
+    <string name="network_mode_server_error">Server error</string>
+    <string name="network_mode_unavailable">Unavailable</string>
+    <string name="network_mode_bad_data">Bad data</string>
+</resources>

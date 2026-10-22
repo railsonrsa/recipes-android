@@ -5,6 +5,19 @@
         <item quantity="other">%1$d recipes</item>
     </plurals>
 
+    <string name="recipe_list_loading">Loading recipes…</string>
+    <string name="recipe_list_error_title">Couldn\'t load recipes</string>
+    <string name="recipe_list_error_body">Something went wrong reading the recipe data.</string>
+    <string name="recipe_list_try_again">Try again</string>
+    <string name="recipe_list_offline_title">You\'re offline.</string>
+    <string name="recipe_list_offline_body">Results for this search aren\'t saved yet.</string>
+    <string name="recipe_list_retry">Retry</string>
+    <string name="recipe_list_empty_catalogue_title">No recipes yet</string>
+    <string name="recipe_list_empty_catalogue_body">The recipe book is empty right now. New recipes will show up here.</string>
+    <string name="recipe_list_refresh">Refresh</string>
+    <string name="recipe_list_snackbar_offline">You\'re offline. Showing saved recipes.</string>
+    <string name="recipe_list_snackbar_refresh_failed">Couldn\'t refresh recipes.</string>
+
     <string name="recipe_card_separator">·</string>
     <string name="recipe_card_no_ratings">No ratings</string>
     <string name="recipe_card_serves">Serves %1$d</string>

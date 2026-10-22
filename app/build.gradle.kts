@@ -29,4 +29,6 @@ dependencies {
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)
+    // Only the debug Network menu injects from Compose.
+    debugImplementation(libs.koin.androidx.compose)
 }

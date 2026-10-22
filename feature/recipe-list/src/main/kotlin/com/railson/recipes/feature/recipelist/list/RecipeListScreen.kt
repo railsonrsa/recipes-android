@@ -13,15 +13,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
 import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
@@ -37,16 +45,46 @@ internal fun RecipeListScreen(
     viewModel: RecipeListViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RecipeListLayout(uiState = uiState, topBarActions = topBarActions)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val offlineMessage = stringResource(R.string.recipe_list_snackbar_offline)
+    val refreshFailedMessage = stringResource(R.string.recipe_list_snackbar_refresh_failed)
+    val retry = stringResource(R.string.recipe_list_retry)
+    LaunchedEffect(viewModel) {
+        // A new snackbar replaces the one on screen: cancelling showSnackbar dismisses it.
+        viewModel.effects.collectLatest { effect ->
+            val message = when (effect) {
+                RecipeListEffect.ShowOfflineSnackbar -> offlineMessage
+                RecipeListEffect.ShowRefreshFailedSnackbar -> refreshFailedMessage
+            }
+            // With an action, the default duration is Indefinite.
+            val result = snackbarHostState.showSnackbar(message, actionLabel = retry, duration = SnackbarDuration.Long)
+            if (result == SnackbarResult.ActionPerformed) viewModel.onAction(RecipeListAction.Refresh)
+        }
+    }
+    val showsList = uiState is RecipeListUiState.Content
+    LaunchedEffect(showsList) {
+        // The snackbars are about the saved list. Another state says it all on its own.
+        if (!showsList) snackbarHostState.currentSnackbarData?.dismiss()
+    }
+    RecipeListLayout(
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        onAction = viewModel::onAction,
+        topBarActions = topBarActions,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RecipeListLayout(
     uiState: RecipeListUiState,
+    snackbarHostState: SnackbarHostState,
+    onAction: (RecipeListAction) -> Unit,
     topBarActions: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val refresh = { onAction(RecipeListAction.Refresh) }
+    val layoutDirection = LocalLayoutDirection.current
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -55,14 +93,29 @@ internal fun RecipeListLayout(
                 actions = topBarActions,
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
+        val statePadding = Modifier.padding(padding)
         when (uiState) {
-            RecipeListUiState.Loading,
-            RecipeListUiState.Offline,
-            RecipeListUiState.Error,
-            RecipeListUiState.EmptyCatalogue,
-            -> Unit
-            is RecipeListUiState.Content -> RecipeListList(recipes = uiState.recipes, contentPadding = padding)
+            RecipeListUiState.Loading -> RecipeListLoading(statePadding)
+            RecipeListUiState.Offline -> RecipeListOffline(onRetry = refresh, modifier = statePadding)
+            RecipeListUiState.Error -> RecipeListError(onTryAgain = refresh, modifier = statePadding)
+            RecipeListUiState.EmptyCatalogue -> RecipeListEmptyCatalogue(onRefresh = refresh, modifier = statePadding)
+            is RecipeListUiState.Content -> PullToRefreshBox(
+                isRefreshing = uiState.isRefreshing,
+                onRefresh = refresh,
+                // The indicator comes down from under the top app bar. The list draws behind the navigation bar.
+                modifier = Modifier.padding(top = padding.calculateTopPadding()),
+            ) {
+                RecipeListList(
+                    recipes = uiState.recipes,
+                    contentPadding = PaddingValues(
+                        start = padding.calculateStartPadding(layoutDirection),
+                        end = padding.calculateEndPadding(layoutDirection),
+                        bottom = padding.calculateBottomPadding(),
+                    ),
+                )
+            }
         }
     }
 }
@@ -108,6 +161,8 @@ private fun RecipeListLayoutPreview() {
     RecipesTheme {
         RecipeListLayout(
             uiState = RecipeListUiState.Content(recipes = PreviewRecipes.all, isRefreshing = false),
+            snackbarHostState = remember { SnackbarHostState() },
+            onAction = {},
             topBarActions = {},
         )
     }
