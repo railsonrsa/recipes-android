@@ -20,8 +20,8 @@ Recipes are named by title. Their ids are UUIDs.
 | No dietary tags | Beef Tacos with Fresh Salsa | No tags; no diet filter matches it |
 | No step durations at all | Beef Tacos with Fresh Salsa | No duration chips; header shows only "4 steps" |
 | Some steps with no duration | Classic Margherita Pizza (steps 3, 5), Salmon Teriyaki Bowl (4), Greek Salad (2), Lamb Shoulder (5) | Those steps have no chip |
-| Seconds that are not whole minutes | Chickpea Coconut Curry (30 s), Salmon Teriyaki Bowl (45 s), Creamy Mushroom Risotto (90 s) | "30 s", "45 s", "1 min 30 s" |
-| Long durations | Lamb Shoulder: cook 4 h, a 14400 s step; Avocado Mousse: a 3600 s step | "4 h", "1 h" |
+| Seconds that are not whole minutes | Chickpea Coconut Curry (30 s), Salmon Teriyaki Bowl (45 s), Creamy Mushroom Risotto (90 s) | "30s", "45s", "1m 30s" |
+| Long durations | Lamb Shoulder: cook 4 h, a 14400 s step; Avocado Mousse: a 3600 s step | "4h", "1h" |
 | Zero cook time | Avocado Mousse, Greek Salad | Cook stat "None" |
 | Unicode, accents, emoji | Mousse au Chocolat Végétalien à l'Avocat 🥑🍫, Pão de Queijo | Renders; "pao" finds Pão de Queijo |
 | Very long title and description | Lamb Shoulder | 2 lines + ellipsis on the card; full text and "Read more" on detail |
