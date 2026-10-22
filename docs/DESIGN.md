@@ -184,7 +184,7 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 - Top app bar "Recipes", then the search bar (16 dp margins).
 - "10 recipes" (`bodyMedium`, `onSurfaceVariant`), padding 16 / 16 / 8.
 - `LazyColumn` of recipe cards, gap 8, horizontal padding 16.
-- Card metadata line: `★ 4.7 · 32 min · Medium` (star filled `ratingStar`; rating in `onSurface` 500). When the rating is null, show "No ratings". When the difficulty is unknown, leave it out of the line. The time is the total time, formatted as in section 4.
+- Card metadata line: `★ 4.7 · 32m · Medium` (star filled `ratingStar`; rating in `onSurface` 500). When the rating is null, show "No ratings". When the difficulty is unknown, leave it out of the line. The time is the total time, formatted as in section 4.
 
 ### 3.3 Loading the next page
 - The search bar stays pinned at the top (8 dp vertical padding, a 1 dp `hairline` below it).
@@ -244,7 +244,7 @@ The bottom button shows a live count: "Show N recipes", or "Show 1 recipe" for o
 | `unit = pinch` | "1 pinch" (plural "2 pinches"). |
 | Fractional quantity | 0.25 → ¼, 0.5 → ½, 0.75 → ¾, 1.5 → 1½. Otherwise up to 1 decimal place. |
 | Servings stepper | Scales every quantity by `selected / original`, with "Scaled from N servings · Reset" (a `TextButton`). Range 1–20. |
-| Time (prep, cook, step, totals) | At most 2 units, the largest first, zero units skipped: "30 s", "1 min 30 s", "1 h", "1 h 30 min". 3630 s → "1 h" (the rest is dropped). |
+| Time (prep, cook, step, totals) | At most 2 units, the largest first, zero units skipped, no space between value and unit: "30s", "1m 30s", "1h", "1h 30m". 3630 s → "1h" (the rest is dropped). |
 | Cook time = 0 | Cook stat shows "None". |
 | Total time on card | Prep time + cook time. |
 | Step with no duration | No duration chip on that step. |

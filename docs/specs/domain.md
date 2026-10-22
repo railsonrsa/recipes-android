@@ -35,12 +35,12 @@ Derived values:
 ## Time
 
 - Every time value from the backend is in **seconds**: `prepTimeSeconds`, `cookTimeSeconds`, `durationSeconds`. The domain holds `kotlin.time.Duration`.
-- One formatting util turns a `Duration` into text. It shows at most **2 units**, the largest first, skips zero units and drops the rest:
-  - 30 s → "30 s"
-  - 90 s → "1 min 30 s"
-  - 3600 s → "1 h"
-  - 3630 s → "1 h" (the seconds are dropped)
-  - 5400 s → "1 h 30 min"
+- One formatting util turns a `Duration` into text. It shows at most **2 units**, the largest first, skips zero units and drops the rest. No space between a value and its unit; a space only between two units:
+  - 30 s → "30s"
+  - 90 s → "1m 30s"
+  - 3600 s → "1h"
+  - 3630 s → "1h" (the seconds are dropped)
+  - 5400 s → "1h 30m"
 - A cook time of zero shows "None".
 
 ## Servings scaling
