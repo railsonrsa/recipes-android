@@ -6,13 +6,12 @@ import com.railson.recipes.recipes.domain.model.Recipe
 internal sealed interface RecipeListUiState {
     data object Loading : RecipeListUiState
 
-    /** Offline, and this search was never saved. */
+    /** Offline, with no saved recipes to show. */
     data object Offline : RecipeListUiState
 
-    /** Any other failure, and this search was never saved. */
+    /** Any other failure, with no saved recipes to show. */
     data object Error : RecipeListUiState
 
-    /** The server answered an empty catalog. */
     data object EmptyCatalogue : RecipeListUiState
 
     /** The saved recipes. [isRefreshing] while a call to the server runs. */
