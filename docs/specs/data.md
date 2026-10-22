@@ -163,7 +163,7 @@ At step 3, r14 is already saved, but the search "lamb shoulder" is new. Online, 
 
 ### Images
 
-Images are not in Room. Coil loads them with its default memory and disk cache, no extra setup. Offline, an image never loaded before shows the placeholder from [DESIGN.md](../DESIGN.md#4-data--ui-rules).
+Images are not in Room. Coil loads them from `:core:ui` (`RecipeImage`) with its default memory and disk cache, no extra setup. They are the only real network calls, so the app asks for `INTERNET`. Offline, an image never loaded before shows the placeholder from [DESIGN.md](../DESIGN.md#4-data--ui-rules).
 
 ## Repository
 
@@ -212,6 +212,7 @@ Load more failing: the "Loading more recipes…" row becomes "Couldn't load more
 - Room **2.8.5** (`androidx.room`), not Room 3.
 - kotlinx.serialization 1.12.0, because the build uses Kotlin 2.4.
 - Retrofit 3.0.0 with the kotlinx converter, OkHttp and logging-interceptor 5.4.0. OkHttp 5.5 needs `compileSdk 37`, so it waits like the AndroidX libraries in [architecture.md](architecture.md#build).
+- Coil 3.5.0 (`coil-compose`, `coil-network-okhttp`). Coil 3.6 needs `compileSdk 37` too.
 
 ## Not in this version
 
