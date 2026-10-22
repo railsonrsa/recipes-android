@@ -10,6 +10,6 @@ import com.railson.recipes.feature.recipelist.navigation.recipeListScreen
 internal fun RecipesNavHost() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = RecipeListRoute) {
-        recipeListScreen(topBarActions = {})
+        recipeListScreen(topBarActions = { TopBarActions() })
     }
 }
