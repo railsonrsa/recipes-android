@@ -169,7 +169,7 @@ Images are not in Room. Coil loads them from `:core:ui` (`RecipeImage`) with its
 
 ```kotlin
 interface RecipeRepository {
-    fun observeSearch(query: SearchQuery): Flow<SearchResult>     // reads Room only
+    fun observeSearch(query: SearchQuery): Flow<SearchResult?>    // reads Room only, null if never saved
     fun observeRecipe(id: String): Flow<Recipe?>              // reads Room only
     suspend fun refresh(query: SearchQuery): CallOutcome          // page 1, always hits the network
     suspend fun loadNextPage(query: SearchQuery): CallOutcome     // uses the stored nextPage
@@ -179,6 +179,7 @@ interface RecipeRepository {
 
 - Paging is manual. No Paging 3 `RemoteMediator`.
 - `SearchResult.hasMore` comes from the stored remote key.
+- `observeSearch` emits `null` while the search has no remote key: it was never saved. This is the "Room has this search?" column in [Screen states](#screen-states).
 - `count` calls `page=1&pageSize=1`, reads `totalItems` and writes nothing to Room.
 
 ## Flow
@@ -201,9 +202,13 @@ interface RecipeRepository {
 | No | Generic | Error (DESIGN 3.6) |
 | Yes, 0 recipes, catalog | `Success` | Empty catalogue (DESIGN 3.7) |
 | Yes, 0 recipes, with filters or text | `Success` | No results (DESIGN 3.5) |
+| Yes, 0 recipes | Offline | Same as "No": the offline message + "Retry" |
+| Yes, 0 recipes | Generic | Error (DESIGN 3.6) |
 | Yes, has recipes | Running | List |
 | Yes, has recipes | Offline | List + snackbar "You're offline. Showing saved recipes." · "Retry" |
 | Yes, has recipes | Generic | List + snackbar "Couldn't refresh recipes." · "Retry" |
+
+A saved result with 0 recipes counts as not saved when the call fails, since there is nothing to show. This also keeps the Offline and Error screens easy to show with the debug menu: pick Empty catalogue and refresh, then pick No network or Server error and refresh again.
 
 Load more failing: the "Loading more recipes…" row becomes "Couldn't load more" + "Retry". The cards stay.
 

@@ -56,7 +56,14 @@ internal fun RecipeListLayout(
             )
         },
     ) { padding ->
-        RecipeListList(recipes = uiState.recipes, contentPadding = padding)
+        when (uiState) {
+            RecipeListUiState.Loading,
+            RecipeListUiState.Offline,
+            RecipeListUiState.Error,
+            RecipeListUiState.EmptyCatalogue,
+            -> Unit
+            is RecipeListUiState.Content -> RecipeListList(recipes = uiState.recipes, contentPadding = padding)
+        }
     }
 }
 
@@ -99,7 +106,10 @@ internal fun RecipeListList(
 @Composable
 private fun RecipeListLayoutPreview() {
     RecipesTheme {
-        RecipeListLayout(uiState = RecipeListUiState(recipes = PreviewRecipes.all), topBarActions = {})
+        RecipeListLayout(
+            uiState = RecipeListUiState.Content(recipes = PreviewRecipes.all, isRefreshing = false),
+            topBarActions = {},
+        )
     }
 }
 

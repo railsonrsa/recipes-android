@@ -20,11 +20,12 @@ internal class OfflineFirstRecipeRepository(
     private val dao: SearchDao,
 ) : RecipeRepository {
 
-    override fun observeSearch(query: SearchQuery): Flow<SearchResult> = combine(
+    override fun observeSearch(query: SearchQuery): Flow<SearchResult?> = combine(
         dao.observeRecipes(query.searchKey),
         dao.observeRemoteKey(query.searchKey),
     ) { recipes: List<RecipeEntity>, remoteKey: SearchRemoteKeyEntity? ->
-        SearchResult(recipes = recipes.map { it.toDomain() }, hasMore = remoteKey?.nextPage != null)
+        // The remote key is written with every save, so no key means the search was never saved.
+        remoteKey?.let { SearchResult(recipes = recipes.map { it.toDomain() }, hasMore = it.nextPage != null) }
     }
 
     override suspend fun refresh(query: SearchQuery): CallOutcome = callServer {
