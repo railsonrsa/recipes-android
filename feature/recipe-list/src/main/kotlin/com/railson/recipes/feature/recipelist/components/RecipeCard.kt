@@ -70,7 +70,7 @@ internal fun RecipeCard(
     }
 }
 
-/** "★ 4.7 · 32 min · Medium". No rating shows "No ratings"; an unknown difficulty is left out. */
+/** "★ 4.7 · 32m · Medium". No rating shows "No ratings"; an unknown difficulty is left out. */
 @Composable
 private fun MetadataLine(recipe: Recipe) {
     val style = MaterialTheme.typography.bodyMedium
