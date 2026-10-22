@@ -50,9 +50,9 @@ internal fun com.android.build.api.dsl.Lint.configureLint() {
     abortOnError = true
     warningsAsErrors = true
     checkDependencies = false
-    // Versions are pinned on purpose (see libs.versions.toml). These checks would break the build
-    // each time a library ships a new version.
-    disable += setOf("AndroidGradlePluginVersion", "GradleDependency", "NewerVersionAvailable")
+    // Versions and SDK levels are pinned on purpose (see libs.versions.toml). These checks would break
+    // the build each time a library or an Android version ships.
+    disable += setOf("AndroidGradlePluginVersion", "GradleDependency", "NewerVersionAvailable", "OldTargetApi")
 }
 
 private fun Project.configureDetekt() {
