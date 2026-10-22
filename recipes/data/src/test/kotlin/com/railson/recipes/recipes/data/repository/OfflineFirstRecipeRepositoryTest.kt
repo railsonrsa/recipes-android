@@ -86,6 +86,7 @@ class OfflineFirstRecipeRepositoryTest {
 
         assertThat(repository.observeSearch(SearchQuery).first().recipes).hasSize(catalogTitles.size)
     }
+
     @Test
     fun `slow still saves the catalog`() = runTest {
         networkConfig.mode = FakeNetworkMode.Slow
