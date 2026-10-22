@@ -61,6 +61,7 @@ Write the failing test first for the pure rules:
 - `SearchQuery`: text normalization, a word moving between included and excluded, the active filter count.
 - `FakeRecipeSearch.run`: every matching rule in [domain.md](domain.md#search), paging and `pagination`.
 - The `Duration` formatter: 30s, 1m, 1m 30s, 1h, 1h 30m.
+- Servings scaling, and the quantity formatter: ¼, ½, ¾, 1½, pinch and pinches.
 
 Everywhere else, tests come in the same change as the code.
 
@@ -68,11 +69,11 @@ Everywhere else, tests come in the same change as the code.
 
 | Module | Tests |
 |---|---|
-| `:recipes:domain` | `SearchQuery` rules. Use cases only forward the call, so they have no tests |
+| `:recipes:domain` | `SearchQuery` rules, servings scaling. Use cases only forward the call, so they have no tests |
 | `:recipes:data` | `FakeRecipeSearch.run`. DTO → domain mappers. The repository with in-memory Room, real Retrofit and OkHttp and the fake interceptors: the `CallOutcome` for each fake network mode, and the refresh and next-page transactions |
 | `:core:network` | `FakeNetworkModeInterceptor`: each mode throws the right exception or answers the right status |
 | `:core:ui` | The `Duration` formatter |
-| `:feature:recipe-list`, `:feature:recipe-detail` | ViewModels with `FakeRecipeRepository`, real use cases and Turbine: each `XAction` gives the expected `XUiState` and `XEffect` |
+| `:feature:recipe-list`, `:feature:recipe-detail` | The quantity formatter (detail). ViewModels with `FakeRecipeRepository`, real use cases and Turbine: each `XAction` gives the expected `XUiState` and `XEffect` |
 | `:app` | None |
 
 ## Not in this version
