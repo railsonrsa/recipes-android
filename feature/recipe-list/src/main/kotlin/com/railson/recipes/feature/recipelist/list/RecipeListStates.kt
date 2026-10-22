@@ -94,7 +94,6 @@ internal fun RecipeListEmptyCatalogue(onRefresh: () -> Unit, modifier: Modifier 
     }
 }
 
-/** A 72 dp circle with a 36 dp icon, a title, a line of text and an action, centered. */
 @Composable
 private fun RecipeListMessage(
     @DrawableRes icon: Int,
