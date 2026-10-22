@@ -18,6 +18,10 @@ data class Recipe(
     val instructions: List<Step>,
 )
 
+/** The sum of the step durations, `null` when no step has one. */
+val Recipe.instructionsTime: Duration?
+    get() = instructions.mapNotNull { it.duration }.reduceOrNull(Duration::plus)
+
 data class Ingredient(
     val name: String,
     val quantity: Double,
