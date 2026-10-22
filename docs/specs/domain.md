@@ -81,5 +81,28 @@ DESIGN.md is still the UI source of truth. These decisions override it:
 
 - The "Method" section on the detail screen is called **"Instructions"**.
 - Step durations are `durationSeconds`, not `durationMinutes`. Prep and cook times are in seconds too.
-- The filter sheet gets an **Instructions** section after Ingredients: one text field for the instruction search. The layout is decided in issue #6.
-- The filter sheet gets excluded ingredients. The layout is decided in issue #6.
+- The filter sheet gets excluded ingredients and an **Instructions** section. See [Filter sheet: excluded ingredients and instructions](#filter-sheet-excluded-ingredients-and-instructions).
+
+### Filter sheet: excluded ingredients and instructions
+
+Decided in issue #6 (variant A of the prototype).
+
+**Ingredients section**
+
+- A `SingleChoiceSegmentedButtonRow` with two segments, **Must have** and **Must not have**, sits above the field. It picks where the next word goes. It starts on Must have and is not a filter itself (it does not count in the badge).
+- One text field and one add button, as in DESIGN.md. The placeholder follows the segment: "Search ingredients" or "Ingredient to avoid".
+- Included and excluded chips share one `FlowRow`: included first, then excluded.
+- Included chip: as in DESIGN.md ("Coconut milk ×", `vegetarian` container).
+- Excluded chip: `InputChip` with a 1 dp `outline` border on `surfaceContainerLowest`, a leading block icon (18 dp) and the label "No garlic".
+- Adding a word that is on the other side moves it, and a snackbar says so: "“garlic” moved to Must have".
+
+**Instructions section** (after Ingredients)
+
+- One `OutlinedTextField`, no add button: leading numbered-list icon, placeholder "Search steps, e.g. oven", trailing clear icon when it has text.
+- Typing updates the "Show N recipes" count (the same 300 ms wait as the other filters).
+
+**Active filters on the list**
+
+- Included and excluded chips look the same as in the sheet.
+- The instruction search is one chip: `secondaryContainer`, leading numbered-list icon, label "Steps: oven".
+- Chip order: diet, servings, difficulty, included, excluded, instructions.
