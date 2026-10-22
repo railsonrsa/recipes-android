@@ -1,6 +1,6 @@
 # Data spec
 
-How the app gets recipes: the fake endpoint's contract, the offline-first cache, and how loading, paging, refresh and errors behave. Terms are in [GLOSSARY.md](../../GLOSSARY.md), domain rules in [domain.md](domain.md). Decided in issue #4. The fake endpoint split into two interceptors comes from issue #5. Research: `docs/research/fake-endpoint-offline-first.md` on branch `research/fake-endpoint`.
+How the app gets recipes: the fake endpoint's contract, the offline-first cache, and how loading, paging, refresh and errors behave. Terms are in [GLOSSARY.md](../../GLOSSARY.md), domain rules in [domain.md](domain.md). Decided in issue #4. The fake endpoint split into two interceptors comes from issue #5. Research: [fake-endpoint-offline-first.md](../research/fake-endpoint-offline-first.md).
 
 ## The picture
 
