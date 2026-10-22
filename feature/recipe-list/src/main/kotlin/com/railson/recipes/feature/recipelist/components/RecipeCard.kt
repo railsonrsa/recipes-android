@@ -99,7 +99,7 @@ private fun MetadataLine(recipe: Recipe) {
             IconAndText {
                 DifficultyBars(
                     filledBars = difficulty.bars,
-                    contentDescription = stringResource(R.string.difficulty_description, label.lowercase()),
+                    contentDescription = stringResource(CoreUiR.string.difficulty_description, label.lowercase()),
                     modifier = Modifier.size(iconSize),
                 )
                 Text(label, style = style, color = secondary)
@@ -148,9 +148,9 @@ private fun ServesLine(servings: Int, cuisine: String) {
 @get:StringRes
 private val Difficulty.label: Int
     get() = when (this) {
-        Difficulty.Easy -> R.string.difficulty_easy
-        Difficulty.Medium -> R.string.difficulty_medium
-        Difficulty.Hard -> R.string.difficulty_hard
+        Difficulty.Easy -> CoreUiR.string.difficulty_easy
+        Difficulty.Medium -> CoreUiR.string.difficulty_medium
+        Difficulty.Hard -> CoreUiR.string.difficulty_hard
     }
 
 @Suppress("MagicNumber") // Filled bars per difficulty, DESIGN.md 2.

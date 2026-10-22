@@ -21,6 +21,7 @@ import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipelist.R
 import com.railson.recipes.recipes.domain.model.DietaryTag
+import com.railson.recipes.core.ui.R as CoreUiR
 
 private const val CARD_TAG_COUNT = 2
 
@@ -80,14 +81,14 @@ private fun CardTag(
 @get:StringRes
 private val DietaryTag.label: Int
     get() = when (this) {
-        DietaryTag.Vegan -> R.string.diet_vegan
-        DietaryTag.Vegetarian -> R.string.diet_vegetarian
-        DietaryTag.Pescatarian -> R.string.diet_pescatarian
-        DietaryTag.Halal -> R.string.diet_halal
-        DietaryTag.GlutenFree -> R.string.diet_gluten_free
-        DietaryTag.DairyFree -> R.string.diet_dairy_free
-        DietaryTag.NutFree -> R.string.diet_nut_free
-        DietaryTag.LowCarb -> R.string.diet_low_carb
+        DietaryTag.Vegan -> CoreUiR.string.diet_vegan
+        DietaryTag.Vegetarian -> CoreUiR.string.diet_vegetarian
+        DietaryTag.Pescatarian -> CoreUiR.string.diet_pescatarian
+        DietaryTag.Halal -> CoreUiR.string.diet_halal
+        DietaryTag.GlutenFree -> CoreUiR.string.diet_gluten_free
+        DietaryTag.DairyFree -> CoreUiR.string.diet_dairy_free
+        DietaryTag.NutFree -> CoreUiR.string.diet_nut_free
+        DietaryTag.LowCarb -> CoreUiR.string.diet_low_carb
     }
 
 private val DietaryTag.color: Color
