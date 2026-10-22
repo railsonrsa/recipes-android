@@ -1,0 +1,5 @@
+<resources>
+    <string name="recipe_detail_back">Back</string>
+    <string name="recipe_detail_not_available_title">Recipe not available</string>
+    <string name="recipe_detail_not_available_body">This recipe isn\'t saved on this device yet.</string>
+</resources>
