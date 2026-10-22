@@ -33,9 +33,13 @@ How code is written and changed in this repo. What to build is in [specs/](specs
 ## Git and pull requests
 
 - Never commit or push to `main`. Every change goes through a pull request, and the human merges it.
-- One branch per implementation ticket: `impl/<issue>-<topic>`, from `main`. If the previous ticket is not merged yet, branch from it and say so in the PR, so it can be retargeted to `main` before merging. The repo does not delete merged branches.
+- Keep each pull request small enough to review in one sitting (about 400 changed lines, not counting generated files). A ticket can take several pull requests.
+- Split a ticket into a **stack**: each part is one branch, `impl/<issue>-<part>-<topic>` (`impl/18-1-build-logic`, `impl/18-2-theme`), made from the part before it. The first part comes from `main`. Each part builds and passes the checks on its own.
+- Every PR in a stack says its place in the PR body: "Part 2 of 3 for #18, based on #31".
+- The repo does not delete merged branches. Before merging a part, retarget its PR to `main` if the part below it is already merged.
+- The same goes across tickets: a ticket that starts before the previous one is merged stacks on it.
 - Commits follow Conventional Commits: `feat:`, `fix:`, `test:`, `refactor:`, `build:`, `ci:`, `docs:`.
-- The PR body says what changed and how it was checked, and ends with `Closes #<issue>`.
+- The PR body says what changed and how it was checked. Parts end with `Part of #<issue>`, and only the last part ends with `Closes #<issue>`.
 
 ## Done
 

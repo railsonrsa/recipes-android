@@ -8,7 +8,7 @@ A native Android app to browse, search and filter recipes. Kotlin, Jetpack Compo
 2. Read the docs its "Specs" section points to before writing code.
 3. Build it test first for the pure rules, the rest with tests in the same change.
 4. Check: `./gradlew detekt lint test assembleDebug`. Red means not done.
-5. Open a pull request as in [guidelines](docs/guidelines.md#git-and-pull-requests). Never push to `main`.
+5. Open small pull requests, stacked when the ticket is big, as in [guidelines](docs/guidelines.md#git-and-pull-requests). Never push to `main`.
 
 The ticket is done when [Done](docs/guidelines.md#done) holds.
 
