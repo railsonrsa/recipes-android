@@ -31,3 +31,10 @@ The ticket is done when [Done](docs/guidelines.md#done) holds.
 - The docs are the source of truth. When they disagree with the code, the docs win; when the code proves them wrong, fix the docs in the same PR.
 - DESIGN.md section 6 and each spec's "Not in this version" list what not to build.
 - Everything is written in English, kept simple.
+
+## Reviews
+
+When the human asks you to review a pull request or to answer their review comments, you post from their GitHub account.
+
+- End every review, comment or reply you post with one last line of its own: 🤖 Written by Claude
+- After each change made for a review comment, read the PR body again. When it shows an output the change altered (a format, an example, a count), update the PR body in the same round.
