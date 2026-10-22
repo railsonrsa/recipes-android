@@ -1,6 +1,7 @@
 package com.railson.recipes.recipes.data.mapper
 
 import com.railson.recipes.recipes.data.local.entity.RecipeEntity
+import com.railson.recipes.recipes.data.remote.RecipeDto
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.Difficulty
 import com.railson.recipes.recipes.domain.model.Ingredient
@@ -40,4 +41,20 @@ private val dietaryTagsByKey = mapOf(
     "dairy-free" to DietaryTag.DairyFree,
     "nut-free" to DietaryTag.NutFree,
     "low-carb" to DietaryTag.LowCarb,
+)
+
+internal fun RecipeDto.toEntity(): RecipeEntity = RecipeEntity(
+    id = id,
+    title = title,
+    description = description,
+    servings = servings,
+    prepTimeSeconds = prepTimeSeconds,
+    cookTimeSeconds = cookTimeSeconds,
+    difficulty = difficulty,
+    cuisine = cuisine,
+    rating = rating,
+    imageUrl = imageUrl,
+    dietaryTags = dietaryAttributes,
+    ingredients = ingredients,
+    instructions = instructions,
 )

@@ -49,3 +49,9 @@ internal data class StepDto(
     val description: String,
     val durationSeconds: Long?,
 )
+
+@Serializable
+internal data class ErrorDto(
+    val code: String,
+    val message: String,
+)
