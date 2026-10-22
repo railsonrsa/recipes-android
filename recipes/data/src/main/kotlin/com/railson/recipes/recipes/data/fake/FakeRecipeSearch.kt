@@ -10,7 +10,12 @@ internal data class FakeSearchParams(
     val pageSize: Int,
 )
 
-/** The fake server's answer to `GET /recipes`, without any HTTP. */
+/**
+ * The fake server's answer to `GET /recipes`, without any HTTP.
+ *
+ * `pagination` is built from the given list, so the asset's own `pagination` is ignored:
+ * it only describes the full catalog on page 1.
+ */
 internal object FakeRecipeSearch {
     fun run(recipes: List<RecipeDto>, params: FakeSearchParams): RecipePageDto {
         val (page, pageSize) = params
