@@ -11,6 +11,7 @@ The checks every change must pass, and how the code is tested. Modules are in [a
 | Unit tests | `./gradlew test` | Yes |
 
 - No baseline. The code starts clean and stays clean.
+- Lint warnings fail the build too. Only the lint checks that ask for newer versions are off (`AndroidGradlePluginVersion`, `GradleDependency`, `NewerVersionAvailable`): versions are pinned on purpose ([architecture.md](architecture.md#build)), and these checks would break the build each time a library ships.
 - A `@Suppress` needs a comment that says why.
 
 Before each commit, run:
