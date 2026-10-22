@@ -1,8 +1,11 @@
-# Default rules, plus the two Compose changes the detekt docs suggest.
-# https://detekt.dev/docs/introduction/compose/
+# Only the rules we change. Everything else uses detekt defaults.
 naming:
   FunctionNaming:
+    # From the detekt Compose docs: Composable names start with a capital letter.
+    # https://detekt.dev/docs/1.23.0/introduction/compose/
     ignoreAnnotated: ['Composable']
 style:
   UnusedPrivateMember:
+    # 'Preview' is from the detekt Compose docs.
+    # https://detekt.dev/docs/1.23.0/introduction/compose/
     ignoreAnnotated: ['Preview', 'ThemePreviews']
