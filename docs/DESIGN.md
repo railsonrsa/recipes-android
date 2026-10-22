@@ -241,7 +241,7 @@ The bottom button shows a live count: "Show N recipes", or "Show 1 recipe" for o
 | Offline image | Coil's default disk cache, no extra setup. An image never loaded before shows the same placeholder. |
 | `rating = null` | "No ratings" (list); "–" with the label "Rating" (detail). Never show `0.0`. |
 | `unit = null` | Quantity only: "2" (for example, "Eggs · 2"). |
-| `unit = pinch` | "1 pinch" (plural "2 pinches"). |
+| `unit = pinch` or `cup` | "1 pinch", "1 cup" (plural "2 pinches", "2 cups"). The other units are abbreviations and stay the same. |
 | Fractional quantity | 0.25 → ¼, 0.5 → ½, 0.75 → ¾, 1.5 → 1½. Otherwise up to 1 decimal place. |
 | Servings stepper | Scales every quantity by `selected / original`, with "Scaled from N servings · Reset" (a `TextButton`). Range 1–20. |
 | Time (prep, cook, step, totals) | At most 2 units, the largest first, zero units skipped, no space between value and unit: "30s", "1m 30s", "1h", "1h 30m". 3630 s → "1h" (the rest is dropped). |

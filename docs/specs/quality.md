@@ -61,7 +61,7 @@ Write the failing test first for the pure rules:
 - `SearchQuery`: text normalization, a word moving between included and excluded, the active filter count.
 - `FakeRecipeSearch.run`: every matching rule in [domain.md](domain.md#search), paging and `pagination`.
 - The `Duration` formatter: 30s, 1m, 1m 30s, 1h, 1h 30m.
-- Servings scaling, and the quantity formatter: ¼, ½, ¾, 1½, pinch and pinches.
+- Servings scaling, and the quantity formatter: ¼, ½, ¾, 1½, pinches and cups.
 
 Everywhere else, tests come in the same change as the code.
 
