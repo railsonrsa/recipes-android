@@ -1,3 +1,22 @@
 <resources>
     <string name="recipe_list_title">Recipes</string>
+
+    <string name="recipe_card_separator">·</string>
+    <string name="recipe_card_no_ratings">No ratings</string>
+    <string name="recipe_card_serves">Serves %1$d</string>
+    <string name="recipe_card_more_tags">+%1$d</string>
+
+    <string name="difficulty_easy">Easy</string>
+    <string name="difficulty_medium">Medium</string>
+    <string name="difficulty_hard">Hard</string>
+    <string name="difficulty_description">Difficulty: %1$s</string>
+
+    <string name="diet_vegan">Vegan</string>
+    <string name="diet_vegetarian">Vegetarian</string>
+    <string name="diet_pescatarian">Pescatarian</string>
+    <string name="diet_halal">Halal</string>
+    <string name="diet_gluten_free">Gluten-free</string>
+    <string name="diet_dairy_free">Dairy-free</string>
+    <string name="diet_nut_free">Nut-free</string>
+    <string name="diet_low_carb">Low-carb</string>
 </resources>

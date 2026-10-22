@@ -6,3 +6,8 @@ plugins {
 android {
     namespace = "com.railson.recipes.core.ui"
 }
+
+dependencies {
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+}
