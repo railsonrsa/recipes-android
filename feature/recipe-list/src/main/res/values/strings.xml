@@ -1,5 +1,9 @@
 <resources>
     <string name="recipe_list_title">Recipes</string>
+    <plurals name="recipe_list_count">
+        <item quantity="one">%1$d recipe</item>
+        <item quantity="other">%1$d recipes</item>
+    </plurals>
 
     <string name="recipe_card_separator">·</string>
     <string name="recipe_card_no_ratings">No ratings</string>

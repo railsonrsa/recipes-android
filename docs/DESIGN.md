@@ -167,7 +167,7 @@ Minimum touch target: 48 dp, the M3 default. Keep `minimumInteractiveComponentSi
 | Excluded ingredient | `block` |
 | Instruction search | `format_list_numbered` |
 
-**Difficulty icon:** a custom 24 dp drawable with 3 vertical bars (heights 7, 12 and 18 dp, width 4, gap 2, radius 2). Easy fills 1 bar, Medium 2, Hard 3. Filled bars are `onSurface`, empty bars `outlineVariant`. It always appears next to the text label.
+**Difficulty icon:** a custom 24 dp drawable with 3 vertical bars (heights 7, 12 and 18 dp, width 4, gap 2, radius 2). Easy fills 1 bar, Medium 2, Hard 3. Filled bars are `onSurface`, empty bars `outlineVariant`. It always appears next to the text label. In the card metadata line, the bars and the star are sized to the line height of the text, so they scale with the font.
 
 ---
 
