@@ -161,6 +161,10 @@ Example, 15 recipes on the server, `pageSize = 10`:
 
 At step 3, r14 is already saved, but the search "lamb shoulder" is new. Online, the screen loads and then fills. Offline, the app doesn't know which recipes match, so it shows the offline message. The detail of r14 opens offline either way.
 
+### Images
+
+Images are not in Room. Coil loads them with its default memory and disk cache, no extra setup. Offline, an image never loaded before shows the placeholder from [DESIGN.md](../DESIGN.md#4-data--ui-rules).
+
 ## Repository
 
 ```kotlin
