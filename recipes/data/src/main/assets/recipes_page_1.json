@@ -1,0 +1,744 @@
+{
+  "data": [
+    {
+      "id": "c432bed1-de61-47b9-af13-e10f9ec1283d",
+      "title": "Classic Margherita Pizza",
+      "description": "A thin, crisp crust topped with tangy tomato sauce, creamy mozzarella and fresh basil.",
+      "servings": 4,
+      "prepTimeSeconds": 1200,
+      "cookTimeSeconds": 720,
+      "difficulty": 2,
+      "cuisine": "Italian",
+      "rating": 4.7,
+      "imageUrl": "https://picsum.photos/seed/margherita/600/400",
+      "dietaryAttributes": [
+        "vegetarian"
+      ],
+      "ingredients": [
+        {
+          "name": "Pizza dough",
+          "quantity": 500,
+          "unit": "g"
+        },
+        {
+          "name": "Crushed tomatoes",
+          "quantity": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Fresh mozzarella",
+          "quantity": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Fresh basil leaves",
+          "quantity": 12,
+          "unit": null
+        },
+        {
+          "name": "Olive oil",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Salt",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Preheat the oven to its highest setting with a baking tray inside.",
+          "durationSeconds": 900
+        },
+        {
+          "step": 2,
+          "description": "Stretch the dough into two thin rounds on parchment paper.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 3,
+          "description": "Spread the tomatoes over the dough, add torn mozzarella and a drizzle of olive oil.",
+          "durationSeconds": null
+        },
+        {
+          "step": 4,
+          "description": "Slide onto the hot tray and bake until the crust is blistered and golden.",
+          "durationSeconds": 720
+        },
+        {
+          "step": 5,
+          "description": "Top with fresh basil and a pinch of salt before serving.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "7b4b4c5d-5170-4851-8e1a-58df9e27a450",
+      "title": "Chickpea Coconut Curry",
+      "description": "A comforting one-pot curry with chickpeas, spinach and coconut milk. Ready in 30 minutes.",
+      "servings": 4,
+      "prepTimeSeconds": 600,
+      "cookTimeSeconds": 1200,
+      "difficulty": 1,
+      "cuisine": "Indian",
+      "rating": 4.5,
+      "imageUrl": "https://picsum.photos/seed/chickpea-curry/600/400",
+      "dietaryAttributes": [
+        "vegetarian",
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Canned chickpeas, drained",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Coconut milk",
+          "quantity": 400,
+          "unit": "ml"
+        },
+        {
+          "name": "Onion, diced",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Garlic cloves, minced",
+          "quantity": 3,
+          "unit": null
+        },
+        {
+          "name": "Curry powder",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Baby spinach",
+          "quantity": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Vegetable oil",
+          "quantity": 1,
+          "unit": "tbsp"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Heat the oil in a deep pan and soften the onion and garlic.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 2,
+          "description": "Stir in the curry powder and toast until fragrant.",
+          "durationSeconds": 30
+        },
+        {
+          "step": 3,
+          "description": "Add the chickpeas and coconut milk, then simmer gently.",
+          "durationSeconds": 720
+        },
+        {
+          "step": 4,
+          "description": "Fold in the spinach until wilted and season to taste.",
+          "durationSeconds": 120
+        }
+      ]
+    },
+    {
+      "id": "192ec54d-47a8-4510-95bf-42f25342fbfe",
+      "title": "Grilled Lemon Herb Chicken",
+      "description": "Juicy chicken breasts marinated in lemon, garlic and fresh herbs, then grilled to perfection.",
+      "servings": 4,
+      "prepTimeSeconds": 900,
+      "cookTimeSeconds": 960,
+      "difficulty": 1,
+      "cuisine": "Mediterranean",
+      "rating": 4.3,
+      "imageUrl": null,
+      "dietaryAttributes": [
+        "gluten-free",
+        "dairy-free",
+        "nut-free",
+        "low-carb",
+        "halal"
+      ],
+      "ingredients": [
+        {
+          "name": "Chicken breasts",
+          "quantity": 4,
+          "unit": null
+        },
+        {
+          "name": "Lemon juice",
+          "quantity": 60,
+          "unit": "ml"
+        },
+        {
+          "name": "Olive oil",
+          "quantity": 3,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Garlic cloves, minced",
+          "quantity": 4,
+          "unit": null
+        },
+        {
+          "name": "Dried oregano",
+          "quantity": 2,
+          "unit": "tsp"
+        },
+        {
+          "name": "Black pepper",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Whisk the lemon juice, oil, garlic, oregano and pepper together.",
+          "durationSeconds": 180
+        },
+        {
+          "step": 2,
+          "description": "Coat the chicken in the marinade and rest in the fridge.",
+          "durationSeconds": 1800
+        },
+        {
+          "step": 3,
+          "description": "Grill over medium-high heat, turning once, until cooked through.",
+          "durationSeconds": 960
+        }
+      ]
+    },
+    {
+      "id": "e895b46b-453e-46e2-864c-7efcbfd5603c",
+      "title": "Creamy Mushroom Risotto",
+      "description": "Slow-stirred arborio rice with earthy mushrooms, white wine and plenty of parmesan.",
+      "servings": 4,
+      "prepTimeSeconds": 900,
+      "cookTimeSeconds": 2100,
+      "difficulty": 3,
+      "cuisine": "Italian",
+      "rating": null,
+      "imageUrl": "https://picsum.photos/seed/mushroom-risotto/600/400",
+      "dietaryAttributes": [
+        "vegetarian",
+        "gluten-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Arborio rice",
+          "quantity": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Mixed mushrooms, sliced",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Warm vegetable stock",
+          "quantity": 1000,
+          "unit": "ml"
+        },
+        {
+          "name": "Dry white wine",
+          "quantity": 120,
+          "unit": "ml"
+        },
+        {
+          "name": "Onion, finely diced",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Grated parmesan",
+          "quantity": 60,
+          "unit": "g"
+        },
+        {
+          "name": "Butter",
+          "quantity": 30,
+          "unit": "g"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Sauté the mushrooms in half the butter until golden, then set aside.",
+          "durationSeconds": 480
+        },
+        {
+          "step": 2,
+          "description": "Soften the onion in the remaining butter, add the rice and toast it.",
+          "durationSeconds": 240
+        },
+        {
+          "step": 3,
+          "description": "Pour in the wine and stir until absorbed.",
+          "durationSeconds": 90
+        },
+        {
+          "step": 4,
+          "description": "Add the stock one ladle at a time, stirring often, until the rice is creamy and tender.",
+          "durationSeconds": 1200
+        },
+        {
+          "step": 5,
+          "description": "Stir in the mushrooms and parmesan, then rest for a minute before serving.",
+          "durationSeconds": 60
+        }
+      ]
+    },
+    {
+      "id": "7c57d7b1-0c08-46de-a55c-ebec1824d8f6",
+      "title": "Beef Tacos with Fresh Salsa",
+      "description": "Seasoned ground beef in warm corn tortillas with cheese and a quick tomato salsa.",
+      "servings": 4,
+      "prepTimeSeconds": 900,
+      "cookTimeSeconds": 900,
+      "difficulty": 1,
+      "cuisine": "Mexican",
+      "rating": 4.1,
+      "imageUrl": "https://picsum.photos/seed/beef-tacos/600/400",
+      "dietaryAttributes": [],
+      "ingredients": [
+        {
+          "name": "Ground beef",
+          "quantity": 500,
+          "unit": "g"
+        },
+        {
+          "name": "Small corn tortillas",
+          "quantity": 8,
+          "unit": null
+        },
+        {
+          "name": "Grated cheddar",
+          "quantity": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Ripe tomatoes, diced",
+          "quantity": 3,
+          "unit": null
+        },
+        {
+          "name": "Taco seasoning",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Lime",
+          "quantity": 0.5,
+          "unit": null
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Brown the beef in a hot pan, breaking it up as it cooks.",
+          "durationSeconds": null
+        },
+        {
+          "step": 2,
+          "description": "Stir in the taco seasoning and a splash of water, then simmer.",
+          "durationSeconds": null
+        },
+        {
+          "step": 3,
+          "description": "Mix the tomatoes with lime juice and a little salt to make the salsa.",
+          "durationSeconds": null
+        },
+        {
+          "step": 4,
+          "description": "Warm the tortillas and fill with beef, cheese and salsa.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "83dd54a2-60aa-4086-8f03-c23f42cbb000",
+      "title": "Salmon Teriyaki Bowl",
+      "description": "Glazed salmon fillets over steamed rice with crisp cucumber and sesame.",
+      "servings": 2,
+      "prepTimeSeconds": 600,
+      "cookTimeSeconds": 900,
+      "difficulty": 2,
+      "cuisine": "Japanese",
+      "rating": 4.8,
+      "imageUrl": "https://picsum.photos/seed/salmon-teriyaki/600/400",
+      "dietaryAttributes": [
+        "pescatarian",
+        "dairy-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Salmon fillets",
+          "quantity": 2,
+          "unit": null
+        },
+        {
+          "name": "Cooked short-grain rice",
+          "quantity": 2,
+          "unit": "cup"
+        },
+        {
+          "name": "Soy sauce",
+          "quantity": 3,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Honey",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Cucumber, sliced",
+          "quantity": 0.5,
+          "unit": null
+        },
+        {
+          "name": "Sesame seeds",
+          "quantity": 1,
+          "unit": "tsp"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Whisk the soy sauce and honey to make the glaze.",
+          "durationSeconds": 45
+        },
+        {
+          "step": 2,
+          "description": "Sear the salmon skin-side down in a hot pan.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 3,
+          "description": "Flip, pour in the glaze and baste until sticky and cooked through.",
+          "durationSeconds": 240
+        },
+        {
+          "step": 4,
+          "description": "Serve over rice with cucumber and a sprinkle of sesame seeds.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "d7646a61-00c1-49a5-9f4b-9f1dd02e2fb3",
+      "title": "Mousse au Chocolat Végétalien à l'Avocat 🥑🍫",
+      "description": "Silky dairy-free chocolate mousse made with ripe avocado. Crème de la crème, sans œufs!",
+      "servings": 4,
+      "prepTimeSeconds": 600,
+      "cookTimeSeconds": 0,
+      "difficulty": 1,
+      "cuisine": "French",
+      "rating": 4.6,
+      "imageUrl": "https://picsum.photos/seed/avocado-mousse/600/400",
+      "dietaryAttributes": [
+        "vegetarian",
+        "vegan",
+        "gluten-free",
+        "dairy-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Ripe avocados",
+          "quantity": 2,
+          "unit": null
+        },
+        {
+          "name": "Cocoa powder",
+          "quantity": 4,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Maple syrup",
+          "quantity": 3,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Coconut milk",
+          "quantity": 100,
+          "unit": "ml"
+        },
+        {
+          "name": "Vanilla extract",
+          "quantity": 1,
+          "unit": "tsp"
+        },
+        {
+          "name": "Sea salt",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Scoop the avocado flesh into a blender.",
+          "durationSeconds": 120
+        },
+        {
+          "step": 2,
+          "description": "Add the cocoa, maple syrup, coconut milk, vanilla and salt, then blend until completely smooth.",
+          "durationSeconds": 180
+        },
+        {
+          "step": 3,
+          "description": "Spoon into glasses and chill before serving.",
+          "durationSeconds": 3600
+        }
+      ]
+    },
+    {
+      "id": "4b9db0d8-54b0-4f1d-9c93-9991c6cd0eb2",
+      "title": "Greek Salad",
+      "description": "Juicy tomatoes, crunchy cucumber, red onion, olives and feta with an oregano dressing.",
+      "servings": 2,
+      "prepTimeSeconds": 600,
+      "cookTimeSeconds": 0,
+      "difficulty": 1,
+      "cuisine": "Greek",
+      "rating": 4.2,
+      "imageUrl": null,
+      "dietaryAttributes": [
+        "vegetarian",
+        "gluten-free",
+        "nut-free",
+        "low-carb"
+      ],
+      "ingredients": [
+        {
+          "name": "Ripe tomatoes, chunked",
+          "quantity": 4,
+          "unit": null
+        },
+        {
+          "name": "Cucumber",
+          "quantity": 0.5,
+          "unit": null
+        },
+        {
+          "name": "Red onion",
+          "quantity": 0.5,
+          "unit": null
+        },
+        {
+          "name": "Feta cheese",
+          "quantity": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Kalamata olives",
+          "quantity": 80,
+          "unit": "g"
+        },
+        {
+          "name": "Extra virgin olive oil",
+          "quantity": 3,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Dried oregano",
+          "quantity": 1,
+          "unit": "tsp"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Combine the tomatoes, cucumber, onion and olives in a wide bowl.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 2,
+          "description": "Top with a slab of feta, drizzle with oil and sprinkle with oregano.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "01b23c09-4891-46e8-a168-89590ba49237",
+      "title": "Pão de Queijo (Brazilian Cheese Bread)",
+      "description": "Chewy, cheesy little rolls from Minas Gerais, naturally gluten-free and perfect with coffee.",
+      "servings": 6,
+      "prepTimeSeconds": 900,
+      "cookTimeSeconds": 1500,
+      "difficulty": 2,
+      "cuisine": "Brazilian",
+      "rating": 4.9,
+      "imageUrl": "https://picsum.photos/seed/pao-de-queijo/600/400",
+      "dietaryAttributes": [
+        "vegetarian",
+        "gluten-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Sour tapioca starch (polvilho azedo)",
+          "quantity": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Whole milk",
+          "quantity": 120,
+          "unit": "ml"
+        },
+        {
+          "name": "Vegetable oil",
+          "quantity": 80,
+          "unit": "ml"
+        },
+        {
+          "name": "Eggs",
+          "quantity": 2,
+          "unit": null
+        },
+        {
+          "name": "Grated Minas cheese",
+          "quantity": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Salt",
+          "quantity": 1,
+          "unit": "tsp"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Preheat the oven to 200°C and grease a baking tray.",
+          "durationSeconds": 600
+        },
+        {
+          "step": 2,
+          "description": "Boil the milk, oil and salt, then pour over the starch and mix until crumbly.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 3,
+          "description": "Once cooled slightly, knead in the eggs and cheese until a soft dough forms.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 4,
+          "description": "Roll into small balls and bake until puffed and lightly golden.",
+          "durationSeconds": 1500
+        }
+      ]
+    },
+    {
+      "id": "de3d26da-932f-468b-8d74-cc1ab44e482b",
+      "title": "Slow-Roasted Moroccan-Spiced Lamb Shoulder with Preserved Lemon, Green Olives and Fresh Herb Couscous for a Big Family Sunday Gathering",
+      "description": "A show-stopping centrepiece for long weekend lunches. The lamb shoulder is rubbed with ras el hanout, cumin, coriander and smoked paprika, then roasted low and slow with preserved lemon and green olives until it falls off the bone. Serve it with fluffy herb couscous, a spoonful of the pan juices and a big bowl of salad. Make it a day ahead for even more flavour, and use the leftovers in wraps, soups or a hearty next-day hash.",
+      "servings": 8,
+      "prepTimeSeconds": 1800,
+      "cookTimeSeconds": 14400,
+      "difficulty": 3,
+      "cuisine": "Moroccan",
+      "rating": 4.4,
+      "imageUrl": "https://picsum.photos/seed/moroccan-lamb/600/400",
+      "dietaryAttributes": [
+        "dairy-free",
+        "nut-free",
+        "halal"
+      ],
+      "ingredients": [
+        {
+          "name": "Bone-in lamb shoulder",
+          "quantity": 2,
+          "unit": "kg"
+        },
+        {
+          "name": "Ras el hanout",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Preserved lemon, chopped",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Green olives",
+          "quantity": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Couscous",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Fresh parsley and mint, chopped",
+          "quantity": 1,
+          "unit": "cup"
+        },
+        {
+          "name": "Olive oil",
+          "quantity": 4,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Flaky salt",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Score the lamb and rub it all over with oil, ras el hanout and salt. Rest at room temperature.",
+          "durationSeconds": 1800
+        },
+        {
+          "step": 2,
+          "description": "Place the lamb in a deep roasting tin with the preserved lemon, olives and a cup of water. Cover tightly with foil.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 3,
+          "description": "Roast at 160°C until the meat is meltingly tender, basting once or twice.",
+          "durationSeconds": 14400
+        },
+        {
+          "step": 4,
+          "description": "Pour boiling water over the couscous, cover and fluff with a fork, then toss through the herbs.",
+          "durationSeconds": 600
+        },
+        {
+          "step": 5,
+          "description": "Shred the lamb at the table and serve over the couscous with the pan juices.",
+          "durationSeconds": null
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "pageSize": 10,
+    "totalItems": 10,
+    "totalPages": 1,
+    "hasNext": false,
+    "nextPage": null,
+    "previousPage": null
+  }
+}
