@@ -2,6 +2,7 @@ package com.railson.recipes.recipes.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.railson.recipes.core.network.fake.FakeNetworkConfig
 import com.railson.recipes.recipes.data.fake.FakeRecipesInterceptor
 import com.railson.recipes.recipes.data.local.database.RecipesDatabase
 import com.railson.recipes.recipes.data.remote.RecipesApi
@@ -21,15 +22,29 @@ val recipesDataModule = module {
         Room.databaseBuilder(androidContext(), RecipesDatabase::class.java, "recipes.db").build()
     }
     single { get<RecipesDatabase>().searchDao() }
-    single { createRecipesApi(context = androidContext(), client = get(), retrofit = get(), json = get()) }
+    single {
+        createRecipesApi(
+            context = androidContext(),
+            client = get(),
+            retrofit = get(),
+            json = get(),
+            networkConfig = get(),
+        )
+    }
     single<RecipeRepository> { OfflineFirstRecipeRepository(api = get(), dao = get()) }
     factoryOf(::ObserveSearchUseCase)
     factoryOf(::RefreshSearchUseCase)
 }
 
 /** The recipes API, answered by the fake server after the shared client's interceptors. */
-internal fun createRecipesApi(context: Context, client: OkHttpClient, retrofit: Retrofit, json: Json): RecipesApi {
-    val fakeServer = FakeRecipesInterceptor(json) {
+internal fun createRecipesApi(
+    context: Context,
+    client: OkHttpClient,
+    retrofit: Retrofit,
+    json: Json,
+    networkConfig: FakeNetworkConfig,
+): RecipesApi {
+    val fakeServer = FakeRecipesInterceptor(json, networkConfig) {
         context.assets.open(CATALOG_ASSET).bufferedReader().use { it.readText() }
     }
     val recipesClient = client.newBuilder().addInterceptor(fakeServer).build()

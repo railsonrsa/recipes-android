@@ -1,5 +1,7 @@
 package com.railson.recipes.recipes.data.fake
 
+import com.railson.recipes.core.network.fake.FakeNetworkConfig
+import com.railson.recipes.core.network.fake.FakeNetworkMode
 import com.railson.recipes.recipes.data.remote.ErrorDto
 import com.railson.recipes.recipes.data.remote.RecipePageDto
 import kotlinx.serialization.json.Json
@@ -17,6 +19,7 @@ import java.io.IOException
  */
 internal class FakeRecipesInterceptor(
     private val json: Json,
+    private val networkConfig: FakeNetworkConfig,
     readAsset: () -> String,
 ) : Interceptor {
 
@@ -25,7 +28,7 @@ internal class FakeRecipesInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val catalog = try {
-            catalog
+            if (networkConfig.mode == FakeNetworkMode.EmptyCatalogue) emptyList() else catalog
         } catch (e: IllegalArgumentException) {
             // Only IOExceptions may leave an interceptor. Anything else crashes OkHttp's dispatcher.
             throw IOException("The fake catalog asset doesn't parse", e)
