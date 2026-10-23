@@ -31,8 +31,8 @@ Mapped to M3 `ColorScheme` roles. Roles not listed keep the M3 defaults and must
 | `onSurfaceVariant` | `#625B53` | `#B9B0A4` | Secondary text: metadata, counts, descriptions, labels |
 | `surfaceContainerLowest` | `#FFFFFF` | `#221E18` | Cards, search bar, bottom sheet, detail content panel, text field |
 | `surfaceContainer` | `#F9F4E8` | `#2E2922` | Round icon button fill, image placeholder, step number circle, empty/error icon circle |
-| `outline` | `#8A8379` | `#8A8379` | Borders of unselected chips, segmented buttons, outlined text field, outlined button |
-| `outlineVariant` | `#DAD5CE` | `#4A443C` | Search bar border, stat box border, card "+N" chip border, servings stepper border |
+| `outline` | `#8A8379` | `#8A8379` | Borders of unselected chips, segmented buttons, outlined text field, outlined button, servings stepper |
+| `outlineVariant` | `#DAD5CE` | `#4A443C` | Search bar border, stat box border, card "+N" chip border |
 | `primary` | `#FE6F0C` | `#FE6F0C` | Filled buttons, filter badge, stepper glyphs, timer icon |
 | `onPrimary` | `#1B1710` | `#1B1710` | Label on filled buttons and badge (white fails contrast, so it is ink on purpose) |
 | `primaryContainer` | `#FEE3CE` | `#553621` | Tonal "add ingredient" icon button fill |
@@ -145,7 +145,7 @@ Minimum touch target: 48 dp, the M3 default. Keep `minimumInteractiveComponentSi
 | Loading | `CircularProgressIndicator` | First load: 32 dp, stroke 4. Load more: 24 dp, stroke 3. Track `hairline`; the arc color cycles through `spinner` (`rememberInfiniteTransition`, about 3.6 s per full color cycle, plus the default rotation). |
 | Stat box (detail) | `OutlinedCard` | 4 equal boxes in a row, gap 8, radius 12, 1 dp `outlineVariant`, vertical padding 12. Each box: 24 dp icon, value (`titleSmall`), label (`bodySmall`). |
 | Servings stepper | custom `Row` in a bordered `Surface` | 40 dp, full radius, 1 dp `outline`. `IconButton` minus / plus with 20 dp glyphs in `primary`; "Serves N" in `labelLarge`. |
-| Step duration | `AssistChip` (not clickable) | 32 dp, radius 8, 1 dp `outlineVariant`, leading timer icon 18 dp in `primary`, `labelLarge` text. Hidden when the step has no duration. |
+| Step duration | chip-shaped `Surface` (an `AssistChip` is always clickable) | 32 dp, radius 8, 1 dp `outlineVariant`, leading timer icon 18 dp in `primary`, `labelLarge` text. Hidden when the step has no duration. |
 
 **Icons:** outlined, 24 dp, `onSurface`. Material Symbols Outlined equivalents:
 
