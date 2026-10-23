@@ -153,6 +153,30 @@ First the decisions, then the app one slice at a time, from an empty themed scre
 
 Every slice with all its screenshots and videos: [docs/progress.md](docs/progress.md).
 
+## Assumptions
+
+The brief is the ReciMe iOS Coding Challenge. This app builds the same thing for Android:
+
+| The brief asks for | This app uses |
+|---|---|
+| Swift | Kotlin |
+| SwiftUI | Jetpack Compose with Material 3 |
+| Previews | `@Preview`, in light and dark, on the stateless composables |
+| Target iOS 26+ | Android 8.0 (API 26) and newer, target API 36 |
+| Packages | Gradle dependencies in a version catalog |
+| An Xcode project | A Gradle project for Android Studio |
+
+Where the brief leaves room, these are the choices:
+
+- **The JSON and the endpoint are my design.** The brief only lists title, description, servings, ingredients, instructions and dietary attributes. The asset also has an image, rating, difficulty, cuisine and prep, cook and step times, to fill the cards and the detail screen. The contract is in [data.md](docs/specs/data.md).
+- **The vegetarian filter covers every diet.** Vegetarian is one of 8 diet tags. A recipe must have all the picked tags.
+- **The servings filter is a range:** Any, 1–2, 3–4, 5–6 or 7+.
+- **Ingredients match by words.** "garlic" matches "Garlic cloves, minced". Included ingredients must all match; excluded ones must not match any.
+- **Instruction search is its own field**, apart from the title and description search.
+- **Text search ignores case and accents.** "pao" finds "Pão".
+- **Scaling servings only multiplies quantities.** Units are never converted (no cups to grams). The detail screen scales from 1 to 20 servings.
+- **The app is in English only**, with no translations.
+
 ## Tradeoffs and limitations
 
 - **A search never made before shows the Offline screen when there's no network.** The saved recipes are not filtered on the device, so the app only shows results the server gave ([ADR 0001](docs/adr/0001-cache-server-results-per-search.md)).
