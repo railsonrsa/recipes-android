@@ -15,6 +15,7 @@ import com.railson.recipes.recipes.domain.model.SearchResult
 import com.railson.recipes.recipes.domain.repository.RecipeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlin.time.Clock
 
@@ -23,6 +24,7 @@ internal class OfflineFirstRecipeRepository(
     private val api: RecipesApi,
     private val recipeSearchDao: RecipeSearchDao,
     private val recipeDao: RecipeDao,
+    private val pageSize: Int = PAGE_SIZE,
 ) : RecipeRepository {
 
     override fun observeSearch(query: SearchQuery): Flow<SearchResult?> = combine(
@@ -30,22 +32,28 @@ internal class OfflineFirstRecipeRepository(
         recipeSearchDao.observeRemoteKey(query.searchKey),
     ) { recipes: List<RecipeEntity>, remoteKey: SearchRemoteKeyEntity? ->
         // The remote key is written with every save, so no key means the search was never saved.
-        remoteKey?.let { SearchResult(recipes = recipes.map { it.toDomain() }, hasMore = it.nextPage != null) }
+        remoteKey?.let {
+            SearchResult(
+                recipes = recipes.map { recipe -> recipe.toDomain() },
+                hasMore = it.nextPage != null,
+                totalItems = it.totalItems,
+            )
+        }
     }
 
     override fun observeRecipe(id: String): Flow<Recipe?> = recipeDao.observeRecipe(id).map { it?.toDomain() }
 
     override suspend fun refresh(query: SearchQuery): CallOutcome = callServer {
-        val page = api.getRecipes(query, page = 1, pageSize = PAGE_SIZE)
-        recipeSearchDao.replaceSearch(
-            remoteKey = SearchRemoteKeyEntity(
-                searchKey = query.searchKey,
-                nextPage = page.pagination.nextPage,
-                totalItems = page.pagination.totalItems,
-                lastUpdated = Clock.System.now().toEpochMilliseconds(),
-            ),
-            recipes = page.data.map { it.toEntity() },
-        )
+        val page = api.getRecipes(query, page = 1, pageSize = pageSize)
+        recipeSearchDao.replaceSearch(remoteKey = page.remoteKey(query), recipes = page.data.map { it.toEntity() })
+    }
+
+    override suspend fun loadNextPage(query: SearchQuery): CallOutcome {
+        val nextPage = recipeSearchDao.observeRemoteKey(query.searchKey).first()?.nextPage ?: return CallOutcome.Success
+        return callServer {
+            val page = api.getRecipes(query, page = nextPage, pageSize = pageSize)
+            recipeSearchDao.appendPage(remoteKey = page.remoteKey(query), recipes = page.data.map { it.toEntity() })
+        }
     }
 
     override suspend fun count(query: SearchQuery): Int? {
@@ -58,6 +66,13 @@ internal class OfflineFirstRecipeRepository(
         const val PAGE_SIZE = 10
     }
 }
+
+private fun RecipePageDto.remoteKey(query: SearchQuery) = SearchRemoteKeyEntity(
+    searchKey = query.searchKey,
+    nextPage = pagination.nextPage,
+    totalItems = pagination.totalItems,
+    lastUpdated = Clock.System.now().toEpochMilliseconds(),
+)
 
 private suspend fun RecipesApi.getRecipes(query: SearchQuery, page: Int, pageSize: Int): RecipePageDto =
     with(query.searchParams) {

@@ -41,6 +41,40 @@ class FakeRecipeSearchTest {
     }
 
     @Test
+    fun `page 2 of 15 gives the last 5 and no next page`() {
+        val recipes = recipes(15)
+
+        val result = FakeRecipeSearch.run(recipes, FakeSearchParams(page = 2, pageSize = 10))
+
+        assertThat(result.data).isEqualTo(recipes.drop(10))
+        assertThat(result.pagination).isEqualTo(
+            PaginationDto(
+                page = 2, pageSize = 10, totalItems = 15, totalPages = 2,
+                hasNext = false, nextPage = null, previousPage = 1,
+            ),
+        )
+    }
+
+    @Test
+    fun `a page past the end is empty`() {
+        val result = FakeRecipeSearch.run(asset, FakeSearchParams(page = 2, pageSize = 10))
+
+        assertThat(result.data).isEmpty()
+        assertThat(result.pagination.totalItems).isEqualTo(10)
+        assertThat(result.pagination.hasNext).isFalse()
+        assertThat(result.pagination.nextPage).isNull()
+    }
+
+    @Test
+    fun `a page past the end of a search is empty`() {
+        val result = FakeRecipeSearch.run(asset, FakeSearchParams(page = 2, pageSize = 10, text = "lamb"))
+
+        assertThat(result.data).isEmpty()
+        assertThat(result.pagination.totalItems).isEqualTo(1)
+        assertThat(result.pagination.hasNext).isFalse()
+    }
+
+    @Test
     fun `text "pao" finds Pao de Queijo`() {
         val result = FakeRecipeSearch.run(asset, FakeSearchParams(page = 1, pageSize = 10, text = "pao"))
 

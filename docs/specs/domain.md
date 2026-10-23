@@ -73,4 +73,4 @@ Text matching rules, the same for every text above:
 
 ## Search result
 
-The domain does not know about pages. A `SearchResult` holds the recipes that match a search so far and `hasMore`. Pages, page numbers and page size stay in the data layer.
+The domain does not know about pages. A `SearchResult` holds the recipes that match a search so far, `hasMore`, and `totalItems`: how many recipes the server has for the search, loaded or not. Pages, page numbers and page size stay in the data layer.

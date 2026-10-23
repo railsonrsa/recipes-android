@@ -44,6 +44,8 @@ internal class FakeRecipeRepository : RecipeRepository {
         return outcomes.receive()
     }
 
+    override suspend fun loadNextPage(query: SearchQuery): CallOutcome = CallOutcome.Success
+
     override suspend fun count(query: SearchQuery): Int? {
         counted += query
         delay(countWait)

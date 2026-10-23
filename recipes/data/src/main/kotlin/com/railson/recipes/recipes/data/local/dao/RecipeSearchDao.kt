@@ -40,6 +40,23 @@ internal abstract class RecipeSearchDao {
         insertRemoteKey(remoteKey)
     }
 
+    /** Next page: its recipes go after the last saved position, and the remote key moves on. */
+    @Transaction
+    open suspend fun appendPage(remoteKey: SearchRemoteKeyEntity, recipes: List<RecipeEntity>) {
+        upsertRecipes(recipes)
+        val start = (lastPosition(remoteKey.searchKey) ?: -1) + 1
+        insertResults(
+            recipes.mapIndexed { index, recipe ->
+                SearchResultEntity(searchKey = remoteKey.searchKey, position = start + index, recipeId = recipe.id)
+            },
+        )
+        deleteRemoteKey(remoteKey.searchKey)
+        insertRemoteKey(remoteKey)
+    }
+
+    @Query("SELECT MAX(position) FROM search_results WHERE searchKey = :searchKey")
+    protected abstract suspend fun lastPosition(searchKey: String): Int?
+
     @Upsert
     protected abstract suspend fun upsertRecipes(recipes: List<RecipeEntity>)
 

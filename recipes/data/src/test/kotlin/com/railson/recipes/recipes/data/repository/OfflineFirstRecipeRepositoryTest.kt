@@ -33,6 +33,9 @@ class OfflineFirstRecipeRepositoryTest {
     private val networkConfig = FakeNetworkConfig()
     private lateinit var repository: OfflineFirstRecipeRepository
 
+    /** Pages of 4, so the 10 recipes of the asset come in 3 pages. */
+    private lateinit var pagesOf4: OfflineFirstRecipeRepository
+
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -46,6 +49,12 @@ class OfflineFirstRecipeRepositoryTest {
             api = api,
             recipeSearchDao = database.recipeSearchDao(),
             recipeDao = database.recipeDao(),
+        )
+        pagesOf4 = OfflineFirstRecipeRepository(
+            api = api,
+            recipeSearchDao = database.recipeSearchDao(),
+            recipeDao = database.recipeDao(),
+            pageSize = 4,
         )
     }
 
@@ -183,6 +192,111 @@ class OfflineFirstRecipeRepositoryTest {
 
         assertThat(outcome).isEqualTo(CallOutcome.Success)
         assertThat(repository.observeSearch(query).first()?.recipes).isEmpty()
+    }
+
+    @Test
+    fun `the saved result has the server's total, not only the loaded recipes`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(4)).inOrder()
+        assertThat(result?.totalItems).isEqualTo(10)
+        assertThat(result?.hasMore).isTrue()
+    }
+
+    @Test
+    fun `next page appends after the saved recipes`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+
+        val outcome = pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(outcome).isEqualTo(CallOutcome.Success)
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(8)).inOrder()
+        assertThat(result?.hasMore).isTrue()
+    }
+
+    @Test
+    fun `next page moves the remote key on, so the one after it is the last`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
+        assertThat(result?.hasMore).isFalse()
+        assertThat(result?.totalItems).isEqualTo(10)
+    }
+
+    @Test
+    fun `next page of a search with nothing more makes no call`() = runTest {
+        repository.refresh(SearchQuery.Catalog)
+        // A call would fail, so a success proves none was made.
+        networkConfig.mode = FakeNetworkMode.NoNetwork
+
+        val outcome = repository.loadNextPage(SearchQuery.Catalog)
+
+        assertThat(outcome).isEqualTo(CallOutcome.Success)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+    }
+
+    @Test
+    fun `next page of a search never saved makes no call`() = runTest {
+        networkConfig.mode = FakeNetworkMode.NoNetwork
+
+        val outcome = repository.loadNextPage(SearchQuery.Catalog)
+
+        assertThat(outcome).isEqualTo(CallOutcome.Success)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()).isNull()
+    }
+
+    @Test
+    fun `a failed next page keeps the saved recipes`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+        networkConfig.mode = FakeNetworkMode.ServerError
+
+        val outcome = pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(outcome).isEqualTo(CallOutcome.ServerError)
+        assertThat(result?.recipes).hasSize(4)
+        assertThat(result?.hasMore).isTrue()
+    }
+
+    @Test
+    fun `next page after a failed one asks for the same page again`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+        networkConfig.mode = FakeNetworkMode.ServerError
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+        networkConfig.mode = FakeNetworkMode.Normal
+
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        assertThat(pagesOf4.observeSearch(SearchQuery.Catalog).first()?.recipes?.map { it.title })
+            .containsExactlyElementsIn(catalogTitles.take(8)).inOrder()
+    }
+
+    @Test
+    fun `refresh after a next page starts again from page 1`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        pagesOf4.refresh(SearchQuery.Catalog)
+
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(4)).inOrder()
+        assertThat(result?.hasMore).isTrue()
+    }
+
+    @Test
+    fun `next page of one search leaves the other searches alone`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+        pagesOf4.refresh(SearchQuery(text = "cheese"))
+
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        assertThat(pagesOf4.observeSearch(SearchQuery(text = "cheese")).first()?.recipes).hasSize(2)
     }
 
     @Test
