@@ -37,16 +37,36 @@ internal class FakeRecipesInterceptor(
         return when {
             request.method != "GET" || request.url.encodedPath != "/recipes" ->
                 request.error(HTTP_NOT_FOUND, "NOT_FOUND", "No route for ${request.url.encodedPath}")
-            params == null -> request.error(HTTP_BAD_REQUEST, "BAD_REQUEST", "Bad page or pageSize")
+            params == null -> request.error(HTTP_BAD_REQUEST, "BAD_REQUEST", "Bad parameter")
             else -> request.respond(HTTP_OK, json.encodeToString(FakeRecipeSearch.run(catalog, params)))
         }
     }
 
+    /** `null` for a bad parameter (docs/specs/data.md, Errors). */
     private fun Request.searchParams(): FakeSearchParams? {
         val page = url.queryParameter("page")?.toIntOrNull()?.takeIf { it >= 1 }
         val pageSize = url.queryParameter("pageSize")?.toIntOrNull()?.takeIf { it in 1..MAX_PAGE_SIZE }
-        val text = url.queryParameter("q")
-        return if (page != null && pageSize != null) FakeSearchParams(page, pageSize, text) else null
+        val diet = url.queryParameterValues("diet").filterNotNull().toSet()
+        val difficulties = url.queryParameterValues("difficulty").map { it?.toIntOrNull() }.toSet()
+        val minServingsText = url.queryParameter("minServings")
+        val maxServingsText = url.queryParameter("maxServings")
+        val minServings = minServingsText?.toIntOrNull()
+        val maxServings = maxServingsText?.toIntOrNull()
+        val valid = page != null && pageSize != null &&
+            diet.all { it in DIET_KEYS } &&
+            difficulties.all { it in DIFFICULTIES } &&
+            (minServingsText == null) == (minServings == null) &&
+            (maxServingsText == null) == (maxServings == null) &&
+            (minServings == null || maxServings == null || minServings <= maxServings)
+        return if (!valid) null else FakeSearchParams(
+            page = page,
+            pageSize = pageSize,
+            text = url.queryParameter("q"),
+            diet = diet,
+            minServings = minServings,
+            maxServings = maxServings,
+            difficulties = difficulties.filterNotNull().toSet(),
+        )
     }
 
     private fun Request.error(code: Int, errorCode: String, message: String): Response =
@@ -65,5 +85,10 @@ internal class FakeRecipesInterceptor(
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_NOT_FOUND = 404
         const val MAX_PAGE_SIZE = 50
+        // The fake server keeps its own list of keys, like a real backend, instead of reading the app's mapper.
+        val DIFFICULTIES = 1..3
+        val DIET_KEYS = setOf(
+            "vegan", "vegetarian", "pescatarian", "halal", "gluten-free", "dairy-free", "nut-free", "low-carb",
+        )
     }
 }

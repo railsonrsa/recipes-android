@@ -4,8 +4,11 @@ import com.railson.recipes.recipes.data.local.dao.RecipeDao
 import com.railson.recipes.recipes.data.local.dao.RecipeSearchDao
 import com.railson.recipes.recipes.data.local.entity.RecipeEntity
 import com.railson.recipes.recipes.data.local.entity.SearchRemoteKeyEntity
+import com.railson.recipes.recipes.data.mapper.key
+import com.railson.recipes.recipes.data.mapper.number
 import com.railson.recipes.recipes.data.mapper.toDomain
 import com.railson.recipes.recipes.data.mapper.toEntity
+import com.railson.recipes.recipes.data.remote.RecipePageDto
 import com.railson.recipes.recipes.data.remote.RecipesApi
 import com.railson.recipes.recipes.domain.model.CallOutcome
 import com.railson.recipes.recipes.domain.model.Recipe
@@ -35,7 +38,7 @@ internal class OfflineFirstRecipeRepository(
     override fun observeRecipe(id: String): Flow<Recipe?> = recipeDao.observeRecipe(id).map { it?.toDomain() }
 
     override suspend fun refresh(query: SearchQuery): CallOutcome = callServer {
-        val page = api.getRecipes(text = query.text.trim().ifEmpty { null }, page = 1, pageSize = PAGE_SIZE)
+        val page = api.getRecipes(query, page = 1, pageSize = PAGE_SIZE)
         recipeSearchDao.replaceSearch(
             remoteKey = SearchRemoteKeyEntity(
                 searchKey = query.searchKey,
@@ -47,8 +50,23 @@ internal class OfflineFirstRecipeRepository(
         )
     }
 
+    override suspend fun count(query: SearchQuery): Int? {
+        var totalItems: Int? = null
+        val outcome = callServer { totalItems = api.getRecipes(query, page = 1, pageSize = 1).pagination.totalItems }
+        return totalItems.takeIf { outcome == CallOutcome.Success }
+    }
+
     private companion object {
         const val PAGE_SIZE = 10
     }
 }
 
+private suspend fun RecipesApi.getRecipes(query: SearchQuery, page: Int, pageSize: Int): RecipePageDto = getRecipes(
+    text = query.text.trim().ifEmpty { null },
+    diet = query.dietaryTags.map { it.key },
+    minServings = query.servingsRange.min,
+    maxServings = query.servingsRange.max,
+    difficulties = query.difficulties.map { it.number },
+    page = page,
+    pageSize = pageSize,
+)

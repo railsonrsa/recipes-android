@@ -19,4 +19,6 @@ internal class FakeRecipeRepository : RecipeRepository {
     override fun observeSearch(query: SearchQuery): Flow<SearchResult?> = flowOf(null)
 
     override suspend fun refresh(query: SearchQuery): CallOutcome = error("The detail screen never refreshes")
+
+    override suspend fun count(query: SearchQuery): Int = error("The detail screen never counts")
 }

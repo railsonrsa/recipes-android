@@ -14,7 +14,9 @@ import com.railson.recipes.recipes.data.di.createRecipesApi
 import com.railson.recipes.recipes.data.local.database.RecipesDatabase
 import com.railson.recipes.recipes.domain.model.CallOutcome
 import com.railson.recipes.recipes.domain.model.DietaryTag
+import com.railson.recipes.recipes.domain.model.Difficulty
 import com.railson.recipes.recipes.domain.model.SearchQuery
+import com.railson.recipes.recipes.domain.model.ServingsRange
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -143,6 +145,54 @@ class OfflineFirstRecipeRepositoryTest {
         assertThat(outcome).isEqualTo(CallOutcome.NoConnection)
         assertThat(repository.observeSearch(SearchQuery(text = "Pão")).first()?.recipes?.map { it.title })
             .containsExactly("Pão de Queijo (Brazilian Cheese Bread)")
+    }
+
+    @Test
+    fun `refresh with filters saves only the recipes the server matched`() = runTest {
+        val query = SearchQuery(
+            dietaryTags = setOf(DietaryTag.Vegetarian),
+            servingsRange = ServingsRange.ThreeToFour,
+            difficulties = setOf(Difficulty.Easy),
+        )
+
+        repository.refresh(query)
+
+        assertThat(repository.observeSearch(query).first()?.recipes?.map { it.title })
+            .containsExactly("Chickpea Coconut Curry", "Mousse au Chocolat Végétalien à l'Avocat 🥑🍫")
+    }
+
+    @Test
+    fun `vegan and halal saves a search with no recipes`() = runTest {
+        val query = SearchQuery(dietaryTags = setOf(DietaryTag.Vegan, DietaryTag.Halal))
+
+        val outcome = repository.refresh(query)
+
+        assertThat(outcome).isEqualTo(CallOutcome.Success)
+        assertThat(repository.observeSearch(query).first()?.recipes).isEmpty()
+    }
+
+    @Test
+    fun `count reads the server total for the text and the filters together`() = runTest {
+        val count = repository.count(SearchQuery(text = "cheese", dietaryTags = setOf(DietaryTag.GlutenFree)))
+
+        // "cheese" alone finds 2, gluten-free alone 6: only Pão de Queijo has both.
+        assertThat(count).isEqualTo(1)
+    }
+
+    @Test
+    fun `count saves nothing`() = runTest {
+        val query = SearchQuery(dietaryTags = setOf(DietaryTag.Vegan))
+
+        repository.count(query)
+
+        assertThat(repository.observeSearch(query).first()).isNull()
+    }
+
+    @Test
+    fun `count is null when the call fails`() = runTest {
+        networkConfig.mode = FakeNetworkMode.NoNetwork
+
+        assertThat(repository.count(SearchQuery(dietaryTags = setOf(DietaryTag.Vegan)))).isNull()
     }
 
     @Test

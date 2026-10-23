@@ -5,11 +5,18 @@ import com.railson.recipes.recipes.data.remote.RecipeDto
 import com.railson.recipes.recipes.data.remote.RecipePageDto
 import com.railson.recipes.recipes.data.search.normalizedForSearch
 
-/** What a call to `GET /recipes` asked for. [text] is the `q` parameter. The filters come with #24. */
+/**
+ * What a call to `GET /recipes` asked for, named as in docs/specs/data.md, "Query parameters".
+ * [text] is `q`, [diet] the tag keys, [difficulties] `1` to `3`. The ingredient filters come with #25.
+ */
 internal data class FakeSearchParams(
     val page: Int,
     val pageSize: Int,
     val text: String? = null,
+    val diet: Set<String> = emptySet(),
+    val minServings: Int? = null,
+    val maxServings: Int? = null,
+    val difficulties: Set<Int> = emptySet(),
 )
 
 /**
@@ -39,7 +46,14 @@ internal object FakeRecipeSearch {
     }
 }
 
-private fun RecipeDto.matches(params: FakeSearchParams): Boolean {
-    val text = params.text?.normalizedForSearch().orEmpty()
-    return text in title.normalizedForSearch() || text in description.normalizedForSearch()
+private fun RecipeDto.matches(params: FakeSearchParams): Boolean =
+    matchesText(params.text) &&
+        dietaryAttributes.containsAll(params.diet) &&
+        servings >= (params.minServings ?: servings) &&
+        servings <= (params.maxServings ?: servings) &&
+        (params.difficulties.isEmpty() || difficulty in params.difficulties)
+
+private fun RecipeDto.matchesText(text: String?): Boolean {
+    val normalized = text?.normalizedForSearch().orEmpty()
+    return normalized in title.normalizedForSearch() || normalized in description.normalizedForSearch()
 }
