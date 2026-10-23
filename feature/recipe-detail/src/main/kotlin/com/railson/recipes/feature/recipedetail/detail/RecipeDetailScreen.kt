@@ -71,7 +71,8 @@ internal fun RecipeDetailLayout(
     ) { padding ->
         val stateModifier = Modifier.padding(padding)
         when (uiState) {
-            RecipeDetailUiState.Loading -> RecipeDetailLoading(modifier = stateModifier)
+            // Room answers in a moment, so nothing shows instead of a spinner that would only flash.
+            RecipeDetailUiState.Loading -> Unit
             RecipeDetailUiState.NotAvailable -> RecipeDetailNotAvailable(onBack = onBack, modifier = stateModifier)
             is RecipeDetailUiState.Content -> RecipeDetailContent(
                 content = uiState,
