@@ -41,9 +41,9 @@ class RecipeListViewModelPagingTest {
         return viewModel.uiState
     }
 
-    /** The catalog's first page of 10 out of 15, saved and refreshed. */
-    private fun TestScope.firstPageShown(): Pair<RecipeListViewModel, StateFlow<RecipeListUiState>> {
-        repository.saved.value = page(size = 10, totalItems = 15, hasMore = true)
+    /** The catalog with 10 of its 15 recipes saved, refreshed. */
+    private fun TestScope.firstResultsShown(): Pair<RecipeListViewModel, StateFlow<RecipeListUiState>> {
+        repository.saved.value = searchResult(recipes = 10, totalItems = 15, hasMore = true)
         val viewModel = viewModel()
         val uiState = uiStateOf(viewModel)
         repository.endRefresh(CallOutcome.Success)
@@ -52,7 +52,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `the list knows the server's total, not only the loaded recipes`() = runTest {
-        val (_, uiState) = firstPageShown()
+        val (_, uiState) = firstResultsShown()
 
         assertThat(uiState.content.recipes).hasSize(10)
         assertThat(uiState.content.totalItems).isEqualTo(15)
@@ -60,14 +60,14 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `a search with more recipes ends with the loading more row`() = runTest {
-        val (_, uiState) = firstPageShown()
+        val (_, uiState) = firstResultsShown()
 
         assertThat(uiState.content.listEnd).isEqualTo(ListEnd.LoadingMore)
     }
 
     @Test
     fun `a search with everything loaded ends with that's all`() = runTest {
-        repository.saved.value = page(size = 10, totalItems = 10, hasMore = false)
+        repository.saved.value = searchResult(recipes = 10, totalItems = 10, hasMore = false)
         val uiState = uiStateOf(viewModel())
         repository.endRefresh(CallOutcome.Success)
 
@@ -76,7 +76,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `load next page asks for the next page of the current search`() = runTest {
-        val (viewModel, _) = firstPageShown()
+        val (viewModel, _) = firstResultsShown()
 
         viewModel.onAction(RecipeListAction.LoadNextPage)
 
@@ -85,7 +85,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `load next page while one runs does not start another`() = runTest {
-        val (viewModel, _) = firstPageShown()
+        val (viewModel, _) = firstResultsShown()
 
         viewModel.onAction(RecipeListAction.LoadNextPage)
         viewModel.onAction(RecipeListAction.LoadNextPage)
@@ -95,7 +95,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `load next page waits for the refresh`() = runTest {
-        repository.saved.value = page(size = 10, totalItems = 15, hasMore = true)
+        repository.saved.value = searchResult(recipes = 10, totalItems = 15, hasMore = true)
         val viewModel = viewModel()
 
         viewModel.onAction(RecipeListAction.LoadNextPage)
@@ -105,7 +105,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `load next page with everything loaded makes no call`() = runTest {
-        repository.saved.value = page(size = 10, totalItems = 10, hasMore = false)
+        repository.saved.value = searchResult(recipes = 10, totalItems = 10, hasMore = false)
         val viewModel = viewModel()
         repository.endRefresh(CallOutcome.Success)
 
@@ -116,7 +116,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `a failed next page says couldn't load more and keeps the cards`() = runTest {
-        val (viewModel, uiState) = firstPageShown()
+        val (viewModel, uiState) = firstResultsShown()
 
         viewModel.onAction(RecipeListAction.LoadNextPage)
         repository.endNextPage(CallOutcome.NoConnection)
@@ -127,7 +127,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `retry after a failed next page asks again and shows loading more`() = runTest {
-        val (viewModel, uiState) = firstPageShown()
+        val (viewModel, uiState) = firstResultsShown()
         viewModel.onAction(RecipeListAction.LoadNextPage)
         repository.endNextPage(CallOutcome.ServerError)
 
@@ -139,7 +139,7 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `refresh after a failed next page shows loading more again`() = runTest {
-        val (viewModel, uiState) = firstPageShown()
+        val (viewModel, uiState) = firstResultsShown()
         viewModel.onAction(RecipeListAction.LoadNextPage)
         repository.endNextPage(CallOutcome.ServerError)
 
@@ -150,10 +150,11 @@ class RecipeListViewModelPagingTest {
 
     @Test
     fun `a new search does not show the old search's failed next page`() = runTest {
-        val (viewModel, uiState) = firstPageShown()
+        val (viewModel, uiState) = firstResultsShown()
         viewModel.onAction(RecipeListAction.LoadNextPage)
         repository.endNextPage(CallOutcome.ServerError)
-        repository.savedFor(SearchQuery(text = "cheese")).value = page(size = 10, totalItems = 12, hasMore = true)
+        repository.savedFor(SearchQuery(text = "cheese")).value =
+            searchResult(recipes = 10, totalItems = 12, hasMore = true)
 
         viewModel.onAction(RecipeListAction.ChangeSearchText("cheese"))
         advanceTimeBy(SEARCH_TEXT_WAIT_PLUS_ONE)
@@ -167,8 +168,8 @@ private val StateFlow<RecipeListUiState>.content: RecipeListUiState.Content
 
 private val SEARCH_TEXT_WAIT_PLUS_ONE = Duration.parse("301ms")
 
-private fun page(size: Int, totalItems: Int, hasMore: Boolean) = SearchResult(
-    recipes = List(size) { recipe("recipe-$it") },
+private fun searchResult(recipes: Int, totalItems: Int, hasMore: Boolean) = SearchResult(
+    recipes = List(recipes) { recipe("recipe-$it") },
     hasMore = hasMore,
     totalItems = totalItems,
 )

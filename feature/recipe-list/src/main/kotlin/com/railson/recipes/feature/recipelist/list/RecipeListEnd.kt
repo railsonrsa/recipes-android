@@ -106,7 +106,7 @@ private fun SkeletonCard() {
                 SkeletonBlock(Modifier.size(width = 180.dp, height = 16.dp))
                 SkeletonBlock(Modifier.size(width = 140.dp, height = 12.dp))
                 SkeletonBlock(Modifier.size(width = 100.dp, height = 12.dp))
-                SkeletonTags(height = 20.dp)
+                SkeletonTags(height = 24.dp)
             }
         }
     }

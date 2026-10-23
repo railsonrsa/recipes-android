@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -257,6 +258,8 @@ private fun RecipeListTopBar(
                 modifier = Modifier.padding(bottom = Spacing.sm),
             )
         }
+        // The cards scroll under the pinned bar (DESIGN.md 3.3).
+        if (uiState is RecipeListUiState.Content) HorizontalDivider(color = RecipesTheme.colors.hairline)
     }
 }
 

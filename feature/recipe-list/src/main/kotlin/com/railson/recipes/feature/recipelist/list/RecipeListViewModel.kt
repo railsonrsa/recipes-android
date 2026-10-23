@@ -79,7 +79,7 @@ internal class RecipeListViewModel(
     fun onAction(action: RecipeListAction) {
         when (action) {
             RecipeListAction.Refresh -> refresh()
-            RecipeListAction.LoadNextPage -> loadMore()
+            RecipeListAction.LoadNextPage -> startNextPage()
             is RecipeListAction.ChangeSearchText -> changeSearchText(action.text)
             is RecipeListAction.OpenRecipe -> effectChannel.trySend(RecipeListEffect.OpenRecipe(action.id))
             RecipeListAction.OpenFilters -> openFilters()
@@ -176,10 +176,11 @@ internal class RecipeListViewModel(
     }
 
     /** One page at a time, only once the search's refresh ended and only while the server has more. */
-    private fun loadMore() {
+    private fun startNextPage() {
         val search = query.value
         if (refreshJob?.isActive == true || nextPageJob?.isActive == true) return
         nextPageJob = viewModelScope.launch {
+            // The repository makes no call either, but this keeps "That's all" from flashing "Running".
             if (observeSearch(search).first()?.hasMore != true) return@launch
             nextPageStatus.value = NextPageStatus.Running
             val outcome = loadNextPage(search)
