@@ -85,6 +85,7 @@ internal class FakeRecipesInterceptor(
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_NOT_FOUND = 404
         const val MAX_PAGE_SIZE = 50
+        // The fake server keeps its own list of keys, like a real backend, instead of reading the app's mapper.
         val DIFFICULTIES = 1..3
         val DIET_KEYS = setOf(
             "vegan", "vegetarian", "pescatarian", "halal", "gluten-free", "dairy-free", "nut-free", "low-carb",

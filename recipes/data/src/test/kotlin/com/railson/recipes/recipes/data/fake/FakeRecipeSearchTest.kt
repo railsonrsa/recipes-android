@@ -169,6 +169,24 @@ class FakeRecipeSearchTest {
     }
 
     @Test
+    fun `each diet alone gives its count from the test data`() {
+        val counts = dietCounts.keys.associateWith { key ->
+            FakeRecipeSearch.run(asset, params(diet = setOf(key))).pagination.totalItems
+        }
+
+        assertThat(counts).containsExactlyEntriesIn(dietCounts)
+    }
+
+    @Test
+    fun `each difficulty alone gives its count from the test data`() {
+        val counts = difficultyCounts.keys.associateWith { number ->
+            FakeRecipeSearch.run(asset, params(difficulties = setOf(number))).pagination.totalItems
+        }
+
+        assertThat(counts).containsExactlyEntriesIn(difficultyCounts)
+    }
+
+    @Test
     fun `pagination counts only the recipes that match`() {
         val lamb = listOf(recipe("lamb-1").copy(title = "Lamb stew"), recipe("lamb-2").copy(title = "Lamb pie"))
         val recipes = recipes(15) + lamb
@@ -189,6 +207,20 @@ private const val AVOCADO_MOUSSE = "Mousse au Chocolat Végétalien à l'Avocat 
 private const val CHICKPEA_CURRY = "Chickpea Coconut Curry"
 private const val MARGHERITA_PIZZA = "Classic Margherita Pizza"
 private const val PAO_DE_QUEIJO = "Pão de Queijo (Brazilian Cheese Bread)"
+
+/** docs/specs/test-data.md, "Filter counts". */
+private val dietCounts = mapOf(
+    "vegetarian" to 6,
+    "vegan" to 2,
+    "pescatarian" to 1,
+    "halal" to 2,
+    "gluten-free" to 6,
+    "dairy-free" to 5,
+    "nut-free" to 8,
+    "low-carb" to 2,
+)
+
+private val difficultyCounts = mapOf(1 to 5, 2 to 3, 3 to 2)
 
 private fun params(
     diet: Set<String> = emptySet(),
