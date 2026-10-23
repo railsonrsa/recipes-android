@@ -34,13 +34,13 @@ internal class RecipeListViewModel(
 ) : ViewModel() {
 
     private val query = MutableStateFlow(SearchQuery.Catalog)
-    private val lastCall = MutableStateFlow(SearchCall(SearchQuery.Catalog, LastCall.Running))
+    private val currentCall = MutableStateFlow(SearchCall(SearchQuery.Catalog, LastCall.Running))
     private val effectChannel = Channel<RecipeListEffect>(Channel.BUFFERED)
     val effects: Flow<RecipeListEffect> = effectChannel.receiveAsFlow()
 
     val uiState: StateFlow<RecipeListUiState> = query
         .flatMapLatest { search ->
-            combine(observeSearch(search), lastCall) { saved, call -> screenState(search, saved, call.lastCall) }
+            combine(observeSearch(search), currentCall) { saved, call -> screenState(search, saved, call.lastCall) }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RecipeListUiState.Loading)
 
@@ -73,12 +73,12 @@ internal class RecipeListViewModel(
     /** No automatic retry: only the reader calls the server again. A new search cancels the old search's call. */
     private fun refresh() {
         val search = query.value
-        if (refreshJob?.isActive == true && lastCall.value.query == search) return
+        if (refreshJob?.isActive == true && currentCall.value.query == search) return
         refreshJob?.cancel()
-        lastCall.value = SearchCall(search, LastCall.Running)
+        currentCall.value = SearchCall(search, LastCall.Running)
         refreshJob = viewModelScope.launch {
             val call = refreshSearch(search).toLastCall()
-            lastCall.value = SearchCall(search, call)
+            currentCall.value = SearchCall(search, call)
             // With saved recipes on screen, a failed refresh is only a snackbar.
             val hasSavedRecipes = observeSearch(search).first()?.recipes.orEmpty().isNotEmpty()
             val snackbar = when (call) {
@@ -99,7 +99,7 @@ internal class RecipeListViewModel(
 /** How the last call to the server went, as the screen sees it. */
 private enum class LastCall { Running, Succeeded, Offline, Failed }
 
-/** The last call and the search it was made for. */
+/** The last call and the search it was made for. A new search sets it to running before the screen reads it. */
 private data class SearchCall(val query: SearchQuery, val lastCall: LastCall)
 
 private fun CallOutcome.toLastCall(): LastCall = when (this) {

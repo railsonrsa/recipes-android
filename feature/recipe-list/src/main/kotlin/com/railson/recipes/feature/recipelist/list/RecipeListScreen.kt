@@ -132,7 +132,7 @@ internal fun RecipeListLayout(
             RecipeListUiState.Offline -> RecipeListOffline(onRetry = refresh, modifier = statePadding)
             RecipeListUiState.Error -> RecipeListError(onTryAgain = refresh, modifier = statePadding)
             RecipeListUiState.EmptyCatalogue -> RecipeListEmptyCatalogue(onRefresh = refresh, modifier = statePadding)
-            RecipeListUiState.NoResults -> RecipeListNoResults(statePadding)
+            RecipeListUiState.NoResults -> RecipeListNoResults(modifier = statePadding)
             is RecipeListUiState.Content -> PullToRefreshBox(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = refresh,

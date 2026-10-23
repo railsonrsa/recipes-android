@@ -176,10 +176,9 @@ class RecipeListViewModelTest {
 
         viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
         advanceTimeBy(299)
-        val beforeTheWait = repository.refreshed.toList()
-        advanceTimeBy(2)
 
-        assertThat(beforeTheWait).containsExactly(SearchQuery.Catalog)
+        assertThat(repository.refreshed).containsExactly(SearchQuery.Catalog)
+        advanceTimeBy(2)
         assertThat(repository.refreshed).containsExactly(SearchQuery.Catalog, SearchQuery(text = "pao")).inOrder()
     }
 
@@ -240,7 +239,7 @@ class RecipeListViewModelTest {
     }
 
     @Test
-    fun `clearing the text shows the saved catalog again and refreshes it`() = runTest {
+    fun `clearing the text shows the saved catalog again`() = runTest {
         repository.saved.value = saved(recipe("Greek Salad"))
         val viewModel = viewModel()
 
@@ -253,8 +252,20 @@ class RecipeListViewModelTest {
             assertThat(expectMostRecentItem()).isEqualTo(
                 RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = true),
             )
-            assertThat(repository.refreshed.last()).isEqualTo(SearchQuery.Catalog)
         }
+    }
+
+    @Test
+    fun `clearing the text refreshes the catalog again`() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
+        advanceTimeBy(301)
+
+        viewModel.onAction(RecipeListAction.ChangeSearchText(" "))
+        advanceTimeBy(301)
+
+        assertThat(repository.refreshed)
+            .containsExactly(SearchQuery.Catalog, SearchQuery(text = "pao"), SearchQuery.Catalog).inOrder()
     }
 
     @Test

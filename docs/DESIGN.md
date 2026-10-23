@@ -177,7 +177,7 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 
 ### 3.1 First load (state `Loading`)
 - Top app bar "Recipes".
-- Search bar shown disabled (38% alpha).
+- Search bar shown disabled (38% alpha). When it already has text (a new search loading), it stays enabled, so the reader can keep typing.
 - Centered: 32 dp multicolor progress indicator + "Loading recipes…" (`bodyMedium`, `onSurfaceVariant`), 16 dp apart.
 
 ### 3.2 List (state `Content`)
@@ -193,12 +193,12 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 ### 3.4 End of list
 - After the last card: a centered "That's all 10 recipes" (`bodySmall`) between two 1 dp lines. No more requests are made (`hasNext = false`; a page-2 request returns `[]`).
 
-### 3.5 Search with no results (state `Empty`)
+### 3.5 Search with no results (state `NoResults`)
 - The active filters appear as `InputChip`s under the search bar. The filter button badge shows the count.
 - Centered illustration (decorative), "No recipes match" (`titleLarge`), an explanation (`bodyMedium`), and a `TextButton` "Clear all filters".
 
 ### 3.6 Error (state `Error`)
-- Search bar disabled.
+- Search bar disabled, unless it has text: then the reader can change the search.
 - 72 dp `surfaceContainer` circle with a 36 dp error icon, "Couldn't load recipes" (`titleLarge`), "Something went wrong reading the recipe data." (`bodyMedium`), and a filled `Button` "Try again".
 
 ### 3.7 Empty catalogue (JSON `data: []` on first load)
