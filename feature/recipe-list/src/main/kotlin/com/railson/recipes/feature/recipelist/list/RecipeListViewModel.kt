@@ -2,9 +2,14 @@ package com.railson.recipes.feature.recipelist.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.railson.recipes.feature.recipelist.filter.RecipeFiltersUiState
+import com.railson.recipes.feature.recipelist.filter.without
+import com.railson.recipes.feature.recipelist.filter.withFiltersOf
+import com.railson.recipes.feature.recipelist.filter.withoutFilters
 import com.railson.recipes.recipes.domain.model.CallOutcome
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
+import com.railson.recipes.recipes.domain.usecase.CountRecipesUseCase
 import com.railson.recipes.recipes.domain.usecase.ObserveSearchUseCase
 import com.railson.recipes.recipes.domain.usecase.RefreshSearchUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,17 +25,20 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Shows what Room has for the current search right away, and refreshes it every time the search opens
- * (docs/specs/data.md, Flow). The list opens on the catalog.
+ * (docs/specs/data.md, Flow). The list opens on the catalog. The filter sheet edits a draft, counted on
+ * the server, that becomes the search on "Show N recipes".
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class RecipeListViewModel(
     private val observeSearch: ObserveSearchUseCase,
     private val refreshSearch: RefreshSearchUseCase,
+    private val countRecipes: CountRecipesUseCase,
 ) : ViewModel() {
 
     private val query = MutableStateFlow(SearchQuery.Catalog)
@@ -44,8 +52,16 @@ internal class RecipeListViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RecipeListUiState.Loading)
 
+    private val draft = MutableStateFlow(DraftFilters())
+
+    /** The sheet has its own life next to the list's states, so it has its own state. */
+    val filters: StateFlow<RecipeFiltersUiState> = combine(query, draft) { applied, draft ->
+        RecipeFiltersUiState(applied = applied, draft = applied.withFiltersOf(draft.query), draftCount = draft.count)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RecipeFiltersUiState())
+
     private var searchTextJob: Job? = null
     private var refreshJob: Job? = null
+    private var countJob: Job? = null
 
     init {
         refresh()
@@ -56,6 +72,18 @@ internal class RecipeListViewModel(
             RecipeListAction.Refresh -> refresh()
             is RecipeListAction.ChangeSearchText -> changeSearchText(action.text)
             is RecipeListAction.OpenRecipe -> effectChannel.trySend(RecipeListEffect.OpenRecipe(action.id))
+            RecipeListAction.OpenFilters -> openFilters()
+            is RecipeListAction.ToggleDietaryTag -> changeDraft {
+                copy(dietaryTags = dietaryTags.toggle(action.tag))
+            }
+            is RecipeListAction.ChangeServingsRange -> changeDraft { copy(servingsRange = action.range) }
+            is RecipeListAction.ToggleDifficulty -> changeDraft {
+                copy(difficulties = difficulties.toggle(action.difficulty))
+            }
+            RecipeListAction.ClearDraftFilters -> changeDraft { withoutFilters() }
+            RecipeListAction.ShowRecipes -> search(query.value.withFiltersOf(draft.value.query))
+            is RecipeListAction.RemoveFilter -> search(query.value.without(action.filter))
+            RecipeListAction.ClearAllFilters -> search(query.value.withoutFilters())
         }
     }
 
@@ -63,10 +91,35 @@ internal class RecipeListViewModel(
         searchTextJob?.cancel()
         searchTextJob = viewModelScope.launch {
             delay(SEARCH_TEXT_WAIT)
-            val newQuery = SearchQuery(text = text.trim())
-            if (newQuery == query.value) return@launch
-            query.value = newQuery
-            refresh()
+            search(query.value.copy(text = text.trim()))
+        }
+    }
+
+    private fun search(newQuery: SearchQuery) {
+        if (newQuery == query.value) return
+        query.value = newQuery
+        refresh()
+    }
+
+    /** Counts right away: the applied filters have nothing to wait for. The last number stays until then. */
+    private fun openFilters() {
+        draft.update { DraftFilters(query = query.value, count = it.count) }
+        count(wait = false)
+    }
+
+    private fun changeDraft(change: SearchQuery.() -> SearchQuery) {
+        draft.update { it.copy(query = it.query.change()) }
+        count(wait = true)
+    }
+
+    /** The count keeps the last number while the next one loads, so the button doesn't flicker. */
+    private fun count(wait: Boolean) {
+        countJob?.cancel()
+        countJob = viewModelScope.launch {
+            if (wait) delay(FILTER_COUNT_WAIT)
+            // The search text may have changed since the sheet opened. The count is for what "Show" applies.
+            val count = countRecipes(query.value.withFiltersOf(draft.value.query))
+            draft.update { it.copy(count = count) }
         }
     }
 
@@ -93,8 +146,14 @@ internal class RecipeListViewModel(
     private companion object {
         const val STOP_TIMEOUT_MILLIS = 5_000L
         val SEARCH_TEXT_WAIT = 300.milliseconds
+        val FILTER_COUNT_WAIT = 300.milliseconds
     }
 }
+
+/** What the sheet edits, and the server's count for it. Its search text is never used. */
+private data class DraftFilters(val query: SearchQuery = SearchQuery.Catalog, val count: Int? = null)
+
+private fun <T> Set<T>.toggle(item: T): Set<T> = if (item in this) this - item else this + item
 
 /** How the last call to the server went, as the screen sees it. */
 private enum class LastCall { Running, Succeeded, Offline, Failed }

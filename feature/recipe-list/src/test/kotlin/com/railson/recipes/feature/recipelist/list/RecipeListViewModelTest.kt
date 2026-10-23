@@ -9,6 +9,7 @@ import com.railson.recipes.recipes.domain.model.CallOutcome
 import com.railson.recipes.recipes.domain.model.Recipe
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
+import com.railson.recipes.recipes.domain.usecase.CountRecipesUseCase
 import com.railson.recipes.recipes.domain.usecase.ObserveSearchUseCase
 import com.railson.recipes.recipes.domain.usecase.RefreshSearchUseCase
 import kotlinx.coroutines.test.advanceTimeBy
@@ -27,6 +28,7 @@ class RecipeListViewModelTest {
     private fun viewModel() = RecipeListViewModel(
         observeSearch = ObserveSearchUseCase(repository),
         refreshSearch = RefreshSearchUseCase(repository),
+        countRecipes = CountRecipesUseCase(repository),
     )
 
     @Test

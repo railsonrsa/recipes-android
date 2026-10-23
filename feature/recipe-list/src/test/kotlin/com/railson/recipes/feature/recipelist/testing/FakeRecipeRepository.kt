@@ -6,18 +6,24 @@ import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
 import com.railson.recipes.recipes.domain.repository.RecipeRepository
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlin.time.Duration
 
 /**
  * Holds a saved result per search that tests can change.
- * Each refresh runs until the test ends it with [endRefresh].
+ * Each refresh runs until the test ends it with [endRefresh]. A count answers from [counts] after
+ * [countWait], `null` (a failed call) for a search it doesn't have.
  */
 internal class FakeRecipeRepository : RecipeRepository {
     private val searches = mutableMapOf<SearchQuery, MutableStateFlow<SearchResult?>>()
     val refreshed = mutableListOf<SearchQuery>()
     private val outcomes = Channel<CallOutcome>(Channel.UNLIMITED)
+    val counts = mutableMapOf<SearchQuery, Int>()
+    val counted = mutableListOf<SearchQuery>()
+    var countWait: Duration = Duration.ZERO
 
     /** The saved catalog. */
     val saved: MutableStateFlow<SearchResult?> get() = savedFor(SearchQuery.Catalog)
@@ -38,5 +44,9 @@ internal class FakeRecipeRepository : RecipeRepository {
         return outcomes.receive()
     }
 
-    override suspend fun count(query: SearchQuery): Int? = null
+    override suspend fun count(query: SearchQuery): Int? {
+        counted += query
+        delay(countWait)
+        return counts[query]
+    }
 }
