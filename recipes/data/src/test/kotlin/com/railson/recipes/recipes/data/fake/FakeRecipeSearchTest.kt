@@ -71,6 +71,104 @@ class FakeRecipeSearchTest {
     }
 
     @Test
+    fun `diet vegan finds the 2 vegan recipes`() {
+        val result = FakeRecipeSearch.run(asset, params(diet = setOf("vegan")))
+
+        assertThat(result.data.map { it.title }).containsExactly(CHICKPEA_CURRY, AVOCADO_MOUSSE)
+    }
+
+    @Test
+    fun `diet vegan and gluten-free needs both tags`() {
+        val result = FakeRecipeSearch.run(asset, params(diet = setOf("vegan", "gluten-free")))
+
+        assertThat(result.data.map { it.title }).containsExactly(CHICKPEA_CURRY, AVOCADO_MOUSSE)
+    }
+
+    @Test
+    fun `diet vegan and halal finds nothing`() {
+        val result = FakeRecipeSearch.run(asset, params(diet = setOf("vegan", "halal")))
+
+        assertThat(result.data).isEmpty()
+        assertThat(result.pagination.totalItems).isEqualTo(0)
+    }
+
+    @Test
+    fun `diet vegetarian finds 6 recipes`() {
+        val result = FakeRecipeSearch.run(asset, params(diet = setOf("vegetarian")))
+
+        assertThat(result.pagination.totalItems).isEqualTo(6)
+    }
+
+    @Test
+    fun `a recipe with no dietary tags matches no diet filter`() {
+        val result = FakeRecipeSearch.run(asset, params(diet = setOf("nut-free")))
+
+        assertThat(result.data.map { it.title }).containsNoneOf("Beef Tacos with Fresh Salsa", MARGHERITA_PIZZA)
+        assertThat(result.pagination.totalItems).isEqualTo(8)
+    }
+
+    @Test
+    fun `servings 1 to 2 finds the salmon bowl and the greek salad`() {
+        val result = FakeRecipeSearch.run(asset, params(minServings = 1, maxServings = 2))
+
+        assertThat(result.data.map { it.title }).containsExactly("Salmon Teriyaki Bowl", "Greek Salad")
+    }
+
+    @Test
+    fun `servings 3 to 4 finds 6 recipes`() {
+        val result = FakeRecipeSearch.run(asset, params(minServings = 3, maxServings = 4))
+
+        assertThat(result.pagination.totalItems).isEqualTo(6)
+    }
+
+    @Test
+    fun `servings 5 to 6 finds pao de queijo`() {
+        val result = FakeRecipeSearch.run(asset, params(minServings = 5, maxServings = 6))
+
+        assertThat(result.data.map { it.title }).containsExactly(PAO_DE_QUEIJO)
+    }
+
+    @Test
+    fun `servings 7 or more has no top and finds the lamb shoulder`() {
+        val result = FakeRecipeSearch.run(asset, params(minServings = 7))
+
+        assertThat(result.data.map { it.servings }).containsExactly(8)
+    }
+
+    @Test
+    fun `difficulty easy finds 5 recipes`() {
+        val result = FakeRecipeSearch.run(asset, params(difficulties = setOf(1)))
+
+        assertThat(result.pagination.totalItems).isEqualTo(5)
+    }
+
+    @Test
+    fun `difficulty medium or hard finds any of them`() {
+        val result = FakeRecipeSearch.run(asset, params(difficulties = setOf(2, 3)))
+
+        assertThat(result.pagination.totalItems).isEqualTo(5)
+    }
+
+    @Test
+    fun `a recipe with no difficulty never matches a difficulty filter`() {
+        val unknown = recipe("unknown").copy(difficulty = null)
+
+        val result = FakeRecipeSearch.run(listOf(unknown), params(difficulties = setOf(1, 2, 3)))
+
+        assertThat(result.data).isEmpty()
+    }
+
+    @Test
+    fun `diet vegetarian, servings 3 to 4 and easy find the curry and the mousse`() {
+        val result = FakeRecipeSearch.run(
+            asset,
+            params(diet = setOf("vegetarian"), minServings = 3, maxServings = 4, difficulties = setOf(1)),
+        )
+
+        assertThat(result.data.map { it.title }).containsExactly(CHICKPEA_CURRY, AVOCADO_MOUSSE)
+    }
+
+    @Test
     fun `pagination counts only the recipes that match`() {
         val lamb = listOf(recipe("lamb-1").copy(title = "Lamb stew"), recipe("lamb-2").copy(title = "Lamb pie"))
         val recipes = recipes(15) + lamb
@@ -88,6 +186,23 @@ class FakeRecipeSearchTest {
 }
 
 private const val AVOCADO_MOUSSE = "Mousse au Chocolat Végétalien à l'Avocat 🥑🍫"
+private const val CHICKPEA_CURRY = "Chickpea Coconut Curry"
+private const val MARGHERITA_PIZZA = "Classic Margherita Pizza"
+private const val PAO_DE_QUEIJO = "Pão de Queijo (Brazilian Cheese Bread)"
+
+private fun params(
+    diet: Set<String> = emptySet(),
+    minServings: Int? = null,
+    maxServings: Int? = null,
+    difficulties: Set<Int> = emptySet(),
+) = FakeSearchParams(
+    page = 1,
+    pageSize = 10,
+    diet = diet,
+    minServings = minServings,
+    maxServings = maxServings,
+    difficulties = difficulties,
+)
 
 /** The 10 recipes the app ships with. The cases come from docs/specs/test-data.md, "Searches". */
 private val asset = createJson()

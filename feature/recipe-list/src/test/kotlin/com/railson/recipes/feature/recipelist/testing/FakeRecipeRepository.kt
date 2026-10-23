@@ -37,4 +37,6 @@ internal class FakeRecipeRepository : RecipeRepository {
         refreshed += query
         return outcomes.receive()
     }
+
+    override suspend fun count(query: SearchQuery): Int? = null
 }

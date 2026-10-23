@@ -16,12 +16,7 @@ internal fun RecipeEntity.toDomain(): Recipe = Recipe(
     servings = servings,
     prepTime = prepTimeSeconds.seconds,
     cookTime = cookTimeSeconds.seconds,
-    difficulty = when (difficulty) {
-        1 -> Difficulty.Easy
-        2 -> Difficulty.Medium
-        3 -> Difficulty.Hard
-        else -> null
-    },
+    difficulty = Difficulty.entries.firstOrNull { it.number == difficulty },
     cuisine = cuisine,
     rating = rating,
     imageUrl = imageUrl,
@@ -42,6 +37,19 @@ private val dietaryTagsByKey = mapOf(
     "nut-free" to DietaryTag.NutFree,
     "low-carb" to DietaryTag.LowCarb,
 )
+
+/** The tag's key on the backend: `vegan`, `gluten-free`, ... */
+internal val DietaryTag.key: String
+    get() = dietaryTagsByKey.entries.first { it.value == this }.key
+
+/** The difficulty's number on the backend: `1`, `2`, `3`. */
+internal val Difficulty.number: Int
+    @Suppress("MagicNumber") // The backend's numbers read better as numbers.
+    get() = when (this) {
+        Difficulty.Easy -> 1
+        Difficulty.Medium -> 2
+        Difficulty.Hard -> 3
+    }
 
 internal fun RecipeDto.toEntity(): RecipeEntity = RecipeEntity(
     id = id,
