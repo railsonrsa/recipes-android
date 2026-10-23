@@ -10,6 +10,7 @@ import com.railson.recipes.recipes.domain.model.Recipe
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
 import com.railson.recipes.recipes.domain.usecase.CountRecipesUseCase
+import com.railson.recipes.recipes.domain.usecase.LoadNextPageUseCase
 import com.railson.recipes.recipes.domain.usecase.ObserveSearchUseCase
 import com.railson.recipes.recipes.domain.usecase.RefreshSearchUseCase
 import kotlinx.coroutines.test.advanceTimeBy
@@ -28,6 +29,7 @@ class RecipeListViewModelTest {
     private fun viewModel() = RecipeListViewModel(
         observeSearch = ObserveSearchUseCase(repository),
         refreshSearch = RefreshSearchUseCase(repository),
+        loadNextPage = LoadNextPageUseCase(repository),
         countRecipes = CountRecipesUseCase(repository),
     )
 
@@ -116,7 +118,7 @@ class RecipeListViewModelTest {
 
         viewModel.uiState.test {
             assertThat(expectMostRecentItem()).isEqualTo(
-                RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = true),
+                content(listOf(recipe("Greek Salad")), isRefreshing = true),
             )
         }
     }
@@ -131,7 +133,7 @@ class RecipeListViewModelTest {
             repository.endRefresh(CallOutcome.Success)
 
             assertThat(expectMostRecentItem()).isEqualTo(
-                RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = false),
+                content(listOf(recipe("Greek Salad")), isRefreshing = false),
             )
         }
     }
@@ -148,7 +150,7 @@ class RecipeListViewModelTest {
             repository.endRefresh(CallOutcome.NoConnection)
 
             assertThat(states.expectMostRecentItem()).isEqualTo(
-                RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = false),
+                content(listOf(recipe("Greek Salad")), isRefreshing = false),
             )
             assertThat(effects.awaitItem()).isEqualTo(RecipeListEffect.ShowOfflineSnackbar)
         }
@@ -166,7 +168,7 @@ class RecipeListViewModelTest {
             repository.endRefresh(CallOutcome.BadData)
 
             assertThat(states.expectMostRecentItem()).isEqualTo(
-                RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = false),
+                content(listOf(recipe("Greek Salad")), isRefreshing = false),
             )
             assertThat(effects.awaitItem()).isEqualTo(RecipeListEffect.ShowRefreshFailedSnackbar)
         }
@@ -222,7 +224,7 @@ class RecipeListViewModelTest {
             advanceTimeBy(301)
 
             assertThat(awaitItem()).isEqualTo(
-                RecipeListUiState.Content(recipes = listOf(recipe("Pão de Queijo")), isRefreshing = true),
+                content(listOf(recipe("Pão de Queijo")), isRefreshing = true),
             )
         }
     }
@@ -252,7 +254,7 @@ class RecipeListViewModelTest {
             advanceTimeBy(301)
 
             assertThat(expectMostRecentItem()).isEqualTo(
-                RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = true),
+                content(listOf(recipe("Greek Salad")), isRefreshing = true),
             )
         }
     }
@@ -332,6 +334,14 @@ class RecipeListViewModelTest {
         assertThat(repository.refreshed).hasSize(1)
     }
 }
+
+/** A list whose recipes are all loaded. */
+private fun content(recipes: List<Recipe>, isRefreshing: Boolean) = RecipeListUiState.Content(
+    recipes = recipes,
+    isRefreshing = isRefreshing,
+    totalItems = recipes.size,
+    listEnd = ListEnd.AllLoaded,
+)
 
 private fun saved(vararg recipes: Recipe) =
     SearchResult(recipes = recipes.toList(), hasMore = false, totalItems = recipes.size)

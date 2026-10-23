@@ -15,6 +15,7 @@ import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
 import com.railson.recipes.recipes.domain.model.ServingsRange
 import com.railson.recipes.recipes.domain.usecase.CountRecipesUseCase
+import com.railson.recipes.recipes.domain.usecase.LoadNextPageUseCase
 import com.railson.recipes.recipes.domain.usecase.ObserveSearchUseCase
 import com.railson.recipes.recipes.domain.usecase.RefreshSearchUseCase
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +38,7 @@ class RecipeListViewModelFiltersTest {
     private fun viewModel() = RecipeListViewModel(
         observeSearch = ObserveSearchUseCase(repository),
         refreshSearch = RefreshSearchUseCase(repository),
+        loadNextPage = LoadNextPageUseCase(repository),
         countRecipes = CountRecipesUseCase(repository),
     )
 

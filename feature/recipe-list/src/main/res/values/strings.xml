@@ -6,6 +6,12 @@
     </plurals>
 
     <string name="recipe_list_loading">Loading recipes…</string>
+    <string name="recipe_list_loading_more">Loading more recipes…</string>
+    <string name="recipe_list_load_more_failed">Couldn\'t load more</string>
+    <plurals name="recipe_list_all_loaded">
+        <item quantity="one">That\'s all %1$d recipe</item>
+        <item quantity="other">That\'s all %1$d recipes</item>
+    </plurals>
     <string name="recipe_list_error_title">Couldn\'t load recipes</string>
     <string name="recipe_list_error_body">Something went wrong reading the recipe data.</string>
     <string name="recipe_list_try_again">Try again</string>

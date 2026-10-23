@@ -182,13 +182,15 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 
 ### 3.2 List (state `Content`)
 - Top app bar "Recipes", then the search bar (16 dp margins).
-- "10 recipes" (`bodyMedium`, `onSurfaceVariant`), padding 16 / 16 / 8.
+- "10 recipes" (`bodyMedium`, `onSurfaceVariant`), padding 16 / 16 / 8. The number is the server's total for the search, not the cards loaded so far.
 - `LazyColumn` of recipe cards, gap 8, horizontal padding 16.
 - Card metadata line: `★ 4.7 · 32m · Medium` (star filled `ratingStar`; rating in `onSurface` 500). When the rating is null, show "No ratings". When the difficulty is unknown, leave it out of the line. The time is the total time, formatted as in section 4.
 
 ### 3.3 Loading the next page
 - The search bar stays pinned at the top (8 dp vertical padding, a 1 dp `hairline` below it).
 - The last cards, then one skeleton card (`hairline` blocks in the card layout), then a row with a 24 dp progress indicator + "Loading more recipes…".
+- Skeleton card: the card's padding and 80 dp thumbnail block, then blocks of 180×16, 140×12 and 100×12 dp, 8 dp apart, and two 24 dp tag blocks (64 and 48 dp wide). Blocks are `hairline` with radius 8.
+- When the next page fails, the skeleton card and the row become one row: "Couldn't load more" (`bodyMedium`, `onSurfaceVariant`) + a `TextButton` "Retry".
 
 ### 3.4 End of list
 - After the last card: a centered "That's all 10 recipes" (`bodySmall`) between two 1 dp lines. No more requests are made (`hasNext = false`; a page-2 request returns `[]`).

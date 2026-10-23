@@ -11,6 +11,9 @@ internal sealed interface RecipeListAction {
     /** Pull-to-refresh, "Try again", "Refresh" and every "Retry". */
     data object Refresh : RecipeListAction
 
+    /** The "Loading more recipes…" row comes into view, or "Retry" under "Couldn't load more". */
+    data object LoadNextPage : RecipeListAction
+
     /** Types in the search bar. The search waits 300 ms after the last change. */
     data class ChangeSearchText(val text: String) : RecipeListAction
 

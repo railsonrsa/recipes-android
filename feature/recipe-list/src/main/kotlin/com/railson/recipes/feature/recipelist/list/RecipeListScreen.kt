@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -54,7 +55,6 @@ import com.railson.recipes.feature.recipelist.filter.RecipeFiltersUiState
 import com.railson.recipes.feature.recipelist.filter.activeFilters
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.IngredientSide
-import com.railson.recipes.recipes.domain.model.Recipe
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -213,8 +213,8 @@ internal fun RecipeListLayout(
                 modifier = Modifier.padding(top = padding.calculateTopPadding()),
             ) {
                 RecipeListList(
-                    recipes = uiState.recipes,
-                    onRecipeClick = { id -> onAction(RecipeListAction.OpenRecipe(id)) },
+                    content = uiState,
+                    onAction = onAction,
                     contentPadding = PaddingValues(
                         start = padding.calculateStartPadding(layoutDirection),
                         end = padding.calculateEndPadding(layoutDirection),
@@ -258,6 +258,8 @@ private fun RecipeListTopBar(
                 modifier = Modifier.padding(bottom = Spacing.sm),
             )
         }
+        // The cards scroll under the pinned bar (DESIGN.md 3.3).
+        if (uiState is RecipeListUiState.Content) HorizontalDivider(color = RecipesTheme.colors.hairline)
     }
 }
 
@@ -270,14 +272,15 @@ private fun searchBarEnabled(uiState: RecipeListUiState, searchText: TextFieldSt
         applied.activeFilterCount > 0 ||
         (uiState != RecipeListUiState.Loading && uiState != RecipeListUiState.Error)
 
-/** "10 recipes", then the recipe cards (DESIGN.md 3.2). */
+/** "15 recipes", the recipe cards, then the next page or the end (DESIGN.md 3.2 to 3.4). */
 @Composable
 internal fun RecipeListList(
-    recipes: List<Recipe>,
-    onRecipeClick: (String) -> Unit,
+    content: RecipeListUiState.Content,
+    onAction: (RecipeListAction) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
+    val recipes = content.recipes
     val layoutDirection = LocalLayoutDirection.current
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -291,9 +294,8 @@ internal fun RecipeListList(
     ) {
         if (recipes.isNotEmpty()) {
             item(key = "count") {
-                // Only the loaded recipes until paging (#26) brings the search total.
                 Text(
-                    text = pluralStringResource(R.plurals.recipe_list_count, recipes.size, recipes.size),
+                    text = pluralStringResource(R.plurals.recipe_list_count, content.totalItems, content.totalItems),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Spacing.lg),
@@ -301,7 +303,24 @@ internal fun RecipeListList(
             }
         }
         items(recipes, key = { it.id }) { recipe ->
-            RecipeCard(recipe = recipe, onClick = { onRecipeClick(recipe.id) }, modifier = Modifier.fillMaxWidth())
+            RecipeCard(
+                recipe = recipe,
+                onClick = { onAction(RecipeListAction.OpenRecipe(recipe.id)) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        item(key = "end", contentType = content.listEnd) {
+            when (content.listEnd) {
+                ListEnd.LoadingMore -> {
+                    // The row coming into view loads the next page. A new page or the end of a refresh asks
+                    // again while it stays in view. The ViewModel ignores the extra asks.
+                    LaunchedEffect(recipes.size, content.isRefreshing) { onAction(RecipeListAction.LoadNextPage) }
+                    RecipeListLoadingMore()
+                }
+                ListEnd.LoadMoreFailed ->
+                    RecipeListLoadMoreFailed(onRetry = { onAction(RecipeListAction.LoadNextPage) })
+                ListEnd.AllLoaded -> RecipeListAllLoaded(totalItems = content.totalItems)
+            }
         }
     }
 }
@@ -311,7 +330,12 @@ internal fun RecipeListList(
 private fun RecipeListLayoutPreview() {
     RecipesTheme {
         RecipeListLayout(
-            uiState = RecipeListUiState.Content(recipes = PreviewRecipes.all, isRefreshing = false),
+            uiState = RecipeListUiState.Content(
+                recipes = PreviewRecipes.all,
+                isRefreshing = false,
+                totalItems = PreviewRecipes.all.size,
+                listEnd = ListEnd.AllLoaded,
+            ),
             filters = RecipeFiltersUiState(),
             searchText = rememberTextFieldState(),
             snackbarHostState = remember { SnackbarHostState() },
@@ -342,7 +366,16 @@ private fun RecipeListLayoutNoResultsPreview() {
 @Composable
 private fun RecipeListListPreview() {
     RecipesTheme {
-        RecipeListList(recipes = PreviewRecipes.edgeCases, onRecipeClick = {}, contentPadding = PaddingValues())
+        RecipeListList(
+            content = RecipeListUiState.Content(
+                recipes = PreviewRecipes.edgeCases,
+                isRefreshing = false,
+                totalItems = PreviewRecipes.edgeCases.size + 10,
+                listEnd = ListEnd.LoadingMore,
+            ),
+            onAction = {},
+            contentPadding = PaddingValues(),
+        )
     }
 }
 
