@@ -179,7 +179,7 @@ class RecipeListViewModelFiltersTest {
     @Test
     fun `vegan and halal shows no results`() = runTest {
         val veganHalal = SearchQuery(dietaryTags = setOf(DietaryTag.Vegan, DietaryTag.Halal))
-        repository.savedFor(veganHalal).value = SearchResult(recipes = emptyList(), hasMore = false)
+        repository.savedFor(veganHalal).value = SearchResult(recipes = emptyList(), hasMore = false, totalItems = 0)
         val viewModel = viewModel()
 
         viewModel.uiState.test {

@@ -16,6 +16,9 @@ interface RecipeRepository {
     /** Asks the server for page 1 and replaces the saved result of this search. */
     suspend fun refresh(query: SearchQuery): CallOutcome
 
+    /** Asks the server for the next page and adds it after the saved recipes. No call when nothing is left. */
+    suspend fun loadNextPage(query: SearchQuery): CallOutcome
+
     /** How many recipes the server has for this search, `null` when the call fails. Saves nothing. */
     suspend fun count(query: SearchQuery): Int?
 }

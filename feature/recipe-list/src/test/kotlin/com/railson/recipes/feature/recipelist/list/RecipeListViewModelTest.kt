@@ -333,7 +333,8 @@ class RecipeListViewModelTest {
     }
 }
 
-private fun saved(vararg recipes: Recipe) = SearchResult(recipes = recipes.toList(), hasMore = false)
+private fun saved(vararg recipes: Recipe) =
+    SearchResult(recipes = recipes.toList(), hasMore = false, totalItems = recipes.size)
 
 private fun recipe(title: String) = Recipe(
     id = title,

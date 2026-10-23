@@ -20,5 +20,7 @@ internal class FakeRecipeRepository : RecipeRepository {
 
     override suspend fun refresh(query: SearchQuery): CallOutcome = error("The detail screen never refreshes")
 
+    override suspend fun loadNextPage(query: SearchQuery): CallOutcome = error("The detail screen never pages")
+
     override suspend fun count(query: SearchQuery): Int = error("The detail screen never counts")
 }

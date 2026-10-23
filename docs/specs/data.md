@@ -178,7 +178,8 @@ interface RecipeRepository {
 ```
 
 - Paging is manual. No Paging 3 `RemoteMediator`.
-- `SearchResult.hasMore` comes from the stored remote key.
+- `SearchResult.hasMore` and `SearchResult.totalItems` come from the stored remote key.
+- `loadNextPage` makes no call and returns `Success` when the search has no remote key or no `nextPage`. A failed next page writes nothing, so the same page is asked again on retry.
 - `observeSearch` emits `null` while the search has no remote key: it was never saved. This is the "Room has this search?" column in [Screen states](#screen-states).
 - `count` calls `page=1&pageSize=1`, reads `totalItems` and writes nothing to Room.
 

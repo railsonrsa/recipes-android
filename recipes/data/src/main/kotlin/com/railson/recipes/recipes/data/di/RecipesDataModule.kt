@@ -9,6 +9,7 @@ import com.railson.recipes.recipes.data.remote.RecipesApi
 import com.railson.recipes.recipes.data.repository.OfflineFirstRecipeRepository
 import com.railson.recipes.recipes.domain.repository.RecipeRepository
 import com.railson.recipes.recipes.domain.usecase.CountRecipesUseCase
+import com.railson.recipes.recipes.domain.usecase.LoadNextPageUseCase
 import com.railson.recipes.recipes.domain.usecase.ObserveRecipeUseCase
 import com.railson.recipes.recipes.domain.usecase.ObserveSearchUseCase
 import com.railson.recipes.recipes.domain.usecase.RefreshSearchUseCase
@@ -38,6 +39,7 @@ val recipesDataModule = module {
     factoryOf(::ObserveSearchUseCase)
     factoryOf(::ObserveRecipeUseCase)
     factoryOf(::RefreshSearchUseCase)
+    factoryOf(::LoadNextPageUseCase)
     factoryOf(::CountRecipesUseCase)
 }
 
