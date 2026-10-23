@@ -11,7 +11,7 @@ import com.railson.recipes.recipes.data.local.entity.SearchResultEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-internal abstract class SearchDao {
+internal abstract class RecipeSearchDao {
 
     @Query(
         """
