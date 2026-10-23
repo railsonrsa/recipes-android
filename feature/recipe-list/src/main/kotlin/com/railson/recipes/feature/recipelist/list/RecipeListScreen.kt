@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
@@ -41,6 +42,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun RecipeListScreen(
+    onRecipeClick: (String) -> Unit,
     topBarActions: @Composable RowScope.() -> Unit,
     viewModel: RecipeListViewModel = koinViewModel(),
 ) {
@@ -49,12 +51,17 @@ internal fun RecipeListScreen(
     val offlineMessage = stringResource(R.string.recipe_list_snackbar_offline)
     val refreshFailedMessage = stringResource(R.string.recipe_list_snackbar_refresh_failed)
     val retry = stringResource(R.string.recipe_list_retry)
+    val currentOnRecipeClick by rememberUpdatedState(onRecipeClick)
     LaunchedEffect(viewModel) {
         // A new snackbar replaces the one on screen: cancelling showSnackbar dismisses it.
         viewModel.effects.collectLatest { effect ->
             val message = when (effect) {
                 RecipeListEffect.ShowOfflineSnackbar -> offlineMessage
                 RecipeListEffect.ShowRefreshFailedSnackbar -> refreshFailedMessage
+                is RecipeListEffect.OpenRecipe -> {
+                    currentOnRecipeClick(effect.id)
+                    return@collectLatest
+                }
             }
             // With an action, the default duration is Indefinite.
             val result = snackbarHostState.showSnackbar(message, actionLabel = retry, duration = SnackbarDuration.Long)
@@ -109,6 +116,7 @@ internal fun RecipeListLayout(
             ) {
                 RecipeListList(
                     recipes = uiState.recipes,
+                    onRecipeClick = { id -> onAction(RecipeListAction.OpenRecipe(id)) },
                     contentPadding = PaddingValues(
                         start = padding.calculateStartPadding(layoutDirection),
                         end = padding.calculateEndPadding(layoutDirection),
@@ -124,6 +132,7 @@ internal fun RecipeListLayout(
 @Composable
 internal fun RecipeListList(
     recipes: List<Recipe>,
+    onRecipeClick: (String) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
@@ -150,7 +159,7 @@ internal fun RecipeListList(
             }
         }
         items(recipes, key = { it.id }) { recipe ->
-            RecipeCard(recipe = recipe, modifier = Modifier.fillMaxWidth())
+            RecipeCard(recipe = recipe, onClick = { onRecipeClick(recipe.id) }, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -172,6 +181,6 @@ private fun RecipeListLayoutPreview() {
 @Composable
 private fun RecipeListListPreview() {
     RecipesTheme {
-        RecipeListList(recipes = PreviewRecipes.edgeCases, contentPadding = PaddingValues())
+        RecipeListList(recipes = PreviewRecipes.edgeCases, onRecipeClick = {}, contentPadding = PaddingValues())
     }
 }

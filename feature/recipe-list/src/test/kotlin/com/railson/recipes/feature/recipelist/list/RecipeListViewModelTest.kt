@@ -170,6 +170,18 @@ class RecipeListViewModelTest {
     }
 
     @Test
+    fun `tapping a card opens that recipe`() = runTest {
+        repository.saved.value = saved(recipe("Greek Salad"))
+        val viewModel = viewModel()
+
+        viewModel.effects.test {
+            viewModel.onAction(RecipeListAction.OpenRecipe(id = "Greek Salad"))
+
+            assertThat(awaitItem()).isEqualTo(RecipeListEffect.OpenRecipe(id = "Greek Salad"))
+        }
+    }
+
+    @Test
     fun `nothing saved and offline shows no snackbar`() = runTest {
         val viewModel = viewModel()
 
