@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,12 +37,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
@@ -56,6 +56,8 @@ import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.IngredientSide
 import com.railson.recipes.recipes.domain.model.Recipe
 import com.railson.recipes.recipes.domain.model.SearchQuery
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -70,12 +72,9 @@ internal fun RecipeListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     // The sheet is its own window over the screen, so its snackbars need their own host.
     val sheetSnackbarHostState = remember { SnackbarHostState() }
-    // The text lives on screen, so typing never waits for the ViewModel. The ViewModel gets each change.
-    val searchText = rememberTextFieldState()
-    LaunchedEffect(searchText, viewModel) {
-        snapshotFlow { searchText.text.toString() }
-            .collect { viewModel.onAction(RecipeListAction.ChangeSearchText(it)) }
-    }
+    // The texts live on screen, so typing never waits for the ViewModel. The ViewModel gets each change.
+    val searchText = rememberTextSentTo(viewModel) { RecipeListAction.ChangeSearchText(it) }
+    val instructionText = rememberTextSentTo(viewModel) { RecipeListAction.ChangeInstructionSearch(it) }
     RecipeListEffects(viewModel, snackbarHostState, sheetSnackbarHostState, onRecipeClick)
     val showsList = uiState is RecipeListUiState.Content
     LaunchedEffect(showsList) {
@@ -88,7 +87,11 @@ internal fun RecipeListScreen(
         searchText = searchText,
         snackbarHostState = snackbarHostState,
         onAction = { action ->
-            if (action == RecipeListAction.OpenFilters) showFilters = true
+            if (action == RecipeListAction.OpenFilters) {
+                // The sheet starts from the applied filters, the instruction field too.
+                instructionText.setTextAndPlaceCursorAtEnd(filters.applied.instructionSearch)
+                showFilters = true
+            }
             viewModel.onAction(action)
         },
         topBarActions = topBarActions,
@@ -96,11 +99,25 @@ internal fun RecipeListScreen(
     if (showFilters) {
         RecipeFilterSheet(
             filters = filters,
+            instructionText = instructionText,
             snackbarHostState = sheetSnackbarHostState,
-            onAction = viewModel::onAction,
+            onAction = { action ->
+                if (action == RecipeListAction.ClearDraftFilters) instructionText.clearText()
+                viewModel.onAction(action)
+            },
             onDismiss = { showFilters = false },
         )
     }
+}
+
+@Composable
+private fun rememberTextSentTo(viewModel: RecipeListViewModel, action: (String) -> RecipeListAction): TextFieldState {
+    val text = rememberTextFieldState()
+    val currentAction by rememberUpdatedState(action)
+    LaunchedEffect(text, viewModel) {
+        snapshotFlow { text.text.toString() }.collect { viewModel.onAction(currentAction(it)) }
+    }
+    return text
 }
 
 /** Shows the snackbars, on the screen or in the sheet, and leaves for a recipe. */

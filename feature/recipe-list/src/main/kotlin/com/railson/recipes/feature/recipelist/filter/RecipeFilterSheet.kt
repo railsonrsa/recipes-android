@@ -6,20 +6,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SegmentedButton
@@ -34,14 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipelist.R
-import com.railson.recipes.feature.recipelist.components.DietDisplayOrder
 import com.railson.recipes.feature.recipelist.components.label
 import com.railson.recipes.feature.recipelist.list.RecipeListAction
 import com.railson.recipes.recipes.domain.model.DietaryTag
@@ -53,11 +49,15 @@ import kotlinx.coroutines.launch
 private const val SCRIM_ALPHA_LIGHT = 0.32f
 private const val SCRIM_ALPHA_DARK = 0.5f
 
-/** The filter bottom sheet (DESIGN.md 2 and 3.8). "Show N recipes" applies the draft and closes it. */
+/**
+ * The filter bottom sheet (DESIGN.md 2 and 3.8). "Show N recipes" applies the draft and closes it.
+ * [instructionText] is the instruction field's text, kept by the screen like the search bar's.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RecipeFilterSheet(
     filters: RecipeFiltersUiState,
+    instructionText: TextFieldState,
     snackbarHostState: SnackbarHostState,
     onAction: (RecipeListAction) -> Unit,
     onDismiss: () -> Unit,
@@ -74,13 +74,18 @@ internal fun RecipeFilterSheet(
         Box(contentAlignment = Alignment.BottomCenter) {
             RecipeFilterSheetContent(
                 filters = filters,
+                instructionText = instructionText,
                 onAction = onAction,
                 onShowRecipes = {
                     onAction(RecipeListAction.ShowRecipes)
                     scope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() }
                 },
             )
-            SnackbarHost(snackbarHostState)
+            // Above the sticky "Show N recipes" button, not over it.
+            SnackbarHost(
+                snackbarHostState,
+                modifier = Modifier.padding(bottom = ButtonDefaults.MinHeight + Spacing.md * 2),
+            )
         }
     }
 }
@@ -89,6 +94,7 @@ internal fun RecipeFilterSheet(
 @Composable
 internal fun RecipeFilterSheetContent(
     filters: RecipeFiltersUiState,
+    instructionText: TextFieldState,
     onAction: (RecipeListAction) -> Unit,
     onShowRecipes: () -> Unit,
     modifier: Modifier = Modifier,
@@ -111,29 +117,14 @@ internal fun RecipeFilterSheetContent(
             }
         }
         // Only the sections scroll. The button stays at the bottom.
-        Column(
+        FilterSections(
+            draft = draft,
+            instructionText = instructionText,
+            onAction = onAction,
             modifier = Modifier
                 .weight(1f, fill = false)
                 .verticalScroll(rememberScrollState()),
-        ) {
-            FilterSection(R.string.recipe_filters_diet, note = stringResource(R.string.recipe_filters_must_match_all)) {
-                DietChips(selected = draft.dietaryTags, onToggle = { onAction(RecipeListAction.ToggleDietaryTag(it)) })
-            }
-            SectionDivider()
-            FilterSection(R.string.recipe_filters_servings) {
-                ServingsButtons(
-                    selected = draft.servingsRange,
-                    onSelect = { onAction(RecipeListAction.ChangeServingsRange(it)) },
-                )
-            }
-            SectionDivider()
-            FilterSection(R.string.recipe_filters_difficulty) {
-                DifficultyChips(
-                    selected = draft.difficulties,
-                    onToggle = { onAction(RecipeListAction.ToggleDifficulty(it)) },
-                )
-            }
-        }
+        )
         Button(
             onClick = onShowRecipes,
             modifier = Modifier
@@ -148,6 +139,47 @@ internal fun RecipeFilterSheetContent(
                     pluralStringResource(R.plurals.recipe_filters_show_count, count, count)
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun FilterSections(
+    draft: SearchQuery,
+    instructionText: TextFieldState,
+    onAction: (RecipeListAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        FilterSection(R.string.recipe_filters_diet, note = stringResource(R.string.recipe_filters_must_match_all)) {
+            DietChips(selected = draft.dietaryTags, onToggle = { onAction(RecipeListAction.ToggleDietaryTag(it)) })
+        }
+        SectionDivider()
+        FilterSection(R.string.recipe_filters_servings) {
+            ServingsButtons(
+                selected = draft.servingsRange,
+                onSelect = { onAction(RecipeListAction.ChangeServingsRange(it)) },
+            )
+        }
+        SectionDivider()
+        FilterSection(R.string.recipe_filters_difficulty) {
+            DifficultyChips(
+                selected = draft.difficulties,
+                onToggle = { onAction(RecipeListAction.ToggleDifficulty(it)) },
+            )
+        }
+        SectionDivider()
+        FilterSection(R.string.recipe_filters_ingredients) {
+            IngredientFilter(
+                included = draft.includedIngredients,
+                excluded = draft.excludedIngredients,
+                onAdd = { word, side -> onAction(RecipeListAction.AddIngredient(word, side)) },
+                onRemove = { onAction(RecipeListAction.RemoveIngredient(it)) },
+            )
+        }
+        SectionDivider()
+        FilterSection(R.string.recipe_filters_instructions) {
+            InstructionSearchField(state = instructionText)
         }
     }
 }
@@ -186,55 +218,6 @@ private fun FilterSection(
 @Composable
 private fun SectionDivider() {
     HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.lg), color = RecipesTheme.colors.hairline)
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun DietChips(selected: Set<DietaryTag>, onToggle: (DietaryTag) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-        DietDisplayOrder.forEach { tag ->
-            SelectChip(label = stringResource(tag.label), selected = tag in selected, onClick = { onToggle(tag) })
-        }
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun DifficultyChips(selected: Set<Difficulty>, onToggle: (Difficulty) -> Unit) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-        Difficulty.entries.forEach { difficulty ->
-            SelectChip(
-                label = stringResource(difficulty.label),
-                selected = difficulty in selected,
-                onClick = { onToggle(difficulty) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun SelectChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = { Text(label) },
-        leadingIcon = if (selected) {
-            {
-                Icon(
-                    painter = painterResource(R.drawable.ic_check),
-                    contentDescription = null,
-                    modifier = Modifier.size(FilterChipDefaults.IconSize),
-                )
-            }
-        } else {
-            null
-        },
-        border = FilterChipDefaults.filterChipBorder(
-            enabled = true,
-            selected = selected,
-            borderColor = MaterialTheme.colorScheme.outline,
-        ),
-    )
 }
 
 @Composable
@@ -277,9 +260,13 @@ private fun RecipeFilterSheetContentPreview() {
                     dietaryTags = setOf(DietaryTag.Vegetarian),
                     servingsRange = ServingsRange.ThreeToFour,
                     difficulties = setOf(Difficulty.Easy),
+                    includedIngredients = setOf("Coconut milk"),
+                    excludedIngredients = setOf("garlic"),
+                    instructionSearch = "oven",
                 ),
                 draftCount = 2,
             ),
+            instructionText = rememberTextFieldState("oven"),
             onAction = {},
             onShowRecipes = {},
         )
@@ -290,6 +277,11 @@ private fun RecipeFilterSheetContentPreview() {
 @Composable
 private fun RecipeFilterSheetContentNoCountPreview() {
     RecipesTheme {
-        RecipeFilterSheetContent(filters = RecipeFiltersUiState(), onAction = {}, onShowRecipes = {})
+        RecipeFilterSheetContent(
+            filters = RecipeFiltersUiState(),
+            instructionText = rememberTextFieldState(),
+            onAction = {},
+            onShowRecipes = {},
+        )
     }
 }

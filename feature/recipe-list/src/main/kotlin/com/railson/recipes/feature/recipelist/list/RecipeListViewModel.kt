@@ -108,9 +108,10 @@ internal class RecipeListViewModel(
         countDraft(after = Duration.ZERO)
     }
 
+    /** An edit that changes nothing doesn't count again, so the on-screen fields can send every change. */
     private fun changeDraft(change: RecipeListAction.DraftChange) {
         val before = draft.value
-        draft.value = when (change) {
+        val after = when (change) {
             is RecipeListAction.ToggleDietaryTag -> before.copy(dietaryTags = before.dietaryTags.toggle(change.tag))
             is RecipeListAction.ChangeServingsRange -> before.copy(servingsRange = change.range)
             is RecipeListAction.ToggleDifficulty ->
@@ -120,6 +121,8 @@ internal class RecipeListViewModel(
             is RecipeListAction.ChangeInstructionSearch -> before.copy(instructionSearch = change.text)
             RecipeListAction.ClearDraftFilters -> before.withoutFilters()
         }
+        if (after == before) return
+        draft.value = after
         if (change is RecipeListAction.AddIngredient) showMoved(before, change.word, change.side)
         countDraft(after = FILTER_COUNT_WAIT)
     }
