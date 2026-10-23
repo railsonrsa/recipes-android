@@ -19,6 +19,6 @@ rootProject.name = "recipes-android"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
-include(":core:ui", ":core:network")
+include(":core:ui", ":core:network", ":core:format")
 include(":recipes:domain", ":recipes:data")
 include(":feature:recipe-list", ":feature:recipe-detail")

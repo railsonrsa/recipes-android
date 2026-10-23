@@ -4,7 +4,7 @@ How the app is split into modules, what each module exposes, and how a screen is
 
 ## Modules
 
-Seven modules. They sit side by side in the repo. The folders `core/`, `recipes/` and `feature/` only group them.
+Eight modules. They sit side by side in the repo. The folders `core/`, `recipes/` and `feature/` only group them.
 
 ```
 recipes-android/
@@ -12,6 +12,7 @@ recipes-android/
 ├── build-logic/            convention plugins
 ├── core/
 │   ├── ui/                 :core:ui
+│   ├── format/             :core:format
 │   └── network/            :core:network
 ├── recipes/
 │   ├── domain/             :recipes:domain
@@ -26,7 +27,8 @@ Package prefix: `com.railson.recipes`.
 | Module | Role | Packages |
 |---|---|---|
 | `:app` | `MainActivity`, `NavHost`, starts Koin. The debug "Network" menu lives in its `debug` source set | |
-| `:core:ui` | Material 3 theme, DESIGN.md tokens, shared components, the `Duration` → text formatter | `theme/`, `components/`, `format/`, `preview/` |
+| `:core:ui` | Material 3 theme, DESIGN.md tokens, shared components | `theme/`, `components/`, `preview/` |
+| `:core:format` | Pure Kotlin. Turns recipe values into text: `Duration.formatTime()` and `formatQuantity(quantity, unit)` | `format/` |
 | `:core:network` | `OkHttpClient`, `Retrofit`, `Json`, `HttpLoggingInterceptor`, `FakeNetworkConfig`, `FakeNetworkModeInterceptor` | `client/`, `fake/`, `di/` |
 | `:recipes:domain` | Pure Kotlin. `Recipe` and its types, `SearchQuery` and its text normalization (shared by the move rule, the fake server and the cache key), `SearchResult`, `CallOutcome`, the `RecipeRepository` interface, the use cases | `model/`, `repository/`, `usecase/` |
 | `:recipes:data` | Room, `RecipesApi` (Retrofit), DTOs, `FakeRecipesInterceptor`, `FakeRecipeSearch`, the asset JSON, `RecipeRepository` implementation | `remote/`, `fake/`, `local/{database,dao,entity}`, `mapper/`, `repository/`, `di/` |
@@ -35,18 +37,21 @@ Package prefix: `com.railson.recipes`.
 
 What goes in `:core:network` and what stays in `:recipes:data`: anything that works for **any** API goes in `:core:network`. Anything that only makes sense for recipes stays in `:recipes:data`.
 
+What goes in `:core:format`: a format for a recipe value, like a time or a quantity, that takes plain types (`Duration`, `Double`, `String`). A text that belongs to one screen, like "N recipes", stays in that feature's string resources.
+
 ## Dependency rules
 
 ```
 :app ──▶ every module
 
 :feature:recipe-list   ─┐
-:feature:recipe-detail ─┴─▶ :recipes:domain, :core:ui
+:feature:recipe-detail ─┴─▶ :recipes:domain, :core:ui, :core:format
 
 :recipes:data ──▶ :recipes:domain, :core:network
 ```
 
-- A feature only sees `:recipes:domain` and `:core:ui`. A feature never depends on another feature.
+- A feature only sees `:recipes:domain`, `:core:ui` and `:core:format`. The `android-feature` convention plugin adds them. A feature never depends on another feature.
+- `:core:format` depends on no module.
 - `:recipes:data` and `:core:network` are never seen by a feature. Only `:app` wires them.
 - In `:recipes:data` everything is `internal`, except its Koin module.
 - In a feature everything is `internal`, except its navigation functions, its route and its Koin module.
@@ -126,7 +131,7 @@ Koin. Each module that provides objects has a Koin module in `di/`. `:app` start
 
 ## Build
 
-- Version catalog and convention plugins in `build-logic`: `android-library`, `android-feature`, `jvm-library`, plus `android-compose` (used by `:core:ui` and the features) and `android-application` (used by `:app`).
+- Version catalog and convention plugins in `build-logic`: `android-library`, `android-feature`, `jvm-library` (used by `:recipes:domain` and `:core:format`), plus `android-compose` (used by `:core:ui` and the features) and `android-application` (used by `:app`).
 - `minSdk 26`, `compileSdk 36`, `targetSdk 36`. JDK 17.
 - AGP 8.13 and Kotlin 2.4. AGP 9 waits for a detekt release that supports it. AndroidX libraries stay on the last versions that build with AGP 8 and `compileSdk 36` (Compose BOM 2026.06.01, lifecycle 2.10, navigation 2.9).
 - No product flavors.

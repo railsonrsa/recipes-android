@@ -23,9 +23,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.railson.recipes.core.format.formatTime
 import com.railson.recipes.core.ui.components.DifficultyBars
 import com.railson.recipes.core.ui.components.RecipeImage
-import com.railson.recipes.core.ui.format.formatTime
 import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing

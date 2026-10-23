@@ -35,7 +35,7 @@ Derived values:
 ## Time
 
 - Every time value from the backend is in **seconds**: `prepTimeSeconds`, `cookTimeSeconds`, `durationSeconds`. The domain holds `kotlin.time.Duration`.
-- One formatting util turns a `Duration` into text. It shows at most **2 units**, the largest first, skips zero units and drops the rest. No space between a value and its unit; a space only between two units:
+- One formatting util, `formatTime()` in `:core:format`, turns a `Duration` into text. It shows at most **2 units**, the largest first, skips zero units and drops the rest. No space between a value and its unit; a space only between two units:
   - 30 s → "30s"
   - 90 s → "1m 30s"
   - 3600 s → "1h"
@@ -47,7 +47,7 @@ Derived values:
 
 - The reader picks the scaled servings, from 1 to 20.
 - The domain scales every ingredient quantity by `scaledServings / servings`. This includes `pinch` and quantities with no unit.
-- The UI formats the result: ¼, ½, ¾, 1½, otherwise up to 1 decimal place, and "pinch" or "pinches", "cup" or "cups".
+- The UI formats the result with `formatQuantity()` from `:core:format`: ¼, ½, ¾, 1½, otherwise up to 1 decimal place, and "pinch" or "pinches", "cup" or "cups".
 
 ## Search
 

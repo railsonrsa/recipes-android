@@ -1,10 +1,10 @@
-package com.railson.recipes.feature.recipedetail.detail
+package com.railson.recipes.core.format
 
 import java.util.Locale
 import kotlin.math.roundToLong
 
 /** "½", "1½", "1.3", "2", then the unit after a space: "2 pinches", "1 cup" (DESIGN.md 4, Data → UI rules). */
-internal fun formatQuantity(quantity: Double, unit: String?): String {
+fun formatQuantity(quantity: Double, unit: String?): String {
     val number = quantity.fractionOrNull() ?: quantity.oneDecimal()
     val plural = quantity > 1 && number != "1"
     val shownUnit = if (plural) Plurals[unit] ?: unit else unit

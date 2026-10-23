@@ -59,7 +59,7 @@ Never mock Room, OkHttp or Retrofit.
 Write the failing test first for the pure rules:
 
 - `SearchQuery`: a word moving between included and excluded, the active filter count.
-- `searchKey` (`:recipes:data`): text trimmed, lower-cased and accent-stripped. It lives in the data module because accent stripping needs `java.text.Normalizer`, which the domain can't use.
+- `searchKey` (`:recipes:data`): text trimmed, lower-cased and accent-stripped by `normalizedForSearch()` from `:recipes:domain`, the same key for the same search in any order.
 - `FakeRecipeSearch.run`: every matching rule in [domain.md](domain.md#search), paging and `pagination`.
 - The `Duration` formatter: 30s, 1m, 1m 30s, 1h, 1h 30m.
 - Servings scaling, and the quantity formatter: ¼, ½, ¾, 1½, pinches and cups.
@@ -73,8 +73,8 @@ Everywhere else, tests come in the same change as the code.
 | `:recipes:domain` | `SearchQuery` rules, servings scaling. Use cases only forward the call, so they have no tests |
 | `:recipes:data` | `FakeRecipeSearch.run`, `searchKey`. DTO → domain mappers. The repository with in-memory Room, real Retrofit and OkHttp and the fake interceptors: the `CallOutcome` for each fake network mode, and the refresh and next-page transactions |
 | `:core:network` | `FakeNetworkModeInterceptor`: each mode throws the right exception or answers the right status |
-| `:core:ui` | The `Duration` formatter |
-| `:feature:recipe-list`, `:feature:recipe-detail` | The quantity formatter (detail). ViewModels with `FakeRecipeRepository`, real use cases and Turbine: each `XAction` gives the expected `XUiState` and `XEffect` |
+| `:core:format` | The `Duration` formatter and the quantity formatter |
+| `:feature:recipe-list`, `:feature:recipe-detail` | ViewModels with `FakeRecipeRepository`, real use cases and Turbine: each `XAction` gives the expected `XUiState` and `XEffect` |
 | `:app` | None |
 
 ## Not in this version
