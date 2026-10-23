@@ -58,10 +58,10 @@ These rules are kept by review. No tool checks them yet.
 It is a Kotlin/JVM module with no Android plugin. Inside it:
 
 - no `android.*`;
-- no `java.*` (no `java.util.UUID`, no `java.time`). Use `String`, `kotlin.time.Duration`, and so on;
+- no `java.*` (no `java.util.UUID`, no `java.time`). Use `String`, `kotlin.time.Duration`, and so on. One exception: `normalizedForSearch()` uses `java.text.Normalizer` to strip accents;
 - only libraries that also exist for Kotlin Multiplatform: `kotlinx.coroutines`.
 
-So the module could move to Kotlin Multiplatform later without changes. The app stays native Android.
+So the module could move to Kotlin Multiplatform later with one change: `normalizedForSearch()` becomes an `expect` function with one `actual` per platform. The app stays native Android.
 
 ## Public use cases
 
