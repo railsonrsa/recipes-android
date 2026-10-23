@@ -28,12 +28,6 @@ import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipedetail.R
 import com.railson.recipes.core.ui.R as CoreUiR
 
-/** Room answers in a moment, so an empty panel shows instead of a spinner that would only flash. */
-@Composable
-internal fun RecipeDetailLoading(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize())
-}
-
 /** The id was never saved, so there is nothing to show (docs/specs/architecture.md, Recipe not in Room). */
 @Composable
 internal fun RecipeDetailNotAvailable(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -74,12 +68,6 @@ internal fun RecipeDetailNotAvailable(onBack: () -> Unit, modifier: Modifier = M
         Spacer(Modifier.height(Spacing.xl))
         Button(onClick = onBack) { Text(stringResource(R.string.recipe_detail_back)) }
     }
-}
-
-@ThemePreviews
-@Composable
-private fun RecipeDetailLoadingPreview() {
-    RecipesTheme { RecipeDetailLoading() }
 }
 
 @ThemePreviews

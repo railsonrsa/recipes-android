@@ -184,11 +184,13 @@ Where the brief leaves room, these are the choices:
 - **The module rules are kept by review.** No tool checks that a feature never depends on the data layer.
 - **"Pão" and "pao" are two searches for the ViewModel but one for the cache.** They share saved results, but switching between them makes one extra call.
 - **An unknown difficulty shows "–"** in the detail's Level stat, and no difficulty on the card.
+- **The detail screen can't load a recipe on its own.** It reads only Room, and the API has no route for one recipe. There are no deep links, but if one opened the detail with an id that was never saved, it would show "Recipe not available" ([architecture.md](docs/specs/architecture.md#recipe-not-in-room)).
 
 ## With more time
 
 - Sorting (Recommended, Top rated, Quickest, A–Z).
 - A two-pane list and detail on tablets and foldables.
+- Deep links to a recipe: a `GET /recipes/{id}` route, so the detail fetches and saves a recipe that isn't in Room yet.
 - Skeleton loading on the first load, instead of the spinner.
 - "Remove X filter · N recipes" suggestions when a search has no results.
 - Monitoring: one event per API call. The named call outcomes are ready for it.
