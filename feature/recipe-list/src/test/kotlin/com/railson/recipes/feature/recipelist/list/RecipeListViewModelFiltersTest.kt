@@ -280,9 +280,20 @@ class RecipeListViewModelFiltersTest {
     }
 
     @Test
-    fun `excluded word moves to included when added there, and a snackbar says so`() = runTest {
+    fun `excluded word moves to included when added there`() = runTest {
         val viewModel = viewModel()
         val filters = filtersOf(viewModel)
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        viewModel.onAction(RecipeListAction.AddIngredient("garlic", IngredientSide.Excluded))
+
+        viewModel.onAction(RecipeListAction.AddIngredient("Garlic", IngredientSide.Included))
+
+        assertThat(filters.value.draft).isEqualTo(SearchQuery(includedIngredients = setOf("Garlic")))
+    }
+
+    @Test
+    fun `a word that moves shows the moved snackbar`() = runTest {
+        val viewModel = viewModel()
         viewModel.onAction(RecipeListAction.OpenFilters)
         viewModel.onAction(RecipeListAction.AddIngredient("garlic", IngredientSide.Excluded))
 
@@ -291,7 +302,6 @@ class RecipeListViewModelFiltersTest {
 
             assertThat(awaitItem()).isEqualTo(RecipeListEffect.ShowIngredientMoved("Garlic", IngredientSide.Included))
         }
-        assertThat(filters.value.draft).isEqualTo(SearchQuery(includedIngredients = setOf("Garlic")))
     }
 
     @Test
@@ -355,20 +365,31 @@ class RecipeListViewModelFiltersTest {
     }
 
     @Test
-    fun `removing an ingredient chip or the steps chip searches without it`() = runTest {
+    fun `removing an ingredient chip searches without it`() = runTest {
         val viewModel = viewModel()
+        applyIngredientAndSteps(viewModel)
+
+        viewModel.onAction(RecipeListAction.RemoveFilter(ActiveFilter.IncludedIngredient("basil")))
+
+        assertThat(repository.refreshed.last()).isEqualTo(SearchQuery(instructionSearch = "oven"))
+    }
+
+    @Test
+    fun `removing the steps chip searches without the instruction search`() = runTest {
+        val viewModel = viewModel()
+        applyIngredientAndSteps(viewModel)
+
+        viewModel.onAction(RecipeListAction.RemoveFilter(ActiveFilter.InstructionSearch("oven")))
+
+        assertThat(repository.refreshed.last()).isEqualTo(SearchQuery(includedIngredients = setOf("basil")))
+    }
+
+    /** Applies the included ingredient "basil" and the instruction search "oven". */
+    private fun applyIngredientAndSteps(viewModel: RecipeListViewModel) {
         viewModel.onAction(RecipeListAction.OpenFilters)
         viewModel.onAction(RecipeListAction.AddIngredient("basil", IngredientSide.Included))
         viewModel.onAction(RecipeListAction.ChangeInstructionSearch("oven"))
         viewModel.onAction(RecipeListAction.ShowRecipes)
-
-        viewModel.onAction(RecipeListAction.RemoveFilter(ActiveFilter.IncludedIngredient("basil")))
-        viewModel.onAction(RecipeListAction.RemoveFilter(ActiveFilter.InstructionSearch("oven")))
-
-        assertThat(repository.refreshed.takeLast(2)).containsExactly(
-            SearchQuery(instructionSearch = "oven"),
-            SearchQuery.Catalog,
-        ).inOrder()
     }
 
     private fun applyFilters(viewModel: RecipeListViewModel, vararg tags: DietaryTag) {

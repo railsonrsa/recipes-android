@@ -39,7 +39,8 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
@@ -69,37 +70,13 @@ internal fun RecipeListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     // The sheet is its own window over the screen, so its snackbars need their own host.
     val sheetSnackbarHostState = remember { SnackbarHostState() }
-    val resources = LocalResources.current
-    val offlineMessage = stringResource(R.string.recipe_list_snackbar_offline)
-    val refreshFailedMessage = stringResource(R.string.recipe_list_snackbar_refresh_failed)
-    val retry = stringResource(R.string.recipe_list_retry)
-    val currentOnRecipeClick by rememberUpdatedState(onRecipeClick)
     // The text lives on screen, so typing never waits for the ViewModel. The ViewModel gets each change.
     val searchText = rememberTextFieldState()
     LaunchedEffect(searchText, viewModel) {
         snapshotFlow { searchText.text.toString() }
             .collect { viewModel.onAction(RecipeListAction.ChangeSearchText(it)) }
     }
-    LaunchedEffect(viewModel) {
-        // A new snackbar replaces the one on screen: cancelling showSnackbar dismisses it.
-        viewModel.effects.collectLatest { effect ->
-            val message = when (effect) {
-                RecipeListEffect.ShowOfflineSnackbar -> offlineMessage
-                RecipeListEffect.ShowRefreshFailedSnackbar -> refreshFailedMessage
-                is RecipeListEffect.OpenRecipe -> {
-                    currentOnRecipeClick(effect.id)
-                    return@collectLatest
-                }
-                is RecipeListEffect.ShowIngredientMoved -> {
-                    sheetSnackbarHostState.showSnackbar(resources.getString(effect.side.movedMessage, effect.word))
-                    return@collectLatest
-                }
-            }
-            // With an action, the default duration is Indefinite.
-            val result = snackbarHostState.showSnackbar(message, actionLabel = retry, duration = SnackbarDuration.Long)
-            if (result == SnackbarResult.ActionPerformed) viewModel.onAction(RecipeListAction.Refresh)
-        }
-    }
+    RecipeListEffects(viewModel, snackbarHostState, sheetSnackbarHostState, onRecipeClick)
     val showsList = uiState is RecipeListUiState.Content
     LaunchedEffect(showsList) {
         // The snackbars are about the saved list. Another state says it all on its own.
@@ -123,6 +100,53 @@ internal fun RecipeListScreen(
             onAction = viewModel::onAction,
             onDismiss = { showFilters = false },
         )
+    }
+}
+
+/** Shows the snackbars, on the screen or in the sheet, and leaves for a recipe. */
+@Composable
+private fun RecipeListEffects(
+    viewModel: RecipeListViewModel,
+    snackbarHostState: SnackbarHostState,
+    sheetSnackbarHostState: SnackbarHostState,
+    onRecipeClick: (String) -> Unit,
+) {
+    val resources = LocalResources.current
+    val retry = stringResource(R.string.recipe_list_retry)
+    val currentOnRecipeClick by rememberUpdatedState(onRecipeClick)
+    LaunchedEffect(viewModel) {
+        // A new snackbar replaces the one on its host: cancelling showSnackbar dismisses it.
+        // Each host has its own job, so the sheet's snackbar never dismisses the list's.
+        var listSnackbar: Job? = null
+        var sheetSnackbar: Job? = null
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                RecipeListEffect.ShowOfflineSnackbar, RecipeListEffect.ShowRefreshFailedSnackbar -> {
+                    val message = if (effect == RecipeListEffect.ShowOfflineSnackbar) {
+                        resources.getString(R.string.recipe_list_snackbar_offline)
+                    } else {
+                        resources.getString(R.string.recipe_list_snackbar_refresh_failed)
+                    }
+                    listSnackbar?.cancel()
+                    listSnackbar = launch {
+                        // With an action, the default duration is Indefinite.
+                        val result = snackbarHostState.showSnackbar(
+                            message,
+                            actionLabel = retry,
+                            duration = SnackbarDuration.Long,
+                        )
+                        if (result == SnackbarResult.ActionPerformed) viewModel.onAction(RecipeListAction.Refresh)
+                    }
+                }
+                is RecipeListEffect.ShowIngredientMoved -> {
+                    sheetSnackbar?.cancel()
+                    sheetSnackbar = launch {
+                        sheetSnackbarHostState.showSnackbar(resources.getString(effect.side.movedMessage, effect.word))
+                    }
+                }
+                is RecipeListEffect.OpenRecipe -> currentOnRecipeClick(effect.id)
+            }
+        }
     }
 }
 
