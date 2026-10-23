@@ -65,15 +65,14 @@ flowchart TB
   subgraph DA["Data: :recipes:data"]
     R["OfflineFirstRecipeRepository"] --> DB[("Room: saved results per search")]
     R --> API["RecipesApi (Retrofit)"]
-    FAKE["FakeRecipesInterceptor: answers from the recipes JSON asset"]
   end
   subgraph N["Network: :core:network"]
     OK["OkHttp + logging"] --> MODE["FakeNetworkModeInterceptor: debug network modes"]
   end
   VM --> UC
-  R -. implements .-> RI
+  RI <-. implements .- R
   API --> OK
-  MODE --> FAKE
+  MODE --> FAKE["FakeRecipesInterceptor, in :recipes:data: answers from the recipes JSON asset"]
 ```
 
 Who depends on whom:
