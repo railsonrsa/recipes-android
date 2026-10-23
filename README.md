@@ -138,6 +138,18 @@ Each one was settled in its own issue before any code, then written into a spec.
 
 The design lives in [docs/DESIGN.md](docs/DESIGN.md). The plan lives in the issues: [decision map #1](https://github.com/railsonrsa/recipes-android/issues/1) and [implementation map #17](https://github.com/railsonrsa/recipes-android/issues/17).
 
+## Development progress
+
+First the decisions, then the app one slice at a time, from an empty themed screen to paging. Every slice is an issue of the implementation map, built as small stacked pull requests with screenshots attached.
+
+| [#18 Skeleton](docs/progress.md#skeleton-18) | [#20 Cards](docs/progress.md#recipe-cards-20) | [#21 Offline and errors](docs/progress.md#loading-errors-and-offline-21) | [#22 Detail](docs/progress.md#recipe-detail-22) |
+| :---: | :---: | :---: | :---: |
+| <img width="160" alt="Empty themed screen" src="https://github.com/user-attachments/assets/4ac10617-6e11-498d-8421-ba087c701477" /> | <img width="160" alt="Recipe cards" src="https://github.com/user-attachments/assets/2813dc1e-bbb3-4267-8655-4416dc619d6d" /> | <img width="160" alt="Debug network menu" src="https://github.com/user-attachments/assets/64abf735-04a6-4a83-937f-c2df3faadd44" /> | <img width="160" alt="Recipe detail" src="https://github.com/user-attachments/assets/8bb36ce1-c44a-4a27-8dce-02b2dfa5321d" /> |
+| [**#23 Search**](docs/progress.md#search-by-text-23) | [**#24 Filters**](docs/progress.md#filters-24) | [**#25 Ingredients**](docs/progress.md#ingredients-and-instructions-25) | [**#26 Load more**](docs/progress.md#load-more-26) |
+| <img width="160" alt="Search for pão" src="https://github.com/user-attachments/assets/215d2a8d-55f2-410b-aa8e-da61a6ccc1f9" /> | <img width="160" alt="Filter sheet" src="https://github.com/user-attachments/assets/5e59febf-c40b-4f06-a5ab-0b1c742df044" /> | <img width="160" alt="List with ingredient filter chips" src="https://github.com/user-attachments/assets/b0bf64e5-f982-4da8-9f61-7f2ac0f69c47" /> | <img width="160" alt="Load more failed with retry" src="https://github.com/user-attachments/assets/1ddc600a-a895-4985-a216-62f06a895950" /> |
+
+Every slice with all its screenshots and videos: [docs/progress.md](docs/progress.md).
+
 ## Tradeoffs and limitations
 
 - **A search never made before shows the Offline screen when there's no network.** The saved recipes are not filtered on the device, so the app only shows results the server gave ([ADR 0001](docs/adr/0001-cache-server-results-per-search.md)).
