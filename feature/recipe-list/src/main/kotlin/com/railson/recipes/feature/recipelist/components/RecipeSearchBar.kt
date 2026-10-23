@@ -1,6 +1,8 @@
 package com.railson.recipes.feature.recipelist.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
@@ -12,6 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -24,11 +28,18 @@ import com.railson.recipes.feature.recipelist.R
 
 private const val DISABLED_ALPHA = 0.38f
 
-/** The search bar (DESIGN.md 2). It never expands: the list under it is the result. */
+/**
+ * The search bar (DESIGN.md 2). It never expands: the list under it is the result.
+ * While the reader types, it stays enabled even when [enabled] is false: disabling a focused
+ * field moves the focus away and drops what comes next.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RecipeSearchBar(state: TextFieldState, enabled: Boolean, modifier: Modifier = Modifier) {
     val keyboard = LocalSoftwareKeyboardController.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val focused by interactionSource.collectIsFocusedAsState()
+    val fieldEnabled = enabled || focused
     val colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)
     DockedSearchBar(
         inputField = {
@@ -38,7 +49,8 @@ internal fun RecipeSearchBar(state: TextFieldState, enabled: Boolean, modifier: 
                 onSearch = { keyboard?.hide() },
                 expanded = false,
                 onExpandedChange = {},
-                enabled = enabled,
+                enabled = fieldEnabled,
+                interactionSource = interactionSource,
                 textStyle = MaterialTheme.typography.bodyLarge,
                 placeholder = { Text(stringResource(R.string.recipe_list_search_placeholder)) },
                 leadingIcon = { Icon(painterResource(R.drawable.ic_search), contentDescription = null) },
@@ -54,7 +66,7 @@ internal fun RecipeSearchBar(state: TextFieldState, enabled: Boolean, modifier: 
         tonalElevation = 0.dp,
         modifier = modifier
             .fillMaxWidth()
-            .alpha(if (enabled) 1f else DISABLED_ALPHA)
+            .alpha(if (fieldEnabled) 1f else DISABLED_ALPHA)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
     ) {}
 }
