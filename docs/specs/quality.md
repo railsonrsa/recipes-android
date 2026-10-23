@@ -59,7 +59,7 @@ Never mock Room, OkHttp or Retrofit.
 Write the failing test first for the pure rules:
 
 - `SearchQuery`: a word moving between included and excluded, the active filter count.
-- `searchKey` (`:recipes:data`): text trimmed, lower-cased and accent-stripped. It lives in the data module because accent stripping needs `java.text.Normalizer`, which the domain can't use.
+- `searchKey` (`:recipes:data`): text trimmed, lower-cased and accent-stripped by `normalizedForSearch()` from `:recipes:domain`, the same key for the same search in any order.
 - `FakeRecipeSearch.run`: every matching rule in [domain.md](domain.md#search), paging and `pagination`.
 - The `Duration` formatter: 30s, 1m, 1m 30s, 1h, 1h 30m.
 - Servings scaling, and the quantity formatter: ¼, ½, ¾, 1½, pinches and cups.
