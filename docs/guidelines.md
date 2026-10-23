@@ -11,7 +11,7 @@ How code is written and changed in this repo. What to build is in [specs/](specs
 ## Kotlin
 
 - Official Kotlin style. detekt and lint decide the rest ([quality.md](specs/quality.md)).
-- `internal` by default. Only what [architecture.md](specs/architecture.md) lists as public (models, use cases, navigation functions, Koin modules, the clients `:core:network` builds for other modules, and the `:core:ui` theme, components and formatters) is `public`.
+- `internal` by default. Only what [architecture.md](specs/architecture.md) lists as public (models, use cases, navigation functions, Koin modules, the clients `:core:network` builds for other modules, the `:core:ui` theme and components, and the `:core:format` formats) is `public`.
 - No `!!`. Model the missing case instead (a nullable type, an empty list, a state).
 - UI state and domain models are immutable `data class`es with `val`s and read-only collections.
 - Room and Retrofit are main-safe. Call them from `viewModelScope` without `withContext`.

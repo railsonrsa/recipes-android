@@ -51,7 +51,7 @@ The same command CI runs on every pull request:
 
 ## Architecture
 
-Seven modules. Features only see the domain and the UI kit, never the data layer and never each other. `:app` wires everything together.
+Eight modules. Features only see the domain, the UI kit and the formatters, never the data layer and never each other. `:app` wires everything together.
 
 ```mermaid
 flowchart TB
@@ -89,6 +89,8 @@ flowchart LR
   detail --> domain
   list --> ui[":core:ui"]
   detail --> ui
+  list --> format[":core:format"]
+  detail --> format
   data --> domain
   data --> net[":core:network"]
 ```
@@ -96,12 +98,13 @@ flowchart LR
 | Module | What's inside |
 |---|---|
 | `:app` | `MainActivity`, navigation, Koin setup, the debug Network menu |
-| `:core:ui` | Material 3 theme from [DESIGN.md](docs/DESIGN.md), shared components, the time format |
+| `:core:ui` | Material 3 theme from [DESIGN.md](docs/DESIGN.md), shared components |
+| `:core:format` | The time and quantity formats. Pure Kotlin, no module dependencies |
 | `:core:network` | OkHttp, Retrofit, JSON, logging, the network mode interceptor |
 | `:recipes:domain` | `Recipe`, `SearchQuery`, the repository interface and the 5 use cases. No Android; only `java.text.Normalizer` from the JDK |
 | `:recipes:data` | Room, the Retrofit API, DTOs, the fake server, the repository |
 | `:feature:recipe-list` | List screen, search bar, filter sheet |
-| `:feature:recipe-detail` | Detail screen, servings scaling and the quantity format |
+| `:feature:recipe-detail` | Detail screen and servings scaling |
 
 ### Offline first
 
@@ -138,6 +141,7 @@ Each one was settled in its own issue before any code, then written into a spec.
 | detekt and lint with default rules fail the build; test first for the pure rules | Strict from day one, with no config to maintain | [#7](https://github.com/railsonrsa/recipes-android/issues/7), [quality.md](docs/specs/quality.md) |
 | `AGENTS.md` as the entry point for AI agents, specs as the source of truth | Every change starts from the same docs, and fixes them when the code proves them wrong | [#8](https://github.com/railsonrsa/recipes-android/issues/8), [AGENTS.md](AGENTS.md), [guidelines.md](docs/guidelines.md) |
 | Manual paging instead of Paging 3 | Results are saved per search, which a small hand-written pager handles simply | [#26](https://github.com/railsonrsa/recipes-android/issues/26), [data.md](docs/specs/data.md) |
+| The time and quantity formats in their own pure Kotlin module, `:core:format` | Any feature can format a recipe value the same way, and the formats are tested with no Android | [#72](https://github.com/railsonrsa/recipes-android/issues/72), [architecture.md](docs/specs/architecture.md) |
 
 The design lives in [docs/DESIGN.md](docs/DESIGN.md). The plan lives in the issues: [decision map #1](https://github.com/railsonrsa/recipes-android/issues/1) and [implementation map #17](https://github.com/railsonrsa/recipes-android/issues/17).
 
@@ -196,6 +200,7 @@ Where the brief leaves room, these are the choices:
 - Monitoring: one event per API call. The named call outcomes are ready for it.
 - Offline results for a search never made before, by filtering the saved recipes on the device, labeled as possibly incomplete.
 - A Koin `verify()` test for the dependency graph, and a tool that checks the module rules.
+- Translated units and plurals. The formats in `:core:format` build English text in code.
 - ktlint, Compose rules for detekt, stricter detekt and lint configs, minimum coverage with Kover, screenshot tests with Roborazzi, Compose UI tests.
 
 ## Kotlin Multiplatform, later
