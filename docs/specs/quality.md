@@ -75,6 +75,7 @@ Everywhere else, tests come in the same change as the code.
 | `:core:network` | `FakeNetworkModeInterceptor`: each mode throws the right exception or answers the right status |
 | `:core:format` | The `Duration` formatter and the quantity formatter |
 | `:feature:recipe-list`, `:feature:recipe-detail` | ViewModels with `FakeRecipeRepository`, real use cases and Turbine: each `XAction` gives the expected `XUiState` and `XEffect` |
+| `:recipes:ui` | None. One `when` per value, seen in the feature previews |
 | `:app` | None |
 
 ## Not in this version

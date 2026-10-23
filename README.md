@@ -51,11 +51,11 @@ The same command CI runs on every pull request:
 
 ## Architecture
 
-Eight modules. Features only see the domain, the UI kit and the formatters, never the data layer and never each other. `:app` wires everything together.
+Nine modules. Features only see the domain and its UI labels, the UI kit and the formatters, never the data layer and never each other. `:app` wires everything together.
 
 ```mermaid
 flowchart TB
-  subgraph P["Presentation: :feature:recipe-list, :feature:recipe-detail"]
+  subgraph P["Presentation: :feature:recipe-list, :feature:recipe-detail, :recipes:ui"]
     S["Compose screens"] -->|Action| VM["ViewModels"]
     VM -->|UiState| S
   end
@@ -91,6 +91,10 @@ flowchart LR
   detail --> ui
   list --> format[":core:format"]
   detail --> format
+  list --> rui[":recipes:ui"]
+  detail --> rui
+  rui --> domain
+  rui --> ui
   data --> domain
   data --> net[":core:network"]
 ```
@@ -103,6 +107,7 @@ flowchart LR
 | `:core:network` | OkHttp, Retrofit, JSON, logging, the network mode interceptor |
 | `:recipes:domain` | `Recipe`, `SearchQuery`, the repository interface and the 5 use cases. No Android; only `java.text.Normalizer` from the JDK |
 | `:recipes:data` | Room, the Retrofit API, DTOs, the fake server, the repository |
+| `:recipes:ui` | How the diet tags and the difficulty show on screen: order, labels, colors and bars. Shared by both features |
 | `:feature:recipe-list` | List screen, search bar, filter sheet |
 | `:feature:recipe-detail` | Detail screen and servings scaling |
 
@@ -141,7 +146,7 @@ Each one was settled in its own issue before any code, then written into a spec.
 | detekt and lint with default rules fail the build; test first for the pure rules | Strict from day one, with no config to maintain | [#7](https://github.com/railsonrsa/recipes-android/issues/7), [quality.md](docs/specs/quality.md) |
 | `AGENTS.md` as the entry point for AI agents, specs as the source of truth | Every change starts from the same docs, and fixes them when the code proves them wrong | [#8](https://github.com/railsonrsa/recipes-android/issues/8), [AGENTS.md](AGENTS.md), [guidelines.md](docs/guidelines.md) |
 | Manual paging instead of Paging 3 | Results are saved per search, which a small hand-written pager handles simply | [#26](https://github.com/railsonrsa/recipes-android/issues/26), [data.md](docs/specs/data.md) |
-| The time and quantity formats in their own pure Kotlin module, `:core:format` | Any feature can format a recipe value the same way, and the formats are tested with no Android | [#72](https://github.com/railsonrsa/recipes-android/issues/72), [architecture.md](docs/specs/architecture.md) |
+| The time and quantity formats in their own pure Kotlin module, `:core:format`; the diet tag and difficulty labels in `:recipes:ui` | Any feature formats and labels a recipe value the same way, written once. The formats are tested with no Android | [#72](https://github.com/railsonrsa/recipes-android/issues/72), [architecture.md](docs/specs/architecture.md) |
 
 The design lives in [docs/DESIGN.md](docs/DESIGN.md). The plan lives in the issues: [decision map #1](https://github.com/railsonrsa/recipes-android/issues/1) and [implementation map #17](https://github.com/railsonrsa/recipes-android/issues/17).
 
