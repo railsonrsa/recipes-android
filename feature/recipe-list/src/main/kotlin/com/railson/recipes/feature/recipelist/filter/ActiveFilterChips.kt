@@ -21,12 +21,12 @@ import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipelist.R
-import com.railson.recipes.feature.recipelist.components.color
-import com.railson.recipes.feature.recipelist.components.label
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.Difficulty
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.ServingsRange
+import com.railson.recipes.recipes.ui.color
+import com.railson.recipes.recipes.ui.label
 
 /** The applied filters under the search bar (DESIGN.md 2, Active filter). Tapping one removes it. */
 @Composable

@@ -31,8 +31,11 @@ import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipedetail.R
 import com.railson.recipes.recipes.domain.model.Difficulty
 import com.railson.recipes.recipes.domain.model.Recipe
+import com.railson.recipes.recipes.ui.filledBars
+import com.railson.recipes.recipes.ui.label
 import java.util.Locale
 import com.railson.recipes.core.ui.R as CoreUiR
+import com.railson.recipes.recipes.ui.R as RecipesUiR
 
 /** Prep, Cook, Level and Rating, 4 equal boxes (DESIGN.md 2, Stat box). */
 @Composable
@@ -72,9 +75,9 @@ internal fun StatBoxes(
             modifier = boxModifier,
         ) {
             DifficultyBars(
-                filledBars = difficulty?.bars ?: 0,
+                filledBars = difficulty?.filledBars ?: 0,
                 contentDescription = level?.let {
-                    stringResource(CoreUiR.string.difficulty_description, it.lowercase())
+                    stringResource(RecipesUiR.string.difficulty_description, it.lowercase())
                 }.orEmpty(),
             )
         }
@@ -120,21 +123,6 @@ private fun StatBox(
 private fun StatIcon(@DrawableRes icon: Int) {
     Icon(painter = painterResource(icon), contentDescription = null, modifier = Modifier.size(24.dp))
 }
-
-private val Difficulty.label: Int
-    get() = when (this) {
-        Difficulty.Easy -> CoreUiR.string.difficulty_easy
-        Difficulty.Medium -> CoreUiR.string.difficulty_medium
-        Difficulty.Hard -> CoreUiR.string.difficulty_hard
-    }
-
-@Suppress("MagicNumber") // Filled bars per difficulty, DESIGN.md 2.
-private val Difficulty.bars: Int
-    get() = when (this) {
-        Difficulty.Easy -> 1
-        Difficulty.Medium -> 2
-        Difficulty.Hard -> 3
-    }
 
 @ThemePreviews
 @Composable

@@ -20,5 +20,5 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 include(":core:ui", ":core:network", ":core:format")
-include(":recipes:domain", ":recipes:data")
+include(":recipes:domain", ":recipes:data", ":recipes:ui")
 include(":feature:recipe-list", ":feature:recipe-detail")

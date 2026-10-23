@@ -4,7 +4,7 @@ How the app is split into modules, what each module exposes, and how a screen is
 
 ## Modules
 
-Eight modules. They sit side by side in the repo. The folders `core/`, `recipes/` and `feature/` only group them.
+Nine modules. They sit side by side in the repo. The folders `core/`, `recipes/` and `feature/` only group them.
 
 ```
 recipes-android/
@@ -16,7 +16,8 @@ recipes-android/
 │   └── network/            :core:network
 ├── recipes/
 │   ├── domain/             :recipes:domain
-│   └── data/               :recipes:data
+│   ├── data/               :recipes:data
+│   └── ui/                 :recipes:ui
 └── feature/
     ├── recipe-list/        :feature:recipe-list
     └── recipe-detail/      :feature:recipe-detail
@@ -32,6 +33,7 @@ Package prefix: `com.railson.recipes`.
 | `:core:network` | `OkHttpClient`, `Retrofit`, `Json`, `HttpLoggingInterceptor`, `FakeNetworkConfig`, `FakeNetworkModeInterceptor` | `client/`, `fake/`, `di/` |
 | `:recipes:domain` | Pure Kotlin. `Recipe` and its types, `SearchQuery` and its text normalization (shared by the move rule, the fake server and the cache key), `SearchResult`, `CallOutcome`, the `RecipeRepository` interface, the use cases | `model/`, `repository/`, `usecase/` |
 | `:recipes:data` | Room, `RecipesApi` (Retrofit), DTOs, `FakeRecipesInterceptor`, `FakeRecipeSearch`, the asset JSON, `RecipeRepository` implementation | `remote/`, `fake/`, `local/{database,dao,entity}`, `mapper/`, `repository/`, `di/` |
+| `:recipes:ui` | How recipe values show on screen in every feature: the diet tag display order, label and color, the difficulty label and bar count | |
 | `:feature:recipe-list` | List screen and filter sheet | `navigation/`, `list/`, `filter/`, `components/`, `di/` |
 | `:feature:recipe-detail` | Detail screen | `navigation/`, `detail/`, `components/`, `di/` |
 
@@ -39,18 +41,22 @@ What goes in `:core:network` and what stays in `:recipes:data`: anything that wo
 
 What goes in `:core:format`: a format for a recipe value, like a time or a quantity, that takes plain types (`Duration`, `Double`, `String`). A text that belongs to one screen, like "N recipes", stays in that feature's string resources.
 
+What goes in `:recipes:ui`: how a recipe value shows on screen when more than one feature shows it, like a diet tag's label and color. UI that works for any app, like the theme or `DifficultyBars`, stays in `:core:ui`.
+
 ## Dependency rules
 
 ```
 :app ──▶ every module
 
 :feature:recipe-list   ─┐
-:feature:recipe-detail ─┴─▶ :recipes:domain, :core:ui, :core:format
+:feature:recipe-detail ─┴─▶ :recipes:domain, :recipes:ui, :core:ui, :core:format
+
+:recipes:ui ──▶ :recipes:domain, :core:ui
 
 :recipes:data ──▶ :recipes:domain, :core:network
 ```
 
-- A feature only sees `:recipes:domain`, `:core:ui` and `:core:format`. The `android-feature` convention plugin adds them. A feature never depends on another feature.
+- A feature only sees `:recipes:domain`, `:recipes:ui`, `:core:ui` and `:core:format`. The `android-feature` convention plugin adds them. A feature never depends on another feature.
 - `:core:format` depends on no module.
 - `:recipes:data` and `:core:network` are never seen by a feature. Only `:app` wires them.
 - In `:recipes:data` everything is `internal`, except its Koin module.
@@ -131,7 +137,7 @@ Koin. Each module that provides objects has a Koin module in `di/`. `:app` start
 
 ## Build
 
-- Version catalog and convention plugins in `build-logic`: `android-library`, `android-feature`, `jvm-library` (used by `:recipes:domain` and `:core:format`), plus `android-compose` (used by `:core:ui` and the features) and `android-application` (used by `:app`).
+- Version catalog and convention plugins in `build-logic`: `android-library`, `android-feature`, `jvm-library` (used by `:recipes:domain` and `:core:format`), plus `android-compose` (used by `:core:ui`, `:recipes:ui` and the features) and `android-application` (used by `:app`).
 - `minSdk 26`, `compileSdk 36`, `targetSdk 36`. JDK 17.
 - AGP 8.13 and Kotlin 2.4. AGP 9 waits for a detekt release that supports it. AndroidX libraries stay on the last versions that build with AGP 8 and `compileSdk 36` (Compose BOM 2026.06.01, lifecycle 2.10, navigation 2.9).
 - No product flavors.

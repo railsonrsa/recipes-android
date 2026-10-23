@@ -1,6 +1,5 @@
 package com.railson.recipes.feature.recipelist.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -32,8 +31,11 @@ import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipelist.R
 import com.railson.recipes.recipes.domain.model.Difficulty
 import com.railson.recipes.recipes.domain.model.Recipe
+import com.railson.recipes.recipes.ui.filledBars
+import com.railson.recipes.recipes.ui.label
 import java.util.Locale
 import com.railson.recipes.core.ui.R as CoreUiR
+import com.railson.recipes.recipes.ui.R as RecipesUiR
 
 /** A recipe on the list (DESIGN.md 2 and 3.2): thumbnail, title, metadata, servings and cuisine, tags. */
 @Composable
@@ -100,8 +102,8 @@ private fun MetadataLine(recipe: Recipe) {
             val label = stringResource(difficulty.label)
             IconAndText {
                 DifficultyBars(
-                    filledBars = difficulty.bars,
-                    contentDescription = stringResource(CoreUiR.string.difficulty_description, label.lowercase()),
+                    filledBars = difficulty.filledBars,
+                    contentDescription = stringResource(RecipesUiR.string.difficulty_description, label.lowercase()),
                     modifier = Modifier.size(iconSize),
                 )
                 Text(label, style = style, color = secondary)
@@ -146,22 +148,6 @@ private fun ServesLine(servings: Int, cuisine: String) {
         }
     }
 }
-
-@get:StringRes
-internal val Difficulty.label: Int
-    get() = when (this) {
-        Difficulty.Easy -> CoreUiR.string.difficulty_easy
-        Difficulty.Medium -> CoreUiR.string.difficulty_medium
-        Difficulty.Hard -> CoreUiR.string.difficulty_hard
-    }
-
-@Suppress("MagicNumber") // Filled bars per difficulty, DESIGN.md 2.
-private val Difficulty.bars: Int
-    get() = when (this) {
-        Difficulty.Easy -> 1
-        Difficulty.Medium -> 2
-        Difficulty.Hard -> 3
-    }
 
 @ThemePreviews
 @Composable
