@@ -26,8 +26,11 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -42,7 +45,13 @@ import com.railson.recipes.feature.recipelist.R
 import com.railson.recipes.feature.recipelist.components.PreviewRecipes
 import com.railson.recipes.feature.recipelist.components.RecipeCard
 import com.railson.recipes.feature.recipelist.components.RecipeSearchBar
+import com.railson.recipes.feature.recipelist.filter.ActiveFilterChips
+import com.railson.recipes.feature.recipelist.filter.RecipeFilterSheet
+import com.railson.recipes.feature.recipelist.filter.RecipeFiltersUiState
+import com.railson.recipes.feature.recipelist.filter.activeFilters
+import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.Recipe
+import com.railson.recipes.recipes.domain.model.SearchQuery
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -52,6 +61,8 @@ internal fun RecipeListScreen(
     viewModel: RecipeListViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val filters by viewModel.filters.collectAsStateWithLifecycle()
+    var showFilters by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val offlineMessage = stringResource(R.string.recipe_list_snackbar_offline)
     val refreshFailedMessage = stringResource(R.string.recipe_list_snackbar_refresh_failed)
@@ -86,18 +97,27 @@ internal fun RecipeListScreen(
     }
     RecipeListLayout(
         uiState = uiState,
+        filters = filters,
         searchText = searchText,
         snackbarHostState = snackbarHostState,
-        onAction = viewModel::onAction,
+        onAction = { action ->
+            if (action == RecipeListAction.OpenFilters) showFilters = true
+            viewModel.onAction(action)
+        },
         topBarActions = topBarActions,
     )
+    if (showFilters) {
+        RecipeFilterSheet(filters = filters, onAction = viewModel::onAction, onDismiss = { showFilters = false })
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Suppress("LongParameterList") // The stateless screen: its state, the hoisted search text, the snackbars and callbacks.
+// The stateless screen: its states, the hoisted search text, the snackbars and callbacks.
+@Suppress("LongParameterList")
 @Composable
 internal fun RecipeListLayout(
     uiState: RecipeListUiState,
+    filters: RecipeFiltersUiState,
     searchText: TextFieldState,
     snackbarHostState: SnackbarHostState,
     onAction: (RecipeListAction) -> Unit,
@@ -109,20 +129,13 @@ internal fun RecipeListLayout(
     Scaffold(
         modifier = modifier,
         topBar = {
-            Column {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.recipe_list_title)) },
-                    actions = topBarActions,
-                )
-                // An empty catalogue has nothing to search (DESIGN.md 3.7).
-                if (uiState != RecipeListUiState.EmptyCatalogue) {
-                    RecipeSearchBar(
-                        state = searchText,
-                        enabled = searchBarEnabled(uiState, searchText),
-                        modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
-                    )
-                }
-            }
+            RecipeListTopBar(
+                uiState = uiState,
+                filters = filters,
+                searchText = searchText,
+                onAction = onAction,
+                topBarActions = topBarActions,
+            )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
@@ -132,7 +145,11 @@ internal fun RecipeListLayout(
             RecipeListUiState.Offline -> RecipeListOffline(onRetry = refresh, modifier = statePadding)
             RecipeListUiState.Error -> RecipeListError(onTryAgain = refresh, modifier = statePadding)
             RecipeListUiState.EmptyCatalogue -> RecipeListEmptyCatalogue(onRefresh = refresh, modifier = statePadding)
-            RecipeListUiState.NoResults -> RecipeListNoResults(modifier = statePadding)
+            RecipeListUiState.NoResults -> RecipeListNoResults(
+                hasFilters = filters.applied.activeFilterCount > 0,
+                onClearAllFilters = { onAction(RecipeListAction.ClearAllFilters) },
+                modifier = statePadding,
+            )
             is RecipeListUiState.Content -> PullToRefreshBox(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = refresh,
@@ -153,12 +170,49 @@ internal fun RecipeListLayout(
     }
 }
 
+/** The top app bar, the search bar and the active filter chips. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RecipeListTopBar(
+    uiState: RecipeListUiState,
+    filters: RecipeFiltersUiState,
+    searchText: TextFieldState,
+    onAction: (RecipeListAction) -> Unit,
+    topBarActions: @Composable RowScope.() -> Unit,
+) {
+    Column {
+        TopAppBar(
+            title = { Text(stringResource(R.string.recipe_list_title)) },
+            actions = topBarActions,
+        )
+        // An empty catalogue has nothing to search (DESIGN.md 3.7).
+        if (uiState == RecipeListUiState.EmptyCatalogue) return@Column
+        RecipeSearchBar(
+            state = searchText,
+            enabled = searchBarEnabled(uiState, searchText, filters.applied),
+            activeFilterCount = filters.applied.activeFilterCount,
+            onFiltersClick = { onAction(RecipeListAction.OpenFilters) },
+            modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+        )
+        val activeFilters = filters.applied.activeFilters
+        if (activeFilters.isNotEmpty()) {
+            ActiveFilterChips(
+                filters = activeFilters,
+                onRemove = { onAction(RecipeListAction.RemoveFilter(it)) },
+                modifier = Modifier.padding(bottom = Spacing.sm),
+            )
+        }
+    }
+}
+
 /**
  * Disabled while the catalog loads for the first time or fails (DESIGN.md 3.1 and 3.6).
- * With text in it, the reader can always change the search.
+ * With text or filters in it, the reader can always change the search.
  */
-private fun searchBarEnabled(uiState: RecipeListUiState, searchText: TextFieldState): Boolean =
-    searchText.text.isNotBlank() || (uiState != RecipeListUiState.Loading && uiState != RecipeListUiState.Error)
+private fun searchBarEnabled(uiState: RecipeListUiState, searchText: TextFieldState, applied: SearchQuery): Boolean =
+    searchText.text.isNotBlank() ||
+        applied.activeFilterCount > 0 ||
+        (uiState != RecipeListUiState.Loading && uiState != RecipeListUiState.Error)
 
 /** "10 recipes", then the recipe cards (DESIGN.md 3.2). */
 @Composable
@@ -202,6 +256,7 @@ private fun RecipeListLayoutPreview() {
     RecipesTheme {
         RecipeListLayout(
             uiState = RecipeListUiState.Content(recipes = PreviewRecipes.all, isRefreshing = false),
+            filters = RecipeFiltersUiState(),
             searchText = rememberTextFieldState(),
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
@@ -216,7 +271,10 @@ private fun RecipeListLayoutNoResultsPreview() {
     RecipesTheme {
         RecipeListLayout(
             uiState = RecipeListUiState.NoResults,
-            searchText = rememberTextFieldState("sushi"),
+            filters = RecipeFiltersUiState(
+                applied = SearchQuery(dietaryTags = setOf(DietaryTag.Vegan, DietaryTag.Halal)),
+            ),
+            searchText = rememberTextFieldState(),
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             topBarActions = {},

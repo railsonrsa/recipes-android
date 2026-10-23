@@ -21,6 +21,31 @@
     <string name="recipe_list_snackbar_offline">You\'re offline. Showing saved recipes.</string>
     <string name="recipe_list_snackbar_refresh_failed">Couldn\'t refresh recipes.</string>
 
+    <string name="recipe_list_clear_all_filters">Clear all filters</string>
+    <string name="recipe_list_filters">Filters</string>
+    <plurals name="recipe_list_filters_active">
+        <item quantity="one">Filters, %1$d active</item>
+        <item quantity="other">Filters, %1$d active</item>
+    </plurals>
+    <string name="recipe_list_remove_filter">Remove filter</string>
+    <string name="recipe_list_filter_servings">%1$s servings</string>
+
+    <string name="recipe_filters_clear_all">Clear all</string>
+    <string name="recipe_filters_diet">Diet</string>
+    <string name="recipe_filters_must_match_all">Must match all</string>
+    <string name="recipe_filters_servings">Servings</string>
+    <string name="recipe_filters_servings_any">Any</string>
+    <string name="recipe_filters_servings_1_2">1–2</string>
+    <string name="recipe_filters_servings_3_4">3–4</string>
+    <string name="recipe_filters_servings_5_6">5–6</string>
+    <string name="recipe_filters_servings_7_plus">7+</string>
+    <string name="recipe_filters_difficulty">Difficulty</string>
+    <string name="recipe_filters_show">Show recipes</string>
+    <plurals name="recipe_filters_show_count">
+        <item quantity="one">Show %1$d recipe</item>
+        <item quantity="other">Show %1$d recipes</item>
+    </plurals>
+
     <string name="recipe_card_separator">·</string>
     <string name="recipe_card_no_ratings">No ratings</string>
     <string name="recipe_card_serves">Serves %1$d</string>
