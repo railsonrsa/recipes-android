@@ -148,7 +148,7 @@ private fun ServesLine(servings: Int, cuisine: String) {
 }
 
 @get:StringRes
-private val Difficulty.label: Int
+internal val Difficulty.label: Int
     get() = when (this) {
         Difficulty.Easy -> CoreUiR.string.difficulty_easy
         Difficulty.Medium -> CoreUiR.string.difficulty_medium

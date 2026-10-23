@@ -129,7 +129,7 @@ Minimum touch target: 48 dp, the M3 default. Keep `minimumInteractiveComponentSi
 | Recipe card | `Card` (filled, `surfaceContainerLowest`) | Radius 12, padding 12, row layout: 80 dp thumbnail (radius 8) + text column (title `titleMedium` max 2 lines with ellipsis; metadata `bodyMedium`; "Serves N · Cuisine" `bodySmall`; tags row). Gap between cards 8. |
 | Diet tag (list) | small `Surface` | 24 dp tall, radius 8, horizontal padding 8, `labelMedium`, diet color. `+N` uses the same shape with a 1 dp `outlineVariant` border and `onSurfaceVariant` text. |
 | Diet tag (detail) | `AssistChip`-sized `Surface` | 32 dp, radius 8, padding 12, `labelLarge`, diet color. Not clickable. |
-| Active filter (list header) | `InputChip` | 32 dp, trailing close icon 18 dp. Diet: diet color container. Included and excluded ingredients: as in the sheet. Instruction search: one chip "Steps: oven", `secondaryContainer`, leading `format_list_numbered` icon. Order: diet, servings, difficulty, included, excluded, instructions. |
+| Active filter (list header) | `InputChip` | 32 dp, trailing close icon 18 dp. Diet: diet color container. Included and excluded ingredients: as in the sheet. Servings: "3–4 servings". Difficulty: "Easy". Both outlined (1 dp `outline`). Instruction search: one chip "Steps: oven", `secondaryContainer`, leading `format_list_numbered` icon. Order: diet, servings, difficulty, included, excluded, instructions. Tapping a chip removes that filter and searches again. |
 | Diet filter | `FilterChip` | 32 dp, radius 8. Unselected: 1 dp `outline` border. Selected: `secondaryContainer` with a leading check icon 18 dp. Multi-select, "must match all". |
 | Servings filter | `SingleChoiceSegmentedButtonRow` | 40 dp, 5 segments: Any, 1–2, 3–4, 5–6, 7+. The selected segment shows the check icon. |
 | Difficulty filter | `FilterChip` | Easy / Medium / Hard, multi-select. |
@@ -195,10 +195,10 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 
 ### 3.5 Search with no results (state `NoResults`)
 - The active filters appear as `InputChip`s under the search bar. The filter button badge shows the count.
-- Centered illustration (decorative), "No recipes match" (`titleLarge`), an explanation (`bodyMedium`), and a `TextButton` "Clear all filters".
+- Centered illustration (decorative), "No recipes match" (`titleLarge`), an explanation (`bodyMedium`), and a `TextButton` "Clear all filters". The button shows only when filters are on. It keeps the search text, which the reader clears in the search bar.
 
 ### 3.6 Error (state `Error`)
-- Search bar disabled, unless it has text: then the reader can change the search.
+- Search bar disabled, unless it has text or filters: then the reader can change the search. The filter button follows the bar.
 - 72 dp `surfaceContainer` circle with a 36 dp error icon, "Couldn't load recipes" (`titleLarge`), "Something went wrong reading the recipe data." (`bodyMedium`), and a filled `Button` "Try again".
 
 ### 3.7 Empty catalogue (JSON `data: []` on first load)
@@ -213,7 +213,7 @@ Sections in this order, each with a `titleSmall` header in `tertiary`:
 4. **Ingredients:** the Must have / Must not have segmented button, then the text field + add button, then the included and excluded chips. Adding a word that is on the other side moves it, and a snackbar says so: "“garlic” moved to Must have".
 5. **Instructions:** the instruction search field. Typing updates the "Show N recipes" count (the same 300 ms wait as the other filters).
 
-The bottom button shows a live count: "Show N recipes", or "Show 1 recipe" for one.
+The bottom button shows a live count: "Show N recipes", or "Show 1 recipe" for one. The count runs right away when the sheet opens. While a new count loads, the button keeps the last number; when the count fails, it says "Show recipes". The sheet edits a draft: closing it without "Show N recipes" drops the changes, and "Clear all" clears only the draft.
 
 ### 3.9 Detail, top
 - Hero image, 232 dp tall, edge-to-edge under the status bar. A back `IconButton` with a 40 dp `surfaceContainerLowest` circle sits over the image.

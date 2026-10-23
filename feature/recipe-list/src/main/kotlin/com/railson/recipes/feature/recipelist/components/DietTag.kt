@@ -79,7 +79,7 @@ private fun CardTag(
 }
 
 @get:StringRes
-private val DietaryTag.label: Int
+internal val DietaryTag.label: Int
     get() = when (this) {
         DietaryTag.Vegan -> CoreUiR.string.diet_vegan
         DietaryTag.Vegetarian -> CoreUiR.string.diet_vegetarian
@@ -91,7 +91,7 @@ private val DietaryTag.label: Int
         DietaryTag.LowCarb -> CoreUiR.string.diet_low_carb
     }
 
-private val DietaryTag.color: Color
+internal val DietaryTag.color: Color
     @Composable
     get() = with(RecipesTheme.colors.dietTags) {
         when (this@color) {
