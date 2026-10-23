@@ -10,17 +10,26 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 
-/** Holds a saved result tests can change. Each refresh runs until the test ends it with [endRefresh]. */
+/**
+ * Holds a saved result per search that tests can change.
+ * Each refresh runs until the test ends it with [endRefresh].
+ */
 internal class FakeRecipeRepository : RecipeRepository {
-    val saved = MutableStateFlow<SearchResult?>(null)
+    private val searches = mutableMapOf<SearchQuery, MutableStateFlow<SearchResult?>>()
     val refreshed = mutableListOf<SearchQuery>()
     private val outcomes = Channel<CallOutcome>(Channel.UNLIMITED)
+
+    /** The saved catalog. */
+    val saved: MutableStateFlow<SearchResult?> get() = savedFor(SearchQuery.Catalog)
+
+    fun savedFor(query: SearchQuery): MutableStateFlow<SearchResult?> =
+        searches.getOrPut(query) { MutableStateFlow(null) }
 
     fun endRefresh(outcome: CallOutcome) {
         outcomes.trySend(outcome)
     }
 
-    override fun observeSearch(query: SearchQuery): Flow<SearchResult?> = saved
+    override fun observeSearch(query: SearchQuery): Flow<SearchResult?> = savedFor(query)
 
     override fun observeRecipe(id: String): Flow<Recipe?> = flowOf(null)
 

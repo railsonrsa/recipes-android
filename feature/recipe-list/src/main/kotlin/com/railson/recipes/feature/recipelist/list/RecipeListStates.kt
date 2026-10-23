@@ -94,13 +94,14 @@ internal fun RecipeListEmptyCatalogue(onRefresh: () -> Unit, modifier: Modifier 
     }
 }
 
+/** The icon, title, text and action every message state shares. */
 @Composable
-private fun RecipeListMessage(
+internal fun RecipeListMessage(
     @DrawableRes icon: Int,
     title: String,
     body: String,
     modifier: Modifier = Modifier,
-    action: @Composable () -> Unit,
+    action: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = modifier
@@ -131,8 +132,10 @@ private fun RecipeListMessage(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
-        Spacer(Modifier.height(Spacing.xl))
-        action()
+        if (action != null) {
+            Spacer(Modifier.height(Spacing.xl))
+            action()
+        }
     }
 }
 
