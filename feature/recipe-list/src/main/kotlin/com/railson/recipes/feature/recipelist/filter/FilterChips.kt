@@ -15,10 +15,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipelist.R
-import com.railson.recipes.feature.recipelist.components.DietDisplayOrder
-import com.railson.recipes.feature.recipelist.components.label
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.Difficulty
+import com.railson.recipes.recipes.ui.DietDisplayOrder
+import com.railson.recipes.recipes.ui.label
 
 /** The multi-select chips of the sheet (DESIGN.md 2, Diet filter and Difficulty filter). */
 @OptIn(ExperimentalLayoutApi::class)

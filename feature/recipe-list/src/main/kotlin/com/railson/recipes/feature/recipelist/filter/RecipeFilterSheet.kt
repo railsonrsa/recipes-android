@@ -38,7 +38,6 @@ import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipelist.R
-import com.railson.recipes.feature.recipelist.components.label
 import com.railson.recipes.feature.recipelist.list.RecipeListAction
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.Difficulty

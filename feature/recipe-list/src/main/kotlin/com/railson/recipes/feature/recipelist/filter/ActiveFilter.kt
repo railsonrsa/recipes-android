@@ -1,9 +1,9 @@
 package com.railson.recipes.feature.recipelist.filter
 
-import com.railson.recipes.feature.recipelist.components.DietDisplayOrder
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.ServingsRange
+import com.railson.recipes.recipes.ui.sortedForDisplay
 import com.railson.recipes.recipes.domain.model.Difficulty as RecipeDifficulty
 
 /** One condition the reader turned on, as a chip under the search bar (DESIGN.md 2, Active filter). */
@@ -24,7 +24,7 @@ internal sealed interface ActiveFilter {
 /** The chips in DESIGN.md order: diet, servings, difficulty, included, excluded, instructions. */
 internal val SearchQuery.activeFilters: List<ActiveFilter>
     get() = buildList {
-        dietaryTags.sortedBy(DietDisplayOrder::indexOf).forEach { add(ActiveFilter.Diet(it)) }
+        dietaryTags.sortedForDisplay().forEach { add(ActiveFilter.Diet(it)) }
         if (servingsRange != ServingsRange.Any) add(ActiveFilter.Servings(servingsRange))
         difficulties.sorted().forEach { add(ActiveFilter.Difficulty(it)) }
         includedIngredients.forEach { add(ActiveFilter.IncludedIngredient(it)) }

@@ -3,7 +3,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.project
 
-/** A feature module sees only `:recipes:domain`, `:core:ui` and `:core:format` (architecture.md, Dependency rules). */
+/** A feature module sees only `:recipes:domain`, `:recipes:ui`, `:core:ui` and `:core:format` (architecture.md, Dependency rules). */
 class AndroidFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("recipes.android.library")
@@ -12,6 +12,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
         dependencies {
             add("implementation", project(":recipes:domain"))
+            add("implementation", project(":recipes:ui"))
             add("implementation", project(":core:ui"))
             add("implementation", project(":core:format"))
 

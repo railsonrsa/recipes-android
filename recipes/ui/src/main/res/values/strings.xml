@@ -1,5 +1,5 @@
 <resources>
-    <!-- Labels for domain values. Each feature maps the value to one of these. -->
+    <!-- Labels for domain values, mapped in this module. -->
     <string name="difficulty_easy">Easy</string>
     <string name="difficulty_medium">Medium</string>
     <string name="difficulty_hard">Hard</string>

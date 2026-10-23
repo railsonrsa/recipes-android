@@ -1,6 +1,5 @@
 package com.railson.recipes.feature.recipedetail.components
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -12,26 +11,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.railson.recipes.core.ui.R
 import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.recipes.domain.model.DietaryTag
-
-/** The most specific first (DESIGN.md 1.2). */
-private val DisplayOrder = listOf(
-    DietaryTag.Vegan,
-    DietaryTag.Vegetarian,
-    DietaryTag.Pescatarian,
-    DietaryTag.Halal,
-    DietaryTag.GlutenFree,
-    DietaryTag.DairyFree,
-    DietaryTag.NutFree,
-    DietaryTag.LowCarb,
-)
+import com.railson.recipes.recipes.ui.color
+import com.railson.recipes.recipes.ui.label
+import com.railson.recipes.recipes.ui.sortedForDisplay
 
 /** Every tag, in display order (DESIGN.md 2, Diet tag (detail)). Not clickable. */
 @Composable
@@ -44,7 +32,7 @@ internal fun DetailDietTags(
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        tags.sortedBy(DisplayOrder::indexOf).forEach { tag ->
+        tags.sortedForDisplay().forEach { tag ->
             Surface(
                 shape = MaterialTheme.shapes.small,
                 color = tag.color,
@@ -63,34 +51,6 @@ internal fun DetailDietTags(
         }
     }
 }
-
-@get:StringRes
-private val DietaryTag.label: Int
-    get() = when (this) {
-        DietaryTag.Vegan -> R.string.diet_vegan
-        DietaryTag.Vegetarian -> R.string.diet_vegetarian
-        DietaryTag.Pescatarian -> R.string.diet_pescatarian
-        DietaryTag.Halal -> R.string.diet_halal
-        DietaryTag.GlutenFree -> R.string.diet_gluten_free
-        DietaryTag.DairyFree -> R.string.diet_dairy_free
-        DietaryTag.NutFree -> R.string.diet_nut_free
-        DietaryTag.LowCarb -> R.string.diet_low_carb
-    }
-
-private val DietaryTag.color: Color
-    @Composable
-    get() = with(RecipesTheme.colors.dietTags) {
-        when (this@color) {
-            DietaryTag.Vegan -> vegan
-            DietaryTag.Vegetarian -> vegetarian
-            DietaryTag.Pescatarian -> pescatarian
-            DietaryTag.Halal -> halal
-            DietaryTag.GlutenFree -> glutenFree
-            DietaryTag.DairyFree -> dairyFree
-            DietaryTag.NutFree -> nutFree
-            DietaryTag.LowCarb -> lowCarb
-        }
-    }
 
 @ThemePreviews
 @Composable
