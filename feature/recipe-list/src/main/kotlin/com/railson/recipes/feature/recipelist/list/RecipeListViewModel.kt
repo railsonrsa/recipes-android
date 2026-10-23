@@ -29,7 +29,7 @@ internal class RecipeListViewModel(
     private val effectChannel = Channel<RecipeListEffect>(Channel.BUFFERED)
     val effects: Flow<RecipeListEffect> = effectChannel.receiveAsFlow()
 
-    val uiState: StateFlow<RecipeListUiState> = combine(observeSearch(SearchQuery), lastCall, ::screenState)
+    val uiState: StateFlow<RecipeListUiState> = combine(observeSearch(SearchQuery.Catalog), lastCall, ::screenState)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RecipeListUiState.Loading)
 
     private var refreshJob: Job? = null
@@ -50,10 +50,10 @@ internal class RecipeListViewModel(
         if (refreshJob?.isActive == true) return
         lastCall.value = LastCall.Running
         refreshJob = viewModelScope.launch {
-            val call = refreshSearch(SearchQuery).toLastCall()
+            val call = refreshSearch(SearchQuery.Catalog).toLastCall()
             lastCall.value = call
             // With saved recipes on screen, a failed refresh is only a snackbar.
-            val hasSavedRecipes = observeSearch(SearchQuery).first()?.recipes.orEmpty().isNotEmpty()
+            val hasSavedRecipes = observeSearch(SearchQuery.Catalog).first()?.recipes.orEmpty().isNotEmpty()
             val snackbar = when (call) {
                 LastCall.Offline -> RecipeListEffect.ShowOfflineSnackbar
                 LastCall.Failed -> RecipeListEffect.ShowRefreshFailedSnackbar

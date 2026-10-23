@@ -32,7 +32,7 @@ class RecipeListViewModelTest {
     fun `opening the list refreshes the catalog`() {
         viewModel()
 
-        assertThat(repository.refreshed).containsExactly(SearchQuery)
+        assertThat(repository.refreshed).containsExactly(SearchQuery.Catalog)
     }
 
     @Test

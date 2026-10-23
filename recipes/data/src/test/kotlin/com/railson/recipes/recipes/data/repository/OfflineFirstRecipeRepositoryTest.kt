@@ -54,16 +54,16 @@ class OfflineFirstRecipeRepositoryTest {
 
     @Test
     fun `nothing is saved before the first refresh`() = runTest {
-        val result = repository.observeSearch(SearchQuery).first()
+        val result = repository.observeSearch(SearchQuery.Catalog).first()
 
         assertThat(result).isNull()
     }
 
     @Test
     fun `refresh saves the catalog in the server's order`() = runTest {
-        val outcome = repository.refresh(SearchQuery)
+        val outcome = repository.refresh(SearchQuery.Catalog)
 
-        val result = repository.observeSearch(SearchQuery).first()
+        val result = repository.observeSearch(SearchQuery.Catalog).first()
         assertThat(outcome).isEqualTo(CallOutcome.Success)
         assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
         assertThat(result?.hasMore).isFalse()
@@ -71,9 +71,9 @@ class OfflineFirstRecipeRepositoryTest {
 
     @Test
     fun `saved recipes keep their times and dietary tags`() = runTest {
-        repository.refresh(SearchQuery)
+        repository.refresh(SearchQuery.Catalog)
 
-        val recipes = repository.observeSearch(SearchQuery).first()?.recipes.orEmpty()
+        val recipes = repository.observeSearch(SearchQuery.Catalog).first()?.recipes.orEmpty()
         val curry = recipes.single { it.title == "Chickpea Coconut Curry" }
         assertThat(curry.prepTime).isEqualTo(10.minutes)
         assertThat(curry.cookTime).isEqualTo(20.minutes)
@@ -84,48 +84,80 @@ class OfflineFirstRecipeRepositoryTest {
 
     @Test
     fun `refreshing again replaces the saved catalog instead of adding to it`() = runTest {
-        repository.refresh(SearchQuery)
+        repository.refresh(SearchQuery.Catalog)
 
-        repository.refresh(SearchQuery)
+        repository.refresh(SearchQuery.Catalog)
 
-        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
     }
 
     @Test
     fun `slow still saves the catalog`() = runTest {
         networkConfig.mode = FakeNetworkMode.Slow
 
-        assertThat(repository.refresh(SearchQuery)).isEqualTo(CallOutcome.Success)
-        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.refresh(SearchQuery.Catalog)).isEqualTo(CallOutcome.Success)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
     }
 
     @Test
     fun `empty catalogue saves a catalog with no recipes`() = runTest {
-        repository.refresh(SearchQuery)
+        repository.refresh(SearchQuery.Catalog)
         networkConfig.mode = FakeNetworkMode.EmptyCatalogue
 
-        val outcome = repository.refresh(SearchQuery)
+        val outcome = repository.refresh(SearchQuery.Catalog)
 
         assertThat(outcome).isEqualTo(CallOutcome.Success)
-        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).isEmpty()
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).isEmpty()
     }
 
     @Test
     fun `each failing mode ends in its call outcome and keeps the saved catalog`() = runTest {
-        repository.refresh(SearchQuery)
+        repository.refresh(SearchQuery.Catalog)
         val outcomes = failingModes.keys.associateWith { mode ->
             networkConfig.mode = mode
-            repository.refresh(SearchQuery)
+            repository.refresh(SearchQuery.Catalog)
         }
 
         assertThat(outcomes).containsExactlyEntriesIn(failingModes)
-        assertThat(repository.observeSearch(SearchQuery).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+    }
+
+    @Test
+    fun `two searches keep separate results`() = runTest {
+        repository.refresh(SearchQuery.Catalog)
+
+        repository.refresh(SearchQuery(text = "pao"))
+
+        assertThat(repository.observeSearch(SearchQuery(text = "pao")).first()?.recipes?.map { it.title })
+            .containsExactly("Pão de Queijo (Brazilian Cheese Bread)")
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+    }
+
+    @Test
+    fun `a saved search shows with no network`() = runTest {
+        repository.refresh(SearchQuery(text = "pao"))
+        networkConfig.mode = FakeNetworkMode.NoNetwork
+
+        val outcome = repository.refresh(SearchQuery(text = "Pão"))
+
+        assertThat(outcome).isEqualTo(CallOutcome.NoConnection)
+        assertThat(repository.observeSearch(SearchQuery(text = "Pão")).first()?.recipes?.map { it.title })
+            .containsExactly("Pão de Queijo (Brazilian Cheese Bread)")
+    }
+
+    @Test
+    fun `a search never made is not saved even when its recipes are`() = runTest {
+        repository.refresh(SearchQuery.Catalog)
+
+        val result = repository.observeSearch(SearchQuery(text = "pao")).first()
+
+        assertThat(result).isNull()
     }
 
     @Test
     fun `a saved recipe is read by its id with no network`() = runTest {
-        repository.refresh(SearchQuery)
-        val curry = repository.observeSearch(SearchQuery).first()?.recipes.orEmpty()
+        repository.refresh(SearchQuery.Catalog)
+        val curry = repository.observeSearch(SearchQuery.Catalog).first()?.recipes.orEmpty()
             .single { it.title == "Chickpea Coconut Curry" }
         networkConfig.mode = FakeNetworkMode.NoNetwork
 
@@ -136,7 +168,7 @@ class OfflineFirstRecipeRepositoryTest {
 
     @Test
     fun `a recipe that was never saved reads as null`() = runTest {
-        repository.refresh(SearchQuery)
+        repository.refresh(SearchQuery.Catalog)
 
         val recipe = repository.observeRecipe("never-saved").first()
 

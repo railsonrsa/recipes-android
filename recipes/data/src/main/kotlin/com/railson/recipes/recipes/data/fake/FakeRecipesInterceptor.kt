@@ -45,7 +45,8 @@ internal class FakeRecipesInterceptor(
     private fun Request.searchParams(): FakeSearchParams? {
         val page = url.queryParameter("page")?.toIntOrNull()?.takeIf { it >= 1 }
         val pageSize = url.queryParameter("pageSize")?.toIntOrNull()?.takeIf { it in 1..MAX_PAGE_SIZE }
-        return if (page != null && pageSize != null) FakeSearchParams(page, pageSize) else null
+        val text = url.queryParameter("q")
+        return if (page != null && pageSize != null) FakeSearchParams(page, pageSize, text) else null
     }
 
     private fun Request.error(code: Int, errorCode: String, message: String): Response =
