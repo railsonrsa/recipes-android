@@ -14,6 +14,9 @@ internal sealed interface RecipeListUiState {
 
     data object EmptyCatalogue : RecipeListUiState
 
+    /** A search with text or filters that matches no recipe. */
+    data object NoResults : RecipeListUiState
+
     /** The saved recipes. [isRefreshing] while a call to the server runs. */
     data class Content(val recipes: List<Recipe>, val isRefreshing: Boolean) : RecipeListUiState
 }

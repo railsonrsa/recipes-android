@@ -11,6 +11,7 @@ import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
 import com.railson.recipes.recipes.domain.usecase.ObserveSearchUseCase
 import com.railson.recipes.recipes.domain.usecase.RefreshSearchUseCase
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -166,6 +167,107 @@ class RecipeListViewModelTest {
                 RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = false),
             )
             assertThat(effects.awaitItem()).isEqualTo(RecipeListEffect.ShowRefreshFailedSnackbar)
+        }
+    }
+
+    @Test
+    fun `typing searches the text 300 ms after the last change`() = runTest {
+        val viewModel = viewModel()
+
+        viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
+        advanceTimeBy(299)
+        val beforeTheWait = repository.refreshed.toList()
+        advanceTimeBy(2)
+
+        assertThat(beforeTheWait).containsExactly(SearchQuery.Catalog)
+        assertThat(repository.refreshed).containsExactly(SearchQuery.Catalog, SearchQuery(text = "pao")).inOrder()
+    }
+
+    @Test
+    fun `typing again within 300 ms searches only the last text`() = runTest {
+        val viewModel = viewModel()
+
+        viewModel.onAction(RecipeListAction.ChangeSearchText("pa"))
+        advanceTimeBy(200)
+        viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
+        advanceTimeBy(301)
+
+        assertThat(repository.refreshed).containsExactly(SearchQuery.Catalog, SearchQuery(text = "pao")).inOrder()
+    }
+
+    @Test
+    fun `a new search shows loading instead of the old search's list`() = runTest {
+        repository.saved.value = saved(recipe("Greek Salad"))
+        val viewModel = viewModel()
+
+        viewModel.uiState.test {
+            viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
+            advanceTimeBy(301)
+
+            assertThat(expectMostRecentItem()).isEqualTo(RecipeListUiState.Loading)
+        }
+    }
+
+    @Test
+    fun `the old search's failed call does not show on the new search`() = runTest {
+        repository.saved.value = saved(recipe("Greek Salad"))
+        repository.savedFor(SearchQuery(text = "pao")).value = saved(recipe("Pão de Queijo"))
+        val viewModel = viewModel()
+
+        viewModel.uiState.test {
+            repository.endRefresh(CallOutcome.NoConnection)
+            skipItems(2)
+            viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
+            advanceTimeBy(301)
+
+            assertThat(awaitItem()).isEqualTo(
+                RecipeListUiState.Content(recipes = listOf(recipe("Pão de Queijo")), isRefreshing = true),
+            )
+        }
+    }
+
+    @Test
+    fun `refresh after an error calls the server again for the current search`() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
+        advanceTimeBy(301)
+        repository.endRefresh(CallOutcome.ServerError)
+
+        viewModel.onAction(RecipeListAction.Refresh)
+
+        assertThat(repository.refreshed.last()).isEqualTo(SearchQuery(text = "pao"))
+        assertThat(repository.refreshed).hasSize(3)
+    }
+
+    @Test
+    fun `clearing the text shows the saved catalog again and refreshes it`() = runTest {
+        repository.saved.value = saved(recipe("Greek Salad"))
+        val viewModel = viewModel()
+
+        viewModel.uiState.test {
+            viewModel.onAction(RecipeListAction.ChangeSearchText("pao"))
+            advanceTimeBy(301)
+            viewModel.onAction(RecipeListAction.ChangeSearchText(" "))
+            advanceTimeBy(301)
+
+            assertThat(expectMostRecentItem()).isEqualTo(
+                RecipeListUiState.Content(recipes = listOf(recipe("Greek Salad")), isRefreshing = true),
+            )
+            assertThat(repository.refreshed.last()).isEqualTo(SearchQuery.Catalog)
+        }
+    }
+
+    @Test
+    fun `a saved search with text and no recipes shows no results`() = runTest {
+        val viewModel = viewModel()
+        repository.savedFor(SearchQuery(text = "sushi")).value = saved()
+
+        viewModel.uiState.test {
+            viewModel.onAction(RecipeListAction.ChangeSearchText("sushi"))
+            advanceTimeBy(301)
+            repository.endRefresh(CallOutcome.Success)
+
+            assertThat(expectMostRecentItem()).isEqualTo(RecipeListUiState.NoResults)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.railson.recipes.feature.recipelist.list
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -25,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
@@ -37,6 +41,7 @@ import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipelist.R
 import com.railson.recipes.feature.recipelist.components.PreviewRecipes
 import com.railson.recipes.feature.recipelist.components.RecipeCard
+import com.railson.recipes.feature.recipelist.components.RecipeSearchBar
 import com.railson.recipes.recipes.domain.model.Recipe
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -52,6 +57,12 @@ internal fun RecipeListScreen(
     val refreshFailedMessage = stringResource(R.string.recipe_list_snackbar_refresh_failed)
     val retry = stringResource(R.string.recipe_list_retry)
     val currentOnRecipeClick by rememberUpdatedState(onRecipeClick)
+    // The text lives on screen, so typing never waits for the ViewModel. The ViewModel gets each change.
+    val searchText = rememberTextFieldState()
+    LaunchedEffect(searchText, viewModel) {
+        snapshotFlow { searchText.text.toString() }
+            .collect { viewModel.onAction(RecipeListAction.ChangeSearchText(it)) }
+    }
     LaunchedEffect(viewModel) {
         // A new snackbar replaces the one on screen: cancelling showSnackbar dismisses it.
         viewModel.effects.collectLatest { effect ->
@@ -75,6 +86,7 @@ internal fun RecipeListScreen(
     }
     RecipeListLayout(
         uiState = uiState,
+        searchText = searchText,
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         topBarActions = topBarActions,
@@ -82,9 +94,11 @@ internal fun RecipeListScreen(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("LongParameterList") // The stateless screen: its state, the hoisted search text, the snackbars and callbacks.
 @Composable
 internal fun RecipeListLayout(
     uiState: RecipeListUiState,
+    searchText: TextFieldState,
     snackbarHostState: SnackbarHostState,
     onAction: (RecipeListAction) -> Unit,
     topBarActions: @Composable RowScope.() -> Unit,
@@ -95,10 +109,20 @@ internal fun RecipeListLayout(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.recipe_list_title)) },
-                actions = topBarActions,
-            )
+            Column {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.recipe_list_title)) },
+                    actions = topBarActions,
+                )
+                // An empty catalogue has nothing to search (DESIGN.md 3.7).
+                if (uiState != RecipeListUiState.EmptyCatalogue) {
+                    RecipeSearchBar(
+                        state = searchText,
+                        enabled = searchBarEnabled(uiState, searchText),
+                        modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                    )
+                }
+            }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
@@ -108,6 +132,7 @@ internal fun RecipeListLayout(
             RecipeListUiState.Offline -> RecipeListOffline(onRetry = refresh, modifier = statePadding)
             RecipeListUiState.Error -> RecipeListError(onTryAgain = refresh, modifier = statePadding)
             RecipeListUiState.EmptyCatalogue -> RecipeListEmptyCatalogue(onRefresh = refresh, modifier = statePadding)
+            RecipeListUiState.NoResults -> RecipeListNoResults(statePadding)
             is RecipeListUiState.Content -> PullToRefreshBox(
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = refresh,
@@ -127,6 +152,13 @@ internal fun RecipeListLayout(
         }
     }
 }
+
+/**
+ * Disabled while the catalog loads for the first time or fails (DESIGN.md 3.1 and 3.6).
+ * With text in it, the reader can always change the search.
+ */
+private fun searchBarEnabled(uiState: RecipeListUiState, searchText: TextFieldState): Boolean =
+    searchText.text.isNotBlank() || (uiState != RecipeListUiState.Loading && uiState != RecipeListUiState.Error)
 
 /** "10 recipes", then the recipe cards (DESIGN.md 3.2). */
 @Composable
@@ -170,6 +202,21 @@ private fun RecipeListLayoutPreview() {
     RecipesTheme {
         RecipeListLayout(
             uiState = RecipeListUiState.Content(recipes = PreviewRecipes.all, isRefreshing = false),
+            searchText = rememberTextFieldState(),
+            snackbarHostState = remember { SnackbarHostState() },
+            onAction = {},
+            topBarActions = {},
+        )
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun RecipeListLayoutNoResultsPreview() {
+    RecipesTheme {
+        RecipeListLayout(
+            uiState = RecipeListUiState.NoResults,
+            searchText = rememberTextFieldState("sushi"),
             snackbarHostState = remember { SnackbarHostState() },
             onAction = {},
             topBarActions = {},
