@@ -87,7 +87,7 @@ Each screen has these parts, named after the screen (`RecipeList…`, `RecipeDet
 | `XLayout` | Stateless, with previews. Picks which state to draw |
 | One composable per state | `XLoading`, `XList`, `XError`, `XEmpty`, … Each is stateless, with a preview |
 | `XViewModel` | Takes `XAction`s, exposes `StateFlow<XUiState>` and a `Channel<XEffect>` |
-| `XUiState` | One state for the whole screen |
+| `XUiState` | One state for the whole screen. A sheet with a life of its own gets its own state next to it: `RecipeFiltersUiState` holds the applied filters and the sheet's draft, since they show in every list state |
 | `XAction` | What the reader does: types text, taps a card, pulls to refresh, … |
 | `XEffect` | Things that happen once: show a snackbar, navigate |
 

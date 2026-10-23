@@ -26,7 +26,7 @@ import com.railson.recipes.core.ui.R as CoreUiR
 private const val CARD_TAG_COUNT = 2
 
 /** The most specific first (DESIGN.md 1.2). */
-private val DisplayOrder = listOf(
+internal val DietDisplayOrder = listOf(
     DietaryTag.Vegan,
     DietaryTag.Vegetarian,
     DietaryTag.Pescatarian,
@@ -43,7 +43,7 @@ internal fun CardDietTags(
     tags: Set<DietaryTag>,
     modifier: Modifier = Modifier,
 ) {
-    val ordered = tags.sortedBy(DisplayOrder::indexOf)
+    val ordered = tags.sortedBy(DietDisplayOrder::indexOf)
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
         ordered.take(CARD_TAG_COUNT).forEach { tag ->
             CardTag(text = stringResource(tag.label), color = tag.color)

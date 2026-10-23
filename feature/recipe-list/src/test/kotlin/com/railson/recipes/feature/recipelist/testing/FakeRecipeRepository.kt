@@ -12,12 +12,15 @@ import kotlinx.coroutines.flow.flowOf
 
 /**
  * Holds a saved result per search that tests can change.
- * Each refresh runs until the test ends it with [endRefresh].
+ * Each refresh runs until the test ends it with [endRefresh]. A count answers from [counts] right away,
+ * `null` (a failed call) for a search it doesn't have.
  */
 internal class FakeRecipeRepository : RecipeRepository {
     private val searches = mutableMapOf<SearchQuery, MutableStateFlow<SearchResult?>>()
     val refreshed = mutableListOf<SearchQuery>()
     private val outcomes = Channel<CallOutcome>(Channel.UNLIMITED)
+    val counts = mutableMapOf<SearchQuery, Int>()
+    val counted = mutableListOf<SearchQuery>()
 
     /** The saved catalog. */
     val saved: MutableStateFlow<SearchResult?> get() = savedFor(SearchQuery.Catalog)
@@ -38,5 +41,8 @@ internal class FakeRecipeRepository : RecipeRepository {
         return outcomes.receive()
     }
 
-    override suspend fun count(query: SearchQuery): Int? = null
+    override suspend fun count(query: SearchQuery): Int? {
+        counted += query
+        return counts[query]
+    }
 }
