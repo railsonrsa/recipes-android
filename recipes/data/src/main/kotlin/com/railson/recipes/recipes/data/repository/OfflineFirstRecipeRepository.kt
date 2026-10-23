@@ -1,7 +1,7 @@
 package com.railson.recipes.recipes.data.repository
 
 import com.railson.recipes.recipes.data.local.dao.RecipeDao
-import com.railson.recipes.recipes.data.local.dao.SearchDao
+import com.railson.recipes.recipes.data.local.dao.RecipeSearchDao
 import com.railson.recipes.recipes.data.local.entity.RecipeEntity
 import com.railson.recipes.recipes.data.local.entity.SearchRemoteKeyEntity
 import com.railson.recipes.recipes.data.mapper.toDomain
@@ -20,13 +20,13 @@ import kotlin.time.Clock
 /** The UI reads Room only. The network just fills Room. See docs/specs/data.md. */
 internal class OfflineFirstRecipeRepository(
     private val api: RecipesApi,
-    private val searchDao: SearchDao,
+    private val recipeSearchDao: RecipeSearchDao,
     private val recipeDao: RecipeDao,
 ) : RecipeRepository {
 
     override fun observeSearch(query: SearchQuery): Flow<SearchResult?> = combine(
-        searchDao.observeRecipes(query.searchKey),
-        searchDao.observeRemoteKey(query.searchKey),
+        recipeSearchDao.observeRecipes(query.searchKey),
+        recipeSearchDao.observeRemoteKey(query.searchKey),
     ) { recipes: List<RecipeEntity>, remoteKey: SearchRemoteKeyEntity? ->
         // The remote key is written with every save, so no key means the search was never saved.
         remoteKey?.let { SearchResult(recipes = recipes.map { it.toDomain() }, hasMore = it.nextPage != null) }
@@ -36,7 +36,7 @@ internal class OfflineFirstRecipeRepository(
 
     override suspend fun refresh(query: SearchQuery): CallOutcome = callServer {
         val page = api.getRecipes(page = 1, pageSize = PAGE_SIZE)
-        searchDao.replaceSearch(
+        recipeSearchDao.replaceSearch(
             remoteKey = SearchRemoteKeyEntity(
                 searchKey = query.searchKey,
                 nextPage = page.pagination.nextPage,

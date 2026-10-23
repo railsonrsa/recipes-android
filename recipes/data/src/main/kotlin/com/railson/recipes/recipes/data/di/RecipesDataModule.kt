@@ -22,7 +22,7 @@ val recipesDataModule = module {
     single {
         Room.databaseBuilder(androidContext(), RecipesDatabase::class.java, "recipes.db").build()
     }
-    single { get<RecipesDatabase>().searchDao() }
+    single { get<RecipesDatabase>().recipeSearchDao() }
     single { get<RecipesDatabase>().recipeDao() }
     single {
         createRecipesApi(
@@ -33,7 +33,7 @@ val recipesDataModule = module {
             networkConfig = get(),
         )
     }
-    single<RecipeRepository> { OfflineFirstRecipeRepository(api = get(), searchDao = get(), recipeDao = get()) }
+    single<RecipeRepository> { OfflineFirstRecipeRepository(api = get(), recipeSearchDao = get(), recipeDao = get()) }
     factoryOf(::ObserveSearchUseCase)
     factoryOf(::ObserveRecipeUseCase)
     factoryOf(::RefreshSearchUseCase)

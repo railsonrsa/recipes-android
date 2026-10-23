@@ -42,7 +42,7 @@ class OfflineFirstRecipeRepositoryTest {
         val api = createRecipesApi(context, client, createRetrofit(client, json), json, networkConfig)
         repository = OfflineFirstRecipeRepository(
             api = api,
-            searchDao = database.searchDao(),
+            recipeSearchDao = database.recipeSearchDao(),
             recipeDao = database.recipeDao(),
         )
     }
