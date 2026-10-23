@@ -50,4 +50,24 @@ class ActiveFilterCountTest {
 
         assertThat(query.activeFilterCount).isEqualTo(3)
     }
+
+    @Test
+    fun `each included or excluded ingredient counts once`() {
+        val query = SearchQuery(
+            includedIngredients = setOf("olive oil", "basil"),
+            excludedIngredients = setOf("garlic"),
+        )
+
+        assertThat(query.activeFilterCount).isEqualTo(3)
+    }
+
+    @Test
+    fun `an instruction search counts once`() {
+        assertThat(SearchQuery(instructionSearch = "oven").activeFilterCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `a blank instruction search does not count`() {
+        assertThat(SearchQuery(instructionSearch = "  ").activeFilterCount).isEqualTo(0)
+    }
 }

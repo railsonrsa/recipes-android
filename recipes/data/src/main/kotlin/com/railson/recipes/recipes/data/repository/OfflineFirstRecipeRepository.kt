@@ -4,8 +4,6 @@ import com.railson.recipes.recipes.data.local.dao.RecipeDao
 import com.railson.recipes.recipes.data.local.dao.RecipeSearchDao
 import com.railson.recipes.recipes.data.local.entity.RecipeEntity
 import com.railson.recipes.recipes.data.local.entity.SearchRemoteKeyEntity
-import com.railson.recipes.recipes.data.mapper.key
-import com.railson.recipes.recipes.data.mapper.number
 import com.railson.recipes.recipes.data.mapper.toDomain
 import com.railson.recipes.recipes.data.mapper.toEntity
 import com.railson.recipes.recipes.data.remote.RecipePageDto
@@ -61,12 +59,18 @@ internal class OfflineFirstRecipeRepository(
     }
 }
 
-private suspend fun RecipesApi.getRecipes(query: SearchQuery, page: Int, pageSize: Int): RecipePageDto = getRecipes(
-    text = query.text.trim().ifEmpty { null },
-    diet = query.dietaryTags.map { it.key },
-    minServings = query.servingsRange.min,
-    maxServings = query.servingsRange.max,
-    difficulties = query.difficulties.map { it.number },
-    page = page,
-    pageSize = pageSize,
-)
+private suspend fun RecipesApi.getRecipes(query: SearchQuery, page: Int, pageSize: Int): RecipePageDto =
+    with(query.searchParams) {
+        getRecipes(
+            text = text,
+            diet = diet,
+            minServings = minServings,
+            maxServings = maxServings,
+            difficulties = difficulties,
+            include = include,
+            exclude = exclude,
+            instructions = instructions,
+            page = page,
+            pageSize = pageSize,
+        )
+    }

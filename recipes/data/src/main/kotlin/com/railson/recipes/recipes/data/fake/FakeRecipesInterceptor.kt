@@ -66,6 +66,9 @@ internal class FakeRecipesInterceptor(
             minServings = minServings,
             maxServings = maxServings,
             difficulties = difficulties.filterNotNull().toSet(),
+            include = url.queryParameterValues("include").filterNotNull().toSet(),
+            exclude = url.queryParameterValues("exclude").filterNotNull().toSet(),
+            instructions = url.queryParameter("instructions"),
         )
     }
 

@@ -90,6 +90,9 @@ A word the reader requires: every included ingredient must appear in the recipe'
 **Excluded ingredient**:
 A word the reader rules out: no excluded ingredient may appear in the recipe's ingredients.
 
+**Ingredient side**:
+Where an ingredient word is: included or excluded. A word is on one side at most. On screen, the ingredient mode switch (Must have / Must not have) picks the side for the next word.
+
 **Instruction search**:
 A filter: text that must appear in at least one step of the recipe. It is not part of the search text.
 _Avoid_: Step search, method search

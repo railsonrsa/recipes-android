@@ -13,6 +13,9 @@ internal interface RecipesApi {
         @Query("minServings") minServings: Int?,
         @Query("maxServings") maxServings: Int?,
         @Query("difficulty") difficulties: List<Int>,
+        @Query("include") include: List<String>,
+        @Query("exclude") exclude: List<String>,
+        @Query("instructions") instructions: String?,
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int,
     ): RecipePageDto

@@ -187,6 +187,71 @@ class FakeRecipeSearchTest {
     }
 
     @Test
+    fun `include garlic matches part of an ingredient name`() {
+        val result = FakeRecipeSearch.run(asset, params(include = setOf("garlic")))
+
+        assertThat(result.data.map { it.title }).containsExactly(CHICKPEA_CURRY, LEMON_HERB_CHICKEN)
+    }
+
+    @Test
+    fun `exclude garlic finds the other 8`() {
+        val result = FakeRecipeSearch.run(asset, params(exclude = setOf("garlic")))
+
+        assertThat(result.pagination.totalItems).isEqualTo(8)
+        assertThat(result.data.map { it.title }).containsNoneOf(CHICKPEA_CURRY, LEMON_HERB_CHICKEN)
+    }
+
+    @Test
+    fun `include olive oil and exclude garlic find the pizza, the salad and the lamb`() {
+        val result = FakeRecipeSearch.run(asset, params(include = setOf("olive oil"), exclude = setOf("garlic")))
+
+        assertThat(result.data.map { it.title }).containsExactly(MARGHERITA_PIZZA, GREEK_SALAD, LAMB_SHOULDER)
+    }
+
+    @Test
+    fun `every included word must match some ingredient`() {
+        val result = FakeRecipeSearch.run(asset, params(include = setOf("garlic", "chickpeas")))
+
+        assertThat(result.data.map { it.title }).containsExactly(CHICKPEA_CURRY)
+    }
+
+    @Test
+    fun `exclude cheese keeps the tacos, whose cheddar has no cheese in its name`() {
+        val result = FakeRecipeSearch.run(asset, params(exclude = setOf("cheese")))
+
+        assertThat(result.pagination.totalItems).isEqualTo(8)
+        assertThat(result.data.map { it.title }).contains("Beef Tacos with Fresh Salsa")
+    }
+
+    @Test
+    fun `ingredient words ignore case and accents`() {
+        val result = FakeRecipeSearch.run(asset, params(include = setOf("GARLÍC")))
+
+        assertThat(result.data.map { it.title }).containsExactly(CHICKPEA_CURRY, LEMON_HERB_CHICKEN)
+    }
+
+    @Test
+    fun `instructions oven finds the pizza and pao de queijo`() {
+        val result = FakeRecipeSearch.run(asset, params(instructions = "oven"))
+
+        assertThat(result.data.map { it.title }).containsExactly(MARGHERITA_PIZZA, PAO_DE_QUEIJO)
+    }
+
+    @Test
+    fun `instructions saute finds the risotto's Saute step`() {
+        val result = FakeRecipeSearch.run(asset, params(instructions = "saute"))
+
+        assertThat(result.data.map { it.title }).containsExactly("Creamy Mushroom Risotto")
+    }
+
+    @Test
+    fun `instructions oven and exclude cheese find the pizza`() {
+        val result = FakeRecipeSearch.run(asset, params(instructions = "oven", exclude = setOf("cheese")))
+
+        assertThat(result.data.map { it.title }).containsExactly(MARGHERITA_PIZZA)
+    }
+
+    @Test
     fun `pagination counts only the recipes that match`() {
         val lamb = listOf(recipe("lamb-1").copy(title = "Lamb stew"), recipe("lamb-2").copy(title = "Lamb pie"))
         val recipes = recipes(15) + lamb
@@ -206,6 +271,10 @@ class FakeRecipeSearchTest {
 private const val AVOCADO_MOUSSE = "Mousse au Chocolat Végétalien à l'Avocat 🥑🍫"
 private const val CHICKPEA_CURRY = "Chickpea Coconut Curry"
 private const val MARGHERITA_PIZZA = "Classic Margherita Pizza"
+private const val GREEK_SALAD = "Greek Salad"
+private const val LAMB_SHOULDER = "Slow-Roasted Moroccan-Spiced Lamb Shoulder with Preserved Lemon, " +
+    "Green Olives and Fresh Herb Couscous for a Big Family Sunday Gathering"
+private const val LEMON_HERB_CHICKEN = "Grilled Lemon Herb Chicken"
 private const val PAO_DE_QUEIJO = "Pão de Queijo (Brazilian Cheese Bread)"
 
 /** docs/specs/test-data.md, "Filter counts". */
@@ -222,11 +291,15 @@ private val dietCounts = mapOf(
 
 private val difficultyCounts = mapOf(1 to 5, 2 to 3, 3 to 2)
 
+@Suppress("LongParameterList") // One parameter per filter of the endpoint.
 private fun params(
     diet: Set<String> = emptySet(),
     minServings: Int? = null,
     maxServings: Int? = null,
     difficulties: Set<Int> = emptySet(),
+    include: Set<String> = emptySet(),
+    exclude: Set<String> = emptySet(),
+    instructions: String? = null,
 ) = FakeSearchParams(
     page = 1,
     pageSize = 10,
@@ -234,6 +307,9 @@ private fun params(
     minServings = minServings,
     maxServings = maxServings,
     difficulties = difficulties,
+    include = include,
+    exclude = exclude,
+    instructions = instructions,
 )
 
 /** The 10 recipes the app ships with. The cases come from docs/specs/test-data.md, "Searches". */
