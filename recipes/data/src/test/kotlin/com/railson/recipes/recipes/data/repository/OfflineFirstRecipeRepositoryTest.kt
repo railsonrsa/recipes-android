@@ -162,6 +162,20 @@ class OfflineFirstRecipeRepositoryTest {
     }
 
     @Test
+    fun `refresh with ingredients and an instruction search saves what the server matched`() = runTest {
+        val query = SearchQuery(
+            includedIngredients = setOf("Olive oil"),
+            excludedIngredients = setOf("garlic"),
+            instructionSearch = "Oven",
+        )
+
+        repository.refresh(query)
+
+        assertThat(repository.observeSearch(query).first()?.recipes?.map { it.title })
+            .containsExactly("Classic Margherita Pizza")
+    }
+
+    @Test
     fun `vegan and halal saves a search with no recipes`() = runTest {
         val query = SearchQuery(dietaryTags = setOf(DietaryTag.Vegan, DietaryTag.Halal))
 

@@ -143,7 +143,7 @@ The cache keeps **what the server returned for each search**. The app never re-r
 | `search_results` | `searchKey`, `position`, `recipeId`. PK (`searchKey`, `position`) | Which recipes a search returned, in order |
 | `search_remote_keys` | `searchKey` PK, `nextPage`, `totalItems`, `lastUpdated` | Paging and freshness per search |
 
-`searchKey` is a canonical string of the search: text and words trimmed, lower-cased and accent-stripped, lists sorted, fixed field order, no `page` or `pageSize`. The same search in any order gives the same key. The catalog is the empty search.
+`searchKey` is a canonical string of the search: text and words trimmed, lower-cased and accent-stripped, lists sorted with no duplicates, the field order of the query parameters table, no `page` or `pageSize`. The same search in any order gives the same key. The catalog is the empty search. The app builds these parameters once and sends the same normalized values to the endpoint.
 
 Writes:
 

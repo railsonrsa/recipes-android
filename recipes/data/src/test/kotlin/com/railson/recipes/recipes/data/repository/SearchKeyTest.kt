@@ -75,4 +75,44 @@ class SearchKeyTest {
     fun `any servings and no tags is still the catalog`() {
         assertThat(SearchQuery(servingsRange = ServingsRange.Any).searchKey).isEqualTo("")
     }
+
+    @Test
+    fun `ingredient words are normalized and sorted`() {
+        val query = SearchQuery(
+            includedIngredients = setOf("Olive oil", "basil"),
+            excludedIngredients = setOf("Garlíc"),
+        )
+
+        assertThat(query.searchKey).isEqualTo("include=basil&include=olive oil&exclude=garlic")
+    }
+
+    @Test
+    fun `ingredient words that normalize the same are sent once`() {
+        val query = SearchQuery(includedIngredients = setOf("pão", "Pao"))
+
+        assertThat(query.searchKey).isEqualTo("include=pao")
+    }
+
+    @Test
+    fun `the instruction search is normalized`() {
+        assertThat(SearchQuery(instructionSearch = " Sauté ").searchKey).isEqualTo("instructions=saute")
+    }
+
+    @Test
+    fun `a blank instruction search is left out`() {
+        assertThat(SearchQuery(instructionSearch = "  ").searchKey).isEqualTo("")
+    }
+
+    @Test
+    fun `every part keeps the order of the endpoint's parameters`() {
+        val query = SearchQuery(
+            text = "pizza",
+            difficulties = setOf(Difficulty.Medium),
+            includedIngredients = setOf("basil"),
+            excludedIngredients = setOf("garlic"),
+            instructionSearch = "oven",
+        )
+
+        assertThat(query.searchKey).isEqualTo("q=pizza&difficulty=2&include=basil&exclude=garlic&instructions=oven")
+    }
 }

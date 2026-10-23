@@ -24,8 +24,10 @@ class FakeRecipesInterceptorTest {
 
     @Test
     fun `filters the app sends answer 200`() {
-        assertThat(statusOf("page=1&pageSize=10&diet=vegan&diet=halal&minServings=3&maxServings=4&difficulty=1"))
-            .isEqualTo(200)
+        val query = "page=1&pageSize=10&diet=vegan&diet=halal&minServings=3&maxServings=4&difficulty=1" +
+            "&include=olive%20oil&include=basil&exclude=garlic&instructions=oven"
+
+        assertThat(statusOf(query)).isEqualTo(200)
     }
 
     @Test

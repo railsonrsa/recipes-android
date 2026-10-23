@@ -7,7 +7,7 @@ import com.railson.recipes.recipes.data.search.normalizedForSearch
 
 /**
  * What a call to `GET /recipes` asked for, named as in docs/specs/data.md, "Query parameters".
- * [text] is `q`, [diet] the tag keys, [difficulties] `1` to `3`. The ingredient filters come with #25.
+ * [text] is `q`, [diet] the tag keys, [difficulties] `1` to `3`, [include] and [exclude] the ingredient words.
  */
 internal data class FakeSearchParams(
     val page: Int,
@@ -17,6 +17,9 @@ internal data class FakeSearchParams(
     val minServings: Int? = null,
     val maxServings: Int? = null,
     val difficulties: Set<Int> = emptySet(),
+    val include: Set<String> = emptySet(),
+    val exclude: Set<String> = emptySet(),
+    val instructions: String? = null,
 )
 
 /**
@@ -51,9 +54,22 @@ private fun RecipeDto.matches(params: FakeSearchParams): Boolean =
         dietaryAttributes.containsAll(params.diet) &&
         servings >= (params.minServings ?: servings) &&
         servings <= (params.maxServings ?: servings) &&
-        (params.difficulties.isEmpty() || difficulty in params.difficulties)
+        (params.difficulties.isEmpty() || difficulty in params.difficulties) &&
+        params.include.all { hasIngredient(it) } &&
+        params.exclude.none { hasIngredient(it) } &&
+        hasStep(params.instructions)
 
 private fun RecipeDto.matchesText(text: String?): Boolean {
     val normalized = text?.normalizedForSearch().orEmpty()
     return normalized in title.normalizedForSearch() || normalized in description.normalizedForSearch()
+}
+
+private fun RecipeDto.hasIngredient(word: String): Boolean {
+    val normalized = word.normalizedForSearch()
+    return ingredients.any { normalized in it.name.normalizedForSearch() }
+}
+
+private fun RecipeDto.hasStep(text: String?): Boolean {
+    val normalized = text?.normalizedForSearch().orEmpty()
+    return normalized.isEmpty() || instructions.any { normalized in it.description.normalizedForSearch() }
 }
