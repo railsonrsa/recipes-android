@@ -35,7 +35,7 @@ internal class OfflineFirstRecipeRepository(
     override fun observeRecipe(id: String): Flow<Recipe?> = recipeDao.observeRecipe(id).map { it?.toDomain() }
 
     override suspend fun refresh(query: SearchQuery): CallOutcome = callServer {
-        val page = api.getRecipes(page = 1, pageSize = PAGE_SIZE)
+        val page = api.getRecipes(text = query.text.trim().ifEmpty { null }, page = 1, pageSize = PAGE_SIZE)
         recipeSearchDao.replaceSearch(
             remoteKey = SearchRemoteKeyEntity(
                 searchKey = query.searchKey,
@@ -52,6 +52,3 @@ internal class OfflineFirstRecipeRepository(
     }
 }
 
-/** Only the catalog for now, which is the empty search. Search (#23) builds the key from the text and filters. */
-@Suppress("UnusedReceiverParameter") // The receiver is the search the key will be built from.
-private val SearchQuery.searchKey: String get() = ""
