@@ -1,4 +1,4 @@
-package com.railson.recipes.feature.recipedetail.detail
+package com.railson.recipes.core.format
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test

@@ -24,12 +24,12 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.railson.recipes.core.format.formatQuantity
 import com.railson.recipes.core.ui.preview.ThemePreviews
 import com.railson.recipes.core.ui.theme.RecipesTheme
 import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipedetail.R
 import com.railson.recipes.feature.recipedetail.detail.RecipeDetailAction
-import com.railson.recipes.feature.recipedetail.detail.formatQuantity
 import com.railson.recipes.recipes.domain.model.Ingredient
 
 /** "Ingredients" and the servings stepper on the right (DESIGN.md 3.9). */

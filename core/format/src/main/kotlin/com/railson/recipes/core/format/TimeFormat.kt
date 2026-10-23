@@ -1,4 +1,4 @@
-package com.railson.recipes.core.ui.format
+package com.railson.recipes.core.format
 
 import kotlin.time.Duration
 
