@@ -4,11 +4,13 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.railson.recipes.feature.recipelist.filter.ActiveFilter
 import com.railson.recipes.feature.recipelist.filter.RecipeFiltersUiState
+import com.railson.recipes.feature.recipelist.filter.activeFilters
 import com.railson.recipes.feature.recipelist.testing.FakeRecipeRepository
 import com.railson.recipes.feature.recipelist.testing.MainDispatcherRule
 import com.railson.recipes.recipes.domain.model.CallOutcome
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.Difficulty
+import com.railson.recipes.recipes.domain.model.IngredientSide
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
 import com.railson.recipes.recipes.domain.model.ServingsRange
@@ -249,6 +251,145 @@ class RecipeListViewModelFiltersTest {
 
         assertThat(repository.refreshed.last())
             .isEqualTo(SearchQuery(text = "curry", dietaryTags = setOf(DietaryTag.Vegan)))
+    }
+
+    @Test
+    fun `adding an ingredient puts it on its side of the draft and counts it`() = runTest {
+        val viewModel = viewModel()
+        val filters = filtersOf(viewModel)
+        viewModel.onAction(RecipeListAction.OpenFilters)
+
+        viewModel.onAction(RecipeListAction.AddIngredient(" garlic ", IngredientSide.Excluded))
+        advanceTimeBy(301)
+
+        val expected = SearchQuery(excludedIngredients = setOf("garlic"))
+        assertThat(filters.value.draft).isEqualTo(expected)
+        assertThat(repository.counted.last()).isEqualTo(expected)
+    }
+
+    @Test
+    fun `adding a new ingredient shows no snackbar`() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAction(RecipeListAction.OpenFilters)
+
+        viewModel.effects.test {
+            viewModel.onAction(RecipeListAction.AddIngredient("garlic", IngredientSide.Included))
+
+            expectNoEvents()
+        }
+    }
+
+    @Test
+    fun `excluded word moves to included when added there`() = runTest {
+        val viewModel = viewModel()
+        val filters = filtersOf(viewModel)
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        viewModel.onAction(RecipeListAction.AddIngredient("garlic", IngredientSide.Excluded))
+
+        viewModel.onAction(RecipeListAction.AddIngredient("Garlic", IngredientSide.Included))
+
+        assertThat(filters.value.draft).isEqualTo(SearchQuery(includedIngredients = setOf("Garlic")))
+    }
+
+    @Test
+    fun `a word that moves shows the moved snackbar`() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        viewModel.onAction(RecipeListAction.AddIngredient("garlic", IngredientSide.Excluded))
+
+        viewModel.effects.test {
+            viewModel.onAction(RecipeListAction.AddIngredient("Garlic", IngredientSide.Included))
+
+            assertThat(awaitItem()).isEqualTo(RecipeListEffect.ShowIngredientMoved("Garlic", IngredientSide.Included))
+        }
+    }
+
+    @Test
+    fun `removing an ingredient in the sheet takes it off the draft only`() = runTest {
+        val viewModel = viewModel()
+        val filters = filtersOf(viewModel)
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        viewModel.onAction(RecipeListAction.AddIngredient("garlic", IngredientSide.Included))
+
+        viewModel.onAction(RecipeListAction.RemoveIngredient("garlic"))
+
+        assertThat(filters.value.draft).isEqualTo(SearchQuery.Catalog)
+        assertThat(repository.refreshed).containsExactly(SearchQuery.Catalog)
+    }
+
+    @Test
+    fun `the instruction search counts the draft 300 ms after the last letter`() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAction(RecipeListAction.OpenFilters)
+
+        viewModel.onAction(RecipeListAction.ChangeInstructionSearch("ov"))
+        advanceTimeBy(200)
+        viewModel.onAction(RecipeListAction.ChangeInstructionSearch("oven"))
+        advanceTimeBy(301)
+
+        assertThat(repository.counted).containsExactly(SearchQuery.Catalog, SearchQuery(instructionSearch = "oven"))
+            .inOrder()
+    }
+
+    @Test
+    fun `show recipes searches the ingredients and the instruction search`() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        viewModel.onAction(RecipeListAction.AddIngredient("cheese", IngredientSide.Excluded))
+        viewModel.onAction(RecipeListAction.ChangeInstructionSearch("oven"))
+
+        viewModel.onAction(RecipeListAction.ShowRecipes)
+
+        assertThat(repository.refreshed.last())
+            .isEqualTo(SearchQuery(excludedIngredients = setOf("cheese"), instructionSearch = "oven"))
+    }
+
+    @Test
+    fun `the chips list included, then excluded, then the instruction search, after the other filters`() = runTest {
+        val viewModel = viewModel()
+        val filters = filtersOf(viewModel)
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        viewModel.onAction(RecipeListAction.ChangeInstructionSearch("oven"))
+        viewModel.onAction(RecipeListAction.AddIngredient("garlic", IngredientSide.Excluded))
+        viewModel.onAction(RecipeListAction.AddIngredient("basil", IngredientSide.Included))
+        viewModel.onAction(RecipeListAction.ToggleDifficulty(Difficulty.Easy))
+
+        viewModel.onAction(RecipeListAction.ShowRecipes)
+
+        assertThat(filters.value.applied.activeFilters).containsExactly(
+            ActiveFilter.Difficulty(Difficulty.Easy),
+            ActiveFilter.IncludedIngredient("basil"),
+            ActiveFilter.ExcludedIngredient("garlic"),
+            ActiveFilter.InstructionSearch("oven"),
+        ).inOrder()
+    }
+
+    @Test
+    fun `removing an ingredient chip searches without it`() = runTest {
+        val viewModel = viewModel()
+        applyIngredientAndSteps(viewModel)
+
+        viewModel.onAction(RecipeListAction.RemoveFilter(ActiveFilter.IncludedIngredient("basil")))
+
+        assertThat(repository.refreshed.last()).isEqualTo(SearchQuery(instructionSearch = "oven"))
+    }
+
+    @Test
+    fun `removing the steps chip searches without the instruction search`() = runTest {
+        val viewModel = viewModel()
+        applyIngredientAndSteps(viewModel)
+
+        viewModel.onAction(RecipeListAction.RemoveFilter(ActiveFilter.InstructionSearch("oven")))
+
+        assertThat(repository.refreshed.last()).isEqualTo(SearchQuery(includedIngredients = setOf("basil")))
+    }
+
+    /** Applies the included ingredient "basil" and the instruction search "oven". */
+    private fun applyIngredientAndSteps(viewModel: RecipeListViewModel) {
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        viewModel.onAction(RecipeListAction.AddIngredient("basil", IngredientSide.Included))
+        viewModel.onAction(RecipeListAction.ChangeInstructionSearch("oven"))
+        viewModel.onAction(RecipeListAction.ShowRecipes)
     }
 
     private fun applyFilters(viewModel: RecipeListViewModel, vararg tags: DietaryTag) {

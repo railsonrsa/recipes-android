@@ -3,6 +3,7 @@ package com.railson.recipes.feature.recipelist.list
 import com.railson.recipes.feature.recipelist.filter.ActiveFilter
 import com.railson.recipes.recipes.domain.model.DietaryTag
 import com.railson.recipes.recipes.domain.model.Difficulty
+import com.railson.recipes.recipes.domain.model.IngredientSide
 import com.railson.recipes.recipes.domain.model.ServingsRange
 
 /** What the reader does on the list screen. */
@@ -19,15 +20,25 @@ internal sealed interface RecipeListAction {
     /** Taps the filter button. The sheet starts from the applied filters. */
     data object OpenFilters : RecipeListAction
 
-    /** In the sheet. Each change counts the draft 300 ms after the last one. */
-    data class ToggleDietaryTag(val tag: DietaryTag) : RecipeListAction
+    /** An edit of the draft in the sheet. Each one counts the draft 300 ms after the last one. */
+    sealed interface DraftChange : RecipeListAction
 
-    data class ChangeServingsRange(val range: ServingsRange) : RecipeListAction
+    data class ToggleDietaryTag(val tag: DietaryTag) : DraftChange
 
-    data class ToggleDifficulty(val difficulty: Difficulty) : RecipeListAction
+    data class ChangeServingsRange(val range: ServingsRange) : DraftChange
+
+    data class ToggleDifficulty(val difficulty: Difficulty) : DraftChange
+
+    /** The "+" button. A word on the other side moves, and a snackbar says so. */
+    data class AddIngredient(val word: String, val side: IngredientSide) : DraftChange
+
+    /** The close icon on an ingredient chip in the sheet. */
+    data class RemoveIngredient(val word: String) : DraftChange
+
+    data class ChangeInstructionSearch(val text: String) : DraftChange
 
     /** "Clear all" in the sheet. Nothing changes on the list until "Show N recipes". */
-    data object ClearDraftFilters : RecipeListAction
+    data object ClearDraftFilters : DraftChange
 
     /** "Show N recipes": the draft becomes the search. */
     data object ShowRecipes : RecipeListAction

@@ -29,6 +29,10 @@
     </plurals>
     <string name="recipe_list_remove_filter">Remove filter</string>
     <string name="recipe_list_filter_servings">%1$s servings</string>
+    <string name="recipe_list_filter_excluded">No %1$s</string>
+    <string name="recipe_list_filter_steps">Steps: %1$s</string>
+    <string name="recipe_filters_ingredient_moved_to_included">“%1$s” moved to Must have</string>
+    <string name="recipe_filters_ingredient_moved_to_excluded">“%1$s” moved to Must not have</string>
 
     <string name="recipe_filters_clear_all">Clear all</string>
     <string name="recipe_filters_diet">Diet</string>

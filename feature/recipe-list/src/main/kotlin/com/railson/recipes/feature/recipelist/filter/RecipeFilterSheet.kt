@@ -3,6 +3,7 @@ package com.railson.recipes.feature.recipelist.filter
 import androidx.annotation.StringRes
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -24,6 +25,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -55,6 +58,7 @@ private const val SCRIM_ALPHA_DARK = 0.5f
 @Composable
 internal fun RecipeFilterSheet(
     filters: RecipeFiltersUiState,
+    snackbarHostState: SnackbarHostState,
     onAction: (RecipeListAction) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -67,14 +71,17 @@ internal fun RecipeFilterSheet(
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = scrimAlpha),
     ) {
-        RecipeFilterSheetContent(
-            filters = filters,
-            onAction = onAction,
-            onShowRecipes = {
-                onAction(RecipeListAction.ShowRecipes)
-                scope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() }
-            },
-        )
+        Box(contentAlignment = Alignment.BottomCenter) {
+            RecipeFilterSheetContent(
+                filters = filters,
+                onAction = onAction,
+                onShowRecipes = {
+                    onAction(RecipeListAction.ShowRecipes)
+                    scope.launch { sheetState.hide() }.invokeOnCompletion { onDismiss() }
+                },
+            )
+            SnackbarHost(snackbarHostState)
+        }
     }
 }
 
