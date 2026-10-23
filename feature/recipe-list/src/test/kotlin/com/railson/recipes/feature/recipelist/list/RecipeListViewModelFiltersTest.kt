@@ -392,6 +392,18 @@ class RecipeListViewModelFiltersTest {
         viewModel.onAction(RecipeListAction.ShowRecipes)
     }
 
+    @Test
+    fun `an edit that changes nothing does not count again`() = runTest {
+        val viewModel = viewModel()
+        viewModel.onAction(RecipeListAction.OpenFilters)
+
+        viewModel.onAction(RecipeListAction.ChangeInstructionSearch(""))
+        viewModel.onAction(RecipeListAction.RemoveIngredient("garlic"))
+        advanceTimeBy(301)
+
+        assertThat(repository.counted).containsExactly(SearchQuery.Catalog)
+    }
+
     private fun applyFilters(viewModel: RecipeListViewModel, vararg tags: DietaryTag) {
         viewModel.onAction(RecipeListAction.OpenFilters)
         tags.forEach { viewModel.onAction(RecipeListAction.ToggleDietaryTag(it)) }

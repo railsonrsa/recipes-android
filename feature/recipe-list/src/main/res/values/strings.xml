@@ -44,6 +44,15 @@
     <string name="recipe_filters_servings_5_6">5–6</string>
     <string name="recipe_filters_servings_7_plus">7+</string>
     <string name="recipe_filters_difficulty">Difficulty</string>
+    <string name="recipe_filters_ingredients">Ingredients</string>
+    <string name="recipe_filters_must_have">Must have</string>
+    <string name="recipe_filters_must_not_have">Must not have</string>
+    <string name="recipe_filters_ingredient_placeholder">Search ingredients</string>
+    <string name="recipe_filters_avoid_placeholder">Ingredient to avoid</string>
+    <string name="recipe_filters_add_ingredient">Add ingredient</string>
+    <string name="recipe_filters_instructions">Instructions</string>
+    <string name="recipe_filters_instructions_placeholder">Search steps, e.g. oven</string>
+    <string name="recipe_filters_clear_instructions">Clear steps search</string>
     <string name="recipe_filters_show">Show recipes</string>
     <plurals name="recipe_filters_show_count">
         <item quantity="one">Show %1$d recipe</item>
