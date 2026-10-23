@@ -101,9 +101,9 @@ internal class RecipeListViewModel(
         refresh()
     }
 
-    /** Counts right away: the applied filters have nothing to wait for. */
+    /** Counts right away: the applied filters have nothing to wait for. The last number stays until then. */
     private fun openFilters() {
-        draft.value = DraftFilters(query = query.value)
+        draft.update { DraftFilters(query = query.value, count = it.count) }
         count(wait = false)
     }
 

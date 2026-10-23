@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration.Companion.seconds
 
 class RecipeListViewModelFiltersTest {
 
@@ -94,16 +95,31 @@ class RecipeListViewModelFiltersTest {
     }
 
     @Test
-    fun `a failed count leaves the button without a number`() = runTest {
+    fun `a failed count drops the number the button showed`() = runTest {
         repository.counts[SearchQuery.Catalog] = 10
         val viewModel = viewModel()
         val filters = filtersOf(viewModel)
         viewModel.onAction(RecipeListAction.OpenFilters)
+        assertThat(filters.value.draftCount).isEqualTo(10)
 
         viewModel.onAction(RecipeListAction.ToggleDietaryTag(DietaryTag.Halal))
         advanceTimeBy(301)
 
+        assertThat(repository.counted.last()).isEqualTo(SearchQuery(dietaryTags = setOf(DietaryTag.Halal)))
         assertThat(filters.value.draftCount).isNull()
+    }
+
+    @Test
+    fun `reopening the sheet keeps the last number while the new count loads`() = runTest {
+        repository.counts[SearchQuery.Catalog] = 10
+        val viewModel = viewModel()
+        val filters = filtersOf(viewModel)
+        viewModel.onAction(RecipeListAction.OpenFilters)
+        repository.countWait = 1.seconds
+
+        viewModel.onAction(RecipeListAction.OpenFilters)
+
+        assertThat(filters.value.draftCount).isEqualTo(10)
     }
 
     @Test
