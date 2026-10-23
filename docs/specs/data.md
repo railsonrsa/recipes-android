@@ -189,7 +189,7 @@ interface RecipeRepository {
 - **Search text**: waits 300 ms after the last keystroke before searching.
 - **Filters**: applied when the reader taps "Show N recipes".
 - **"Show N recipes"**: calls `count` 300 ms after the last filter change. When `count` returns `null`, the button says "Show recipes".
-- **Load more**: when the last items come into view, `hasMore` is true and no load is running.
+- **Load more**: when the "Loading more recipes…" row comes into view, `hasMore` is true and neither a next page nor a refresh is running. A refresh cancels a running next page, since page 1 replaces what it would append to.
 - **Pull-to-refresh**: on the list, calls `refresh`. The saved list stays visible under the indicator.
 - **"Try again"** (Error) and **"Refresh"** (Empty catalogue) call `refresh`.
 - **No automatic retry.** Only the reader retries.
@@ -211,7 +211,7 @@ interface RecipeRepository {
 
 A saved result with 0 recipes counts as not saved when the call fails, since there is nothing to show. This also keeps the Offline and Error screens easy to show with the debug menu: pick Empty catalogue and refresh, then pick No network or Server error and refresh again.
 
-Load more failing: the "Loading more recipes…" row becomes "Couldn't load more" + "Retry". The cards stay.
+Load more failing: the "Loading more recipes…" row becomes "Couldn't load more" + "Retry". The cards stay. Scrolling doesn't retry it; "Retry", a refresh or a new search does.
 
 ## Versions
 

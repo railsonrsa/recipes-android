@@ -14,13 +14,16 @@ import kotlin.time.Duration
 
 /**
  * Holds a saved result per search that tests can change.
- * Each refresh runs until the test ends it with [endRefresh]. A count answers from [counts] after
+ * Each refresh runs until the test ends it with [endRefresh], each next page until [endNextPage].
+ * A count answers from [counts] after
  * [countWait], `null` (a failed call) for a search it doesn't have.
  */
 internal class FakeRecipeRepository : RecipeRepository {
     private val searches = mutableMapOf<SearchQuery, MutableStateFlow<SearchResult?>>()
     val refreshed = mutableListOf<SearchQuery>()
     private val outcomes = Channel<CallOutcome>(Channel.UNLIMITED)
+    val nextPagesLoaded = mutableListOf<SearchQuery>()
+    private val nextPageOutcomes = Channel<CallOutcome>(Channel.UNLIMITED)
     val counts = mutableMapOf<SearchQuery, Int>()
     val counted = mutableListOf<SearchQuery>()
     var countWait: Duration = Duration.ZERO
@@ -35,6 +38,10 @@ internal class FakeRecipeRepository : RecipeRepository {
         outcomes.trySend(outcome)
     }
 
+    fun endNextPage(outcome: CallOutcome) {
+        nextPageOutcomes.trySend(outcome)
+    }
+
     override fun observeSearch(query: SearchQuery): Flow<SearchResult?> = savedFor(query)
 
     override fun observeRecipe(id: String): Flow<Recipe?> = flowOf(null)
@@ -44,7 +51,10 @@ internal class FakeRecipeRepository : RecipeRepository {
         return outcomes.receive()
     }
 
-    override suspend fun loadNextPage(query: SearchQuery): CallOutcome = CallOutcome.Success
+    override suspend fun loadNextPage(query: SearchQuery): CallOutcome {
+        nextPagesLoaded += query
+        return nextPageOutcomes.receive()
+    }
 
     override suspend fun count(query: SearchQuery): Int? {
         counted += query
