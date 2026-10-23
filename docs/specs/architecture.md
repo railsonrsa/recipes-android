@@ -28,8 +28,8 @@ Package prefix: `com.railson.recipes`.
 | `:app` | `MainActivity`, `NavHost`, starts Koin. The debug "Network" menu lives in its `debug` source set | |
 | `:core:ui` | Material 3 theme, DESIGN.md tokens, shared components, the `Duration` → text formatter | `theme/`, `components/`, `format/`, `preview/` |
 | `:core:network` | `OkHttpClient`, `Retrofit`, `Json`, `HttpLoggingInterceptor`, `FakeNetworkConfig`, `FakeNetworkModeInterceptor` | `client/`, `fake/`, `di/` |
-| `:recipes:domain` | Pure Kotlin. `Recipe` and its types, `SearchQuery`, `SearchResult`, `CallOutcome`, the `RecipeRepository` interface, the use cases | `model/`, `repository/`, `usecase/` |
-| `:recipes:data` | Room, `RecipesApi` (Retrofit), DTOs, `FakeRecipesInterceptor`, `FakeRecipeSearch`, the asset JSON, `RecipeRepository` implementation | `remote/`, `fake/`, `local/{database,dao,entity}`, `mapper/`, `search/` (text normalization, shared by the fake and the cache key), `repository/`, `di/` |
+| `:recipes:domain` | Pure Kotlin. `Recipe` and its types, `SearchQuery` and its text normalization (shared by the move rule, the fake server and the cache key), `SearchResult`, `CallOutcome`, the `RecipeRepository` interface, the use cases | `model/`, `repository/`, `usecase/` |
+| `:recipes:data` | Room, `RecipesApi` (Retrofit), DTOs, `FakeRecipesInterceptor`, `FakeRecipeSearch`, the asset JSON, `RecipeRepository` implementation | `remote/`, `fake/`, `local/{database,dao,entity}`, `mapper/`, `repository/`, `di/` |
 | `:feature:recipe-list` | List screen and filter sheet | `navigation/`, `list/`, `filter/`, `components/`, `di/` |
 | `:feature:recipe-detail` | Detail screen | `navigation/`, `detail/`, `components/`, `di/` |
 

@@ -2,7 +2,7 @@ package com.railson.recipes.recipes.data.repository
 
 import com.railson.recipes.recipes.data.mapper.key
 import com.railson.recipes.recipes.data.mapper.number
-import com.railson.recipes.recipes.data.search.normalizedForSearch
+import com.railson.recipes.recipes.domain.model.normalizedForSearch
 import com.railson.recipes.recipes.domain.model.SearchQuery
 
 /**

@@ -3,7 +3,7 @@ package com.railson.recipes.recipes.data.fake
 import com.railson.recipes.recipes.data.remote.PaginationDto
 import com.railson.recipes.recipes.data.remote.RecipeDto
 import com.railson.recipes.recipes.data.remote.RecipePageDto
-import com.railson.recipes.recipes.data.search.normalizedForSearch
+import com.railson.recipes.recipes.domain.model.normalizedForSearch
 
 /**
  * What a call to `GET /recipes` asked for, named as in docs/specs/data.md, "Query parameters".

@@ -16,14 +16,11 @@ data class SearchQuery(
             (if (servingsRange == ServingsRange.Any) 0 else 1) +
             if (instructionSearch.isBlank()) 0 else 1
 
-    /** The side [word] is on, in any case, or `null` when it is on neither. */
-    fun sideOf(word: String): IngredientSide? {
-        val trimmed = word.trim()
-        return when {
-            includedIngredients.any { it.equals(trimmed, ignoreCase = true) } -> IngredientSide.Included
-            excludedIngredients.any { it.equals(trimmed, ignoreCase = true) } -> IngredientSide.Excluded
-            else -> null
-        }
+    /** The side [word] is on, in any case and with any accents, or `null` when it is on neither. */
+    fun sideOf(word: String): IngredientSide? = when {
+        includedIngredients.any { it.isSameWord(word) } -> IngredientSide.Included
+        excludedIngredients.any { it.isSameWord(word) } -> IngredientSide.Excluded
+        else -> null
     }
 
     /** Adds [word] to [side]. A word can't be on both sides, so one on the other side moves. Blank is ignored. */
@@ -38,18 +35,18 @@ data class SearchQuery(
     }
 
     /** Takes [word] off whichever side it is on. */
-    fun withoutIngredient(word: String): SearchQuery {
-        val trimmed = word.trim()
-        return copy(
-            includedIngredients = includedIngredients.filterNot { it.equals(trimmed, ignoreCase = true) }.toSet(),
-            excludedIngredients = excludedIngredients.filterNot { it.equals(trimmed, ignoreCase = true) }.toSet(),
-        )
-    }
+    fun withoutIngredient(word: String): SearchQuery = copy(
+        includedIngredients = includedIngredients.filterNot { it.isSameWord(word) }.toSet(),
+        excludedIngredients = excludedIngredients.filterNot { it.isSameWord(word) }.toSet(),
+    )
 
     companion object {
         val Catalog = SearchQuery()
     }
 }
+
+/** Two words match as the search matches them: case-insensitive and accent-insensitive. */
+private fun String.isSameWord(other: String): Boolean = normalizedForSearch() == other.normalizedForSearch()
 
 /** Where an ingredient word goes: Must have or Must not have. */
 enum class IngredientSide { Included, Excluded }

@@ -74,4 +74,20 @@ class IngredientFilterTest {
 
         assertThat(query.withoutIngredient("garlic")).isEqualTo(SearchQuery(includedIngredients = setOf("basil")))
     }
+
+    @Test
+    fun `the same word with other accents is not added twice`() {
+        val query = SearchQuery(includedIngredients = setOf("pão")).withIngredient("PAO", IngredientSide.Included)
+
+        assertThat(query.includedIngredients).containsExactly("pão")
+    }
+
+    @Test
+    fun `a word moves to the other side whatever its accents`() {
+        val query = SearchQuery(includedIngredients = setOf("jalapeño"))
+            .withIngredient("jalapeno", IngredientSide.Excluded)
+
+        assertThat(query.includedIngredients).isEmpty()
+        assertThat(query.excludedIngredients).containsExactly("jalapeno")
+    }
 }
