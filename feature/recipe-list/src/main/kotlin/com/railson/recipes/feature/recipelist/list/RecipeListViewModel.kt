@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.railson.recipes.feature.recipelist.filter.RecipeFiltersUiState
 import com.railson.recipes.feature.recipelist.filter.without
-import com.railson.recipes.feature.recipelist.filter.withFiltersOf
 import com.railson.recipes.feature.recipelist.filter.withoutFilters
 import com.railson.recipes.recipes.domain.model.CallOutcome
+import com.railson.recipes.recipes.domain.model.IngredientSide
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import com.railson.recipes.recipes.domain.model.SearchResult
 import com.railson.recipes.recipes.domain.usecase.CountRecipesUseCase
@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -52,12 +53,13 @@ internal class RecipeListViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RecipeListUiState.Loading)
 
-    private val draft = MutableStateFlow(DraftFilters())
+    /** What the sheet edits, with the search text "Show N recipes" keeps, and the server's count for it. */
+    private val draft = MutableStateFlow(SearchQuery.Catalog)
+    private val draftCount = MutableStateFlow<Int?>(null)
 
     /** The sheet has its own life next to the list's states, so it has its own state. */
-    val filters: StateFlow<RecipeFiltersUiState> = combine(query, draft) { applied, draft ->
-        RecipeFiltersUiState(applied = applied, draft = applied.withFiltersOf(draft.query), draftCount = draft.count)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RecipeFiltersUiState())
+    val filters: StateFlow<RecipeFiltersUiState> = combine(query, draft, draftCount, ::RecipeFiltersUiState)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), RecipeFiltersUiState())
 
     private var searchTextJob: Job? = null
     private var refreshJob: Job? = null
@@ -73,15 +75,8 @@ internal class RecipeListViewModel(
             is RecipeListAction.ChangeSearchText -> changeSearchText(action.text)
             is RecipeListAction.OpenRecipe -> effectChannel.trySend(RecipeListEffect.OpenRecipe(action.id))
             RecipeListAction.OpenFilters -> openFilters()
-            is RecipeListAction.ToggleDietaryTag -> changeDraft {
-                copy(dietaryTags = dietaryTags.toggle(action.tag))
-            }
-            is RecipeListAction.ChangeServingsRange -> changeDraft { copy(servingsRange = action.range) }
-            is RecipeListAction.ToggleDifficulty -> changeDraft {
-                copy(difficulties = difficulties.toggle(action.difficulty))
-            }
-            RecipeListAction.ClearDraftFilters -> changeDraft { withoutFilters() }
-            RecipeListAction.ShowRecipes -> search(query.value.withFiltersOf(draft.value.query))
+            is RecipeListAction.DraftChange -> changeDraft(action)
+            RecipeListAction.ShowRecipes -> showRecipes()
             is RecipeListAction.RemoveFilter -> search(query.value.without(action.filter))
             RecipeListAction.ClearAllFilters -> search(query.value.withoutFilters())
         }
@@ -95,31 +90,53 @@ internal class RecipeListViewModel(
         }
     }
 
+    /** The instruction field keeps the reader's spaces while typing. The search doesn't. */
+    private fun showRecipes() {
+        search(draft.value.copy(instructionSearch = draft.value.instructionSearch.trim()))
+    }
+
     private fun search(newQuery: SearchQuery) {
         if (newQuery == query.value) return
         query.value = newQuery
+        draft.update { it.copy(text = newQuery.text) }
         refresh()
     }
 
     /** Counts right away: the applied filters have nothing to wait for. The last number stays until then. */
     private fun openFilters() {
-        draft.update { DraftFilters(query = query.value, count = it.count) }
-        count(wait = false)
+        draft.value = query.value
+        countDraft(after = Duration.ZERO)
     }
 
-    private fun changeDraft(change: SearchQuery.() -> SearchQuery) {
-        draft.update { it.copy(query = it.query.change()) }
-        count(wait = true)
+    private fun changeDraft(change: RecipeListAction.DraftChange) {
+        val before = draft.value
+        draft.value = when (change) {
+            is RecipeListAction.ToggleDietaryTag -> before.copy(dietaryTags = before.dietaryTags.toggle(change.tag))
+            is RecipeListAction.ChangeServingsRange -> before.copy(servingsRange = change.range)
+            is RecipeListAction.ToggleDifficulty ->
+                before.copy(difficulties = before.difficulties.toggle(change.difficulty))
+            is RecipeListAction.AddIngredient -> before.withIngredient(change.word, change.side)
+            is RecipeListAction.RemoveIngredient -> before.withoutIngredient(change.word)
+            is RecipeListAction.ChangeInstructionSearch -> before.copy(instructionSearch = change.text)
+            RecipeListAction.ClearDraftFilters -> before.withoutFilters()
+        }
+        if (change is RecipeListAction.AddIngredient) showMoved(before, change.word, change.side)
+        countDraft(after = FILTER_COUNT_WAIT)
+    }
+
+    private fun showMoved(before: SearchQuery, word: String, side: IngredientSide) {
+        val sideBefore = before.sideOf(word)
+        if (sideBefore != null && sideBefore != side) {
+            effectChannel.trySend(RecipeListEffect.ShowIngredientMoved(word.trim(), side))
+        }
     }
 
     /** The count keeps the last number while the next one loads, so the button doesn't flicker. */
-    private fun count(wait: Boolean) {
+    private fun countDraft(after: Duration) {
         countJob?.cancel()
         countJob = viewModelScope.launch {
-            if (wait) delay(FILTER_COUNT_WAIT)
-            // The search text may have changed since the sheet opened. The count is for what "Show" applies.
-            val count = countRecipes(query.value.withFiltersOf(draft.value.query))
-            draft.update { it.copy(count = count) }
+            delay(after)
+            draftCount.value = countRecipes(draft.value)
         }
     }
 
@@ -149,9 +166,6 @@ internal class RecipeListViewModel(
         val FILTER_COUNT_WAIT = 300.milliseconds
     }
 }
-
-/** What the sheet edits, and the server's count for it. Its search text is never used. */
-private data class DraftFilters(val query: SearchQuery = SearchQuery.Catalog, val count: Int? = null)
 
 private fun <T> Set<T>.toggle(item: T): Set<T> = if (item in this) this - item else this + item
 

@@ -1,5 +1,6 @@
 package com.railson.recipes.feature.recipelist.list
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,6 +36,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
@@ -50,6 +52,7 @@ import com.railson.recipes.feature.recipelist.filter.RecipeFilterSheet
 import com.railson.recipes.feature.recipelist.filter.RecipeFiltersUiState
 import com.railson.recipes.feature.recipelist.filter.activeFilters
 import com.railson.recipes.recipes.domain.model.DietaryTag
+import com.railson.recipes.recipes.domain.model.IngredientSide
 import com.railson.recipes.recipes.domain.model.Recipe
 import com.railson.recipes.recipes.domain.model.SearchQuery
 import org.koin.compose.viewmodel.koinViewModel
@@ -64,6 +67,9 @@ internal fun RecipeListScreen(
     val filters by viewModel.filters.collectAsStateWithLifecycle()
     var showFilters by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
+    // The sheet is its own window over the screen, so its snackbars need their own host.
+    val sheetSnackbarHostState = remember { SnackbarHostState() }
+    val resources = LocalResources.current
     val offlineMessage = stringResource(R.string.recipe_list_snackbar_offline)
     val refreshFailedMessage = stringResource(R.string.recipe_list_snackbar_refresh_failed)
     val retry = stringResource(R.string.recipe_list_retry)
@@ -82,6 +88,10 @@ internal fun RecipeListScreen(
                 RecipeListEffect.ShowRefreshFailedSnackbar -> refreshFailedMessage
                 is RecipeListEffect.OpenRecipe -> {
                     currentOnRecipeClick(effect.id)
+                    return@collectLatest
+                }
+                is RecipeListEffect.ShowIngredientMoved -> {
+                    sheetSnackbarHostState.showSnackbar(resources.getString(effect.side.movedMessage, effect.word))
                     return@collectLatest
                 }
             }
@@ -107,7 +117,12 @@ internal fun RecipeListScreen(
         topBarActions = topBarActions,
     )
     if (showFilters) {
-        RecipeFilterSheet(filters = filters, onAction = viewModel::onAction, onDismiss = { showFilters = false })
+        RecipeFilterSheet(
+            filters = filters,
+            snackbarHostState = sheetSnackbarHostState,
+            onAction = viewModel::onAction,
+            onDismiss = { showFilters = false },
+        )
     }
 }
 
@@ -289,3 +304,10 @@ private fun RecipeListListPreview() {
         RecipeListList(recipes = PreviewRecipes.edgeCases, onRecipeClick = {}, contentPadding = PaddingValues())
     }
 }
+
+@get:StringRes
+private val IngredientSide.movedMessage: Int
+    get() = when (this) {
+        IngredientSide.Included -> R.string.recipe_filters_ingredient_moved_to_included
+        IngredientSide.Excluded -> R.string.recipe_filters_ingredient_moved_to_excluded
+    }
