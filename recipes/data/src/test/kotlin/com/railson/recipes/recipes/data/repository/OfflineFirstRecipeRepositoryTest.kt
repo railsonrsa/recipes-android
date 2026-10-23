@@ -205,20 +205,28 @@ class OfflineFirstRecipeRepositoryTest {
     }
 
     @Test
-    fun `next page appends after the saved recipes and moves on to the page after it`() = runTest {
+    fun `next page appends after the saved recipes`() = runTest {
         pagesOf4.refresh(SearchQuery.Catalog)
 
-        val second = pagesOf4.loadNextPage(SearchQuery.Catalog)
-        val afterSecond = pagesOf4.observeSearch(SearchQuery.Catalog).first()
-        val third = pagesOf4.loadNextPage(SearchQuery.Catalog)
-        val afterThird = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        val outcome = pagesOf4.loadNextPage(SearchQuery.Catalog)
 
-        assertThat(second).isEqualTo(CallOutcome.Success)
-        assertThat(afterSecond?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(8)).inOrder()
-        assertThat(afterSecond?.hasMore).isTrue()
-        assertThat(third).isEqualTo(CallOutcome.Success)
-        assertThat(afterThird?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
-        assertThat(afterThird?.hasMore).isFalse()
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(outcome).isEqualTo(CallOutcome.Success)
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(8)).inOrder()
+        assertThat(result?.hasMore).isTrue()
+    }
+
+    @Test
+    fun `next page moves the remote key on, so the one after it is the last`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
+        assertThat(result?.hasMore).isFalse()
+        assertThat(result?.totalItems).isEqualTo(10)
     }
 
     @Test
@@ -244,18 +252,27 @@ class OfflineFirstRecipeRepositoryTest {
     }
 
     @Test
-    fun `a failed next page keeps the saved recipes and the page to load`() = runTest {
+    fun `a failed next page keeps the saved recipes`() = runTest {
         pagesOf4.refresh(SearchQuery.Catalog)
         networkConfig.mode = FakeNetworkMode.ServerError
 
-        val failed = pagesOf4.loadNextPage(SearchQuery.Catalog)
-        val afterFailure = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        val outcome = pagesOf4.loadNextPage(SearchQuery.Catalog)
+
+        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        assertThat(outcome).isEqualTo(CallOutcome.ServerError)
+        assertThat(result?.recipes).hasSize(4)
+        assertThat(result?.hasMore).isTrue()
+    }
+
+    @Test
+    fun `next page after a failed one asks for the same page again`() = runTest {
+        pagesOf4.refresh(SearchQuery.Catalog)
+        networkConfig.mode = FakeNetworkMode.ServerError
+        pagesOf4.loadNextPage(SearchQuery.Catalog)
         networkConfig.mode = FakeNetworkMode.Normal
+
         pagesOf4.loadNextPage(SearchQuery.Catalog)
 
-        assertThat(failed).isEqualTo(CallOutcome.ServerError)
-        assertThat(afterFailure?.recipes).hasSize(4)
-        assertThat(afterFailure?.hasMore).isTrue()
         assertThat(pagesOf4.observeSearch(SearchQuery.Catalog).first()?.recipes?.map { it.title })
             .containsExactlyElementsIn(catalogTitles.take(8)).inOrder()
     }
