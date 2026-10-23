@@ -47,7 +47,7 @@ Derived values:
 
 - The reader picks the scaled servings, from 1 to 20.
 - The domain scales every ingredient quantity by `scaledServings / servings`. This includes `pinch` and quantities with no unit.
-- The UI formats the result: ¼, ½, ¾, 1½, otherwise up to 1 decimal place, and "pinch" or "pinches".
+- The UI formats the result: ¼, ½, ¾, 1½, otherwise up to 1 decimal place, and "pinch" or "pinches", "cup" or "cups".
 
 ## Search
 
