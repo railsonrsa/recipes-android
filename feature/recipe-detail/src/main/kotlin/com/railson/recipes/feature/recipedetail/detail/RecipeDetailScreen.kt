@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -38,7 +39,10 @@ import com.railson.recipes.core.ui.theme.Spacing
 import com.railson.recipes.feature.recipedetail.R
 import com.railson.recipes.feature.recipedetail.components.Description
 import com.railson.recipes.feature.recipedetail.components.DetailDietTags
+import com.railson.recipes.feature.recipedetail.components.IngredientRow
+import com.railson.recipes.feature.recipedetail.components.IngredientsHeader
 import com.railson.recipes.feature.recipedetail.components.PreviewRecipes
+import com.railson.recipes.feature.recipedetail.components.ScaledFrom
 import com.railson.recipes.feature.recipedetail.components.StatBoxes
 import com.railson.recipes.recipes.domain.model.scaledIngredients
 import org.koin.compose.viewmodel.koinViewModel
@@ -51,12 +55,13 @@ internal fun RecipeDetailScreen(
     viewModel: RecipeDetailViewModel = koinViewModel { parametersOf(id) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    RecipeDetailLayout(uiState = uiState, onBack = onBack)
+    RecipeDetailLayout(uiState = uiState, onAction = viewModel::onAction, onBack = onBack)
 }
 
 @Composable
 internal fun RecipeDetailLayout(
     uiState: RecipeDetailUiState,
+    onAction: (RecipeDetailAction) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -73,6 +78,7 @@ internal fun RecipeDetailLayout(
             RecipeDetailUiState.NotAvailable -> RecipeDetailNotAvailable(onBack = onBack, modifier = stateModifier)
             is RecipeDetailUiState.Content -> RecipeDetailContent(
                 content = uiState,
+                onAction = onAction,
                 onBack = onBack,
                 modifier = stateModifier,
             )
@@ -84,6 +90,7 @@ internal fun RecipeDetailLayout(
 @Composable
 internal fun RecipeDetailContent(
     content: RecipeDetailUiState.Content,
+    onAction: (RecipeDetailAction) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -117,6 +124,23 @@ internal fun RecipeDetailContent(
             item(key = "description") {
                 Description(text = recipe.description, modifier = panelPadding.padding(top = Spacing.lg))
             }
+        }
+        item(key = "ingredients-header") {
+            Column(modifier = panelPadding.padding(top = Spacing.lg)) {
+                HorizontalDivider(thickness = 1.dp, color = RecipesTheme.colors.hairline)
+                IngredientsHeader(
+                    scaledServings = content.scaledServings,
+                    canRemoveServings = content.canRemoveServings,
+                    canAddServings = content.canAddServings,
+                    onAction = onAction,
+                )
+                if (content.isScaled) {
+                    ScaledFrom(servings = recipe.servings, onReset = { onAction(RecipeDetailAction.ResetServings) })
+                }
+            }
+        }
+        items(content.ingredients) { ingredient ->
+            IngredientRow(ingredient = ingredient, modifier = panelPadding)
         }
     }
 }
@@ -181,6 +205,7 @@ private fun RecipeDetailContentPreview() {
                     ingredients = it.scaledIngredients(scaled),
                 )
             },
+            onAction = {},
             onBack = {},
         )
     }
@@ -194,6 +219,7 @@ private fun RecipeDetailEdgeCasesPreview() {
             uiState = PreviewRecipes.edgeCases.let {
                 RecipeDetailUiState.Content(recipe = it, scaledServings = it.servings, ingredients = it.ingredients)
             },
+            onAction = {},
             onBack = {},
         )
     }
