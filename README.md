@@ -17,7 +17,7 @@ What you can do:
 
 ## Run it
 
-You need Android Studio (it comes with JDK 17 and the Android SDK) and an emulator or a phone with Android 8.0 (API 26) or newer.
+You need Android Studio with the Android SDK, a JDK 17 for Gradle, and an emulator or a phone with Android 8.0 (API 26) or newer.
 
 1. Open the project in Android Studio and let Gradle sync.
 2. Run the `app` configuration.
@@ -46,7 +46,7 @@ The same command CI runs on every pull request:
 ./gradlew detekt lint test assembleDebug
 ```
 
-- **detekt** and **Android lint** with their default rules. Any issue fails the build.
+- **detekt** and **Android lint** with their default rules. detekt only changes two rules so Composable and Preview functions pass ([detekt.yml](config/detekt/detekt.yml)). Any issue fails the build.
 - **Unit tests**: JUnit 4, Truth, Turbine, MockK. The repository tests run the real Room, OkHttp, Retrofit and fake server, with Robolectric.
 
 ## Architecture
@@ -82,6 +82,9 @@ flowchart LR
   app[":app"] --> list[":feature:recipe-list"]
   app --> detail[":feature:recipe-detail"]
   app --> data[":recipes:data"]
+  app --> domain
+  app --> ui
+  app --> net
   list --> domain[":recipes:domain"]
   detail --> domain
   list --> ui[":core:ui"]
@@ -95,7 +98,7 @@ flowchart LR
 | `:app` | `MainActivity`, navigation, Koin setup, the debug Network menu |
 | `:core:ui` | Material 3 theme from [DESIGN.md](docs/DESIGN.md), shared components, the time format |
 | `:core:network` | OkHttp, Retrofit, JSON, logging, the network mode interceptor |
-| `:recipes:domain` | `Recipe`, `SearchQuery`, the repository interface and the 5 use cases. No Android, no `java.*` |
+| `:recipes:domain` | `Recipe`, `SearchQuery`, the repository interface and the 5 use cases. No Android; only `java.text.Normalizer` from the JDK |
 | `:recipes:data` | Room, the Retrofit API, DTOs, the fake server, the repository |
 | `:feature:recipe-list` | List screen, search bar, filter sheet |
 | `:feature:recipe-detail` | Detail screen, servings scaling and the quantity format |
@@ -167,11 +170,11 @@ Every slice with all its screenshots and videos: [docs/progress.md](docs/progres
 - Monitoring: one event per API call. The named call outcomes are ready for it.
 - Offline results for a search never made before, by filtering the saved recipes on the device, labeled as possibly incomplete.
 - A Koin `verify()` test for the dependency graph, and a tool that checks the module rules.
-- ktlint, Compose rules for detekt, minimum coverage with Kover, screenshot tests with Roborazzi, Compose UI tests.
+- ktlint, Compose rules for detekt, stricter detekt and lint configs, minimum coverage with Kover, screenshot tests with Roborazzi, Compose UI tests.
 
 ## Kotlin Multiplatform, later
 
-`:recipes:domain` is a Kotlin/JVM module with no `android.*` and no `java.*`. Its only library is `kotlinx.coroutines`, which is multiplatform. Moving it would look like this:
+`:recipes:domain` is a Kotlin/JVM module with no `android.*`. Its only library is `kotlinx.coroutines`, which is multiplatform. One line uses the JDK: `normalizedForSearch()` strips accents with `java.text.Normalizer`. Moving the module would look like this:
 
 ```kotlin
 // recipes/domain/build.gradle.kts
@@ -192,4 +195,4 @@ kotlin {
 }
 ```
 
-Then move `src/main/kotlin` to `src/commonMain/kotlin`. The tests use JUnit 4 and Truth, so they move to `src/jvmTest/kotlin` as they are, or to `commonTest` with `kotlin.test`. The Android app keeps depending on the module the same way.
+Then move `src/main/kotlin` to `src/commonMain/kotlin`. `normalizedForSearch()` becomes an `expect fun`, with a `jvmMain` `actual` that keeps `java.text.Normalizer` and an `iosMain` one that uses Foundation's `decomposedStringWithCanonicalMapping`. The tests use JUnit 4 and Truth, so they move to `src/jvmTest/kotlin` as they are, or to `commonTest` with `kotlin.test`. The Android app keeps depending on the module the same way.
