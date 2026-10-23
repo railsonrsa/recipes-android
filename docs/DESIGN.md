@@ -177,7 +177,7 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 
 ### 3.1 First load (state `Loading`)
 - Top app bar "Recipes".
-- Search bar shown disabled (38% alpha). When it already has text (a new search loading), it stays enabled, so the reader can keep typing.
+- Search bar shown disabled (38% alpha). When it already has text or filters (a new search loading), it stays enabled, so the reader can keep changing the search. The filter button follows the bar.
 - Centered: 32 dp multicolor progress indicator + "Loading recipes…" (`bodyMedium`, `onSurfaceVariant`), 16 dp apart.
 
 ### 3.2 List (state `Content`)
@@ -213,7 +213,7 @@ Sections in this order, each with a `titleSmall` header in `tertiary`:
 4. **Ingredients:** the Must have / Must not have segmented button, then the text field + add button, then the included and excluded chips. Adding a word that is on the other side moves it, and a snackbar says so: "“garlic” moved to Must have".
 5. **Instructions:** the instruction search field. Typing updates the "Show N recipes" count (the same 300 ms wait as the other filters).
 
-The bottom button shows a live count: "Show N recipes", or "Show 1 recipe" for one. The count runs right away when the sheet opens. While a new count loads, the button keeps the last number; when the count fails, it says "Show recipes". The sheet edits a draft: closing it without "Show N recipes" drops the changes, and "Clear all" clears only the draft.
+The bottom button shows a live count: "Show N recipes", or "Show 1 recipe" for one. The count runs right away when the sheet opens. While a new count loads, the button keeps the last number (on the very first open there is none yet, so it says "Show recipes"); when the count fails, it says "Show recipes". The sheet edits a draft: closing it without "Show N recipes" drops the changes, and "Clear all" clears only the draft.
 
 ### 3.9 Detail, top
 - Hero image, 232 dp tall, edge-to-edge under the status bar. A back `IconButton` with a 40 dp `surfaceContainerLowest` circle sits over the image.
