@@ -72,7 +72,7 @@ flowchart TB
   VM --> UC
   RI <-. implements .- R
   API --> OK
-  MODE --> FAKE["FakeRecipesInterceptor, in :recipes:data: answers from the recipes JSON asset"]
+  MODE --> FAKE["FakeRecipesInterceptor, in :recipes:data: answers from the two recipes JSON assets"]
 ```
 
 Who depends on whom:
@@ -189,7 +189,6 @@ Where the brief leaves room, these are the choices:
 ## Tradeoffs and limitations
 
 - **A search never made before shows the Offline screen when there's no network.** The saved recipes are not filtered on the device, so the app only shows results the server gave ([ADR 0001](docs/adr/0001-cache-server-results-per-search.md)).
-- **"Loading more" is hard to see.** The asset has 10 recipes and a page has 10, so the whole catalog fits on the first page. A smaller page size shows the next pages.
 - **The module rules are kept by review.** No tool checks that a feature never depends on the data layer.
 - **"Pão" and "pao" are two searches for the ViewModel but one for the cache.** They share saved results, but switching between them makes one extra call.
 - **An unknown difficulty shows "–"** in the detail's Level stat, and no difficulty on the card.

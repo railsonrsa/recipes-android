@@ -735,10 +735,10 @@
   "pagination": {
     "page": 1,
     "pageSize": 10,
-    "totalItems": 10,
-    "totalPages": 1,
-    "hasNext": false,
-    "nextPage": null,
+    "totalItems": 20,
+    "totalPages": 2,
+    "hasNext": true,
+    "nextPage": 2,
     "previousPage": null
   }
 }

@@ -57,10 +57,10 @@ class FakeRecipeSearchTest {
 
     @Test
     fun `a page past the end is empty`() {
-        val result = FakeRecipeSearch.run(asset, FakeSearchParams(page = 2, pageSize = 10))
+        val result = FakeRecipeSearch.run(asset, FakeSearchParams(page = 3, pageSize = 10))
 
         assertThat(result.data).isEmpty()
-        assertThat(result.pagination.totalItems).isEqualTo(10)
+        assertThat(result.pagination.totalItems).isEqualTo(20)
         assertThat(result.pagination.hasNext).isFalse()
         assertThat(result.pagination.nextPage).isNull()
     }
@@ -105,10 +105,11 @@ class FakeRecipeSearchTest {
     }
 
     @Test
-    fun `diet vegan finds the 2 vegan recipes`() {
+    fun `diet vegan finds the 4 vegan recipes`() {
         val result = FakeRecipeSearch.run(asset, params(diet = setOf("vegan")))
 
-        assertThat(result.data.map { it.title }).containsExactly(CHICKPEA_CURRY, AVOCADO_MOUSSE)
+        assertThat(result.data.map { it.title })
+            .containsExactly(CHICKPEA_CURRY, AVOCADO_MOUSSE, "Tomato Bruschetta", "Penne all'Arrabbiata")
     }
 
     @Test
@@ -127,10 +128,10 @@ class FakeRecipeSearchTest {
     }
 
     @Test
-    fun `diet vegetarian finds 6 recipes`() {
+    fun `diet vegetarian finds 11 recipes`() {
         val result = FakeRecipeSearch.run(asset, params(diet = setOf("vegetarian")))
 
-        assertThat(result.pagination.totalItems).isEqualTo(6)
+        assertThat(result.pagination.totalItems).isEqualTo(11)
     }
 
     @Test
@@ -138,28 +139,37 @@ class FakeRecipeSearchTest {
         val result = FakeRecipeSearch.run(asset, params(diet = setOf("nut-free")))
 
         assertThat(result.data.map { it.title }).containsNoneOf("Beef Tacos with Fresh Salsa", MARGHERITA_PIZZA)
-        assertThat(result.pagination.totalItems).isEqualTo(8)
+        assertThat(result.pagination.totalItems).isEqualTo(18)
     }
 
     @Test
-    fun `servings 1 to 2 finds the salmon bowl and the greek salad`() {
+    fun `servings 1 to 2 finds 7 recipes`() {
         val result = FakeRecipeSearch.run(asset, params(minServings = 1, maxServings = 2))
 
-        assertThat(result.data.map { it.title }).containsExactly("Salmon Teriyaki Bowl", "Greek Salad")
+        assertThat(result.data.map { it.title }).containsExactly(
+            "Salmon Teriyaki Bowl",
+            GREEK_SALAD,
+            "Spaghetti with Cherry Tomatoes and Spinach",
+            "Fluffy Buttermilk Pancakes",
+            "Chicken Burrito",
+            "Avocado Toast with Poached Egg",
+            "Pan-Seared Steak with Peppercorn Sauce",
+        )
     }
 
     @Test
-    fun `servings 3 to 4 finds 6 recipes`() {
+    fun `servings 3 to 4 finds 9 recipes`() {
         val result = FakeRecipeSearch.run(asset, params(minServings = 3, maxServings = 4))
 
-        assertThat(result.pagination.totalItems).isEqualTo(6)
+        assertThat(result.pagination.totalItems).isEqualTo(9)
     }
 
     @Test
-    fun `servings 5 to 6 finds pao de queijo`() {
+    fun `servings 5 to 6 finds pao de queijo, the bruschetta and the butter chicken`() {
         val result = FakeRecipeSearch.run(asset, params(minServings = 5, maxServings = 6))
 
-        assertThat(result.data.map { it.title }).containsExactly(PAO_DE_QUEIJO)
+        assertThat(result.data.map { it.title })
+            .containsExactly(PAO_DE_QUEIJO, "Tomato Bruschetta", "Butter Chicken with Naan")
     }
 
     @Test
@@ -170,17 +180,17 @@ class FakeRecipeSearchTest {
     }
 
     @Test
-    fun `difficulty easy finds 5 recipes`() {
+    fun `difficulty easy finds 9 recipes`() {
         val result = FakeRecipeSearch.run(asset, params(difficulties = setOf(1)))
 
-        assertThat(result.pagination.totalItems).isEqualTo(5)
+        assertThat(result.pagination.totalItems).isEqualTo(9)
     }
 
     @Test
     fun `difficulty medium or hard finds any of them`() {
         val result = FakeRecipeSearch.run(asset, params(difficulties = setOf(2, 3)))
 
-        assertThat(result.pagination.totalItems).isEqualTo(5)
+        assertThat(result.pagination.totalItems).isEqualTo(11)
     }
 
     @Test
@@ -228,10 +238,10 @@ class FakeRecipeSearchTest {
     }
 
     @Test
-    fun `exclude garlic finds the other 8`() {
+    fun `exclude garlic finds the other 18`() {
         val result = FakeRecipeSearch.run(asset, params(exclude = setOf("garlic")))
 
-        assertThat(result.pagination.totalItems).isEqualTo(8)
+        assertThat(result.pagination.totalItems).isEqualTo(18)
         assertThat(result.data.map { it.title }).containsNoneOf(CHICKPEA_CURRY, LEMON_HERB_CHICKEN)
     }
 
@@ -253,7 +263,7 @@ class FakeRecipeSearchTest {
     fun `exclude cheese keeps the tacos, whose cheddar has no cheese in its name`() {
         val result = FakeRecipeSearch.run(asset, params(exclude = setOf("cheese")))
 
-        assertThat(result.pagination.totalItems).isEqualTo(8)
+        assertThat(result.pagination.totalItems).isEqualTo(18)
         assertThat(result.data.map { it.title }).contains("Beef Tacos with Fresh Salsa")
     }
 
@@ -313,17 +323,17 @@ private const val PAO_DE_QUEIJO = "Pão de Queijo (Brazilian Cheese Bread)"
 
 /** docs/specs/test-data.md, "Filter counts". */
 private val dietCounts = mapOf(
-    "vegetarian" to 6,
-    "vegan" to 2,
-    "pescatarian" to 1,
-    "halal" to 2,
-    "gluten-free" to 6,
-    "dairy-free" to 5,
-    "nut-free" to 8,
-    "low-carb" to 2,
+    "vegetarian" to 11,
+    "vegan" to 4,
+    "pescatarian" to 2,
+    "halal" to 5,
+    "gluten-free" to 9,
+    "dairy-free" to 10,
+    "nut-free" to 18,
+    "low-carb" to 3,
 )
 
-private val difficultyCounts = mapOf(1 to 5, 2 to 3, 3 to 2)
+private val difficultyCounts = mapOf(1 to 9, 2 to 7, 3 to 4)
 
 @Suppress("LongParameterList") // One parameter per filter of the endpoint.
 private fun params(
@@ -346,10 +356,10 @@ private fun params(
     instructions = instructions,
 )
 
-/** The 10 recipes the app ships with. The cases come from docs/specs/test-data.md, "Searches". */
-private val asset = createJson()
-    .decodeFromString<RecipePageDto>(File("src/main/assets/recipes_page_1.json").readText())
-    .data
+/** The 20 recipes the app ships with, in two assets. The cases come from docs/specs/test-data.md, "Searches". */
+private val asset = listOf("recipes_page_1.json", "recipes_page_2.json").flatMap {
+    createJson().decodeFromString<RecipePageDto>(File("src/main/assets/$it").readText()).data
+}
 
 private fun recipes(count: Int) = (1..count).map { recipe("r$it") }
 

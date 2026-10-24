@@ -88,8 +88,8 @@ Only these M3 styles are defined and used:
 | `titleMedium` | Figtree | 16 / 24 | 500 | 0.15 | Recipe card title |
 | `titleSmall` | Figtree | 14 / 20 | 500 | 0.1 | Section headers (in `tertiary`), stat box values |
 | `bodyLarge` | Figtree | 16 / 24 | 400 | 0.5 | Search text, text field, ingredient rows, instruction steps |
-| `bodyMedium` | Figtree | 14 / 20 | 400 | 0.25 | Card metadata line, descriptions, state messages, "10 recipes" |
-| `bodySmall` | Figtree | 12 / 16 | 400 | 0.4 | "Serves 4 · Italian", "Must match all", stat box labels, "That's all 10 recipes" |
+| `bodyMedium` | Figtree | 14 / 20 | 400 | 0.25 | Card metadata line, descriptions, state messages, "20 recipes" |
+| `bodySmall` | Figtree | 12 / 16 | 400 | 0.4 | "Serves 4 · Italian", "Must match all", stat box labels, "That's all 20 recipes" |
 | `labelLarge` | Figtree | 14 / 20 | 500 | 0.1 | Buttons, chips, segmented buttons, detail diet tags |
 | `labelMedium` | Figtree | 12 / 16 | 500 | 0.5 | Diet tags in list cards, cuisine label |
 | `labelSmall` | Figtree | 11 / 16 | 500 | 0.5 | Badge count |
@@ -182,7 +182,7 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 
 ### 3.2 List (state `Content`)
 - Top app bar "Recipes", then the search bar (16 dp margins).
-- "10 recipes" (`bodyMedium`, `onSurfaceVariant`), padding 16 / 16 / 8. The number is the server's total for the search, not the cards loaded so far.
+- "20 recipes" (`bodyMedium`, `onSurfaceVariant`), padding 16 / 16 / 8. The number is the server's total for the search, not the cards loaded so far.
 - `LazyColumn` of recipe cards, gap 8, horizontal padding 16.
 - Card metadata line: `★ 4.7 · 32m · Medium` (star filled `ratingStar`; rating in `onSurface` 500). When the rating is null, show "No ratings". When the difficulty is unknown, leave it out of the line. The time is the total time, formatted as in section 4.
 
@@ -193,7 +193,7 @@ The phone reference is 360×760 dp, edge-to-edge. Side margins are 16 dp everywh
 - When the next page fails, the skeleton card and the row become one row: "Couldn't load more" (`bodyMedium`, `onSurfaceVariant`) + a `TextButton` "Retry".
 
 ### 3.4 End of list
-- After the last card: a centered "That's all 10 recipes" (`bodySmall`) between two 1 dp lines. No more requests are made (`hasNext = false`; a page-2 request returns `[]`).
+- After the last card: a centered "That's all 20 recipes" (`bodySmall`) between two 1 dp lines. No more requests are made (`hasNext = false`; a page-3 request returns `[]`).
 
 ### 3.5 Search with no results (state `NoResults`)
 - The active filters appear as `InputChip`s under the search bar. The filter button badge shows the count.

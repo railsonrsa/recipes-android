@@ -1,0 +1,748 @@
+{
+  "data": [
+    {
+      "id": "603cec84-b055-5bd6-a620-b1bbc3a01aeb",
+      "title": "Tomato Bruschetta",
+      "description": "Toasted bread piled with juicy tomatoes, basil and black olives. A quick starter for a crowd.",
+      "servings": 6,
+      "prepTimeSeconds": 900,
+      "cookTimeSeconds": 300,
+      "difficulty": 1,
+      "cuisine": "Italian",
+      "rating": 4.4,
+      "imageUrl": "https://images.pexels.com/photos/5639411/pexels-photo-5639411.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "vegetarian",
+        "vegan",
+        "dairy-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Baguette, sliced",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Ripe tomatoes, diced",
+          "quantity": 4,
+          "unit": null
+        },
+        {
+          "name": "Fresh basil leaves",
+          "quantity": 10,
+          "unit": null
+        },
+        {
+          "name": "Black olives, sliced",
+          "quantity": 60,
+          "unit": "g"
+        },
+        {
+          "name": "Balsamic vinegar",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Sunflower oil",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Salt",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Toast the bread slices in a dry pan until golden on both sides.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 2,
+          "description": "Mix the tomatoes, basil, olives, vinegar, oil and salt.",
+          "durationSeconds": 120
+        },
+        {
+          "step": 3,
+          "description": "Spoon the tomato mix onto the toasts just before serving.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "5c061e79-5af9-537d-a52e-3352c51c3c60",
+      "title": "Spaghetti with Cherry Tomatoes and Spinach",
+      "description": "Light weeknight pasta tossed with blistered cherry tomatoes, baby spinach and parmesan.",
+      "servings": 2,
+      "prepTimeSeconds": 600,
+      "cookTimeSeconds": 720,
+      "difficulty": 2,
+      "cuisine": "Italian",
+      "rating": 4.3,
+      "imageUrl": "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "vegetarian",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Spaghetti",
+          "quantity": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Cherry tomatoes",
+          "quantity": 250,
+          "unit": "g"
+        },
+        {
+          "name": "Baby spinach",
+          "quantity": 80,
+          "unit": "g"
+        },
+        {
+          "name": "Grated parmesan",
+          "quantity": 40,
+          "unit": "g"
+        },
+        {
+          "name": "Butter",
+          "quantity": 20,
+          "unit": "g"
+        },
+        {
+          "name": "Black pepper",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Boil the spaghetti in salted water until al dente.",
+          "durationSeconds": 600
+        },
+        {
+          "step": 2,
+          "description": "Blister the cherry tomatoes in the butter over high heat.",
+          "durationSeconds": 240
+        },
+        {
+          "step": 3,
+          "description": "Add the spinach and stir until it just wilts.",
+          "durationSeconds": 45
+        },
+        {
+          "step": 4,
+          "description": "Toss in the pasta with a splash of its water, then top with parmesan and pepper.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "1a5d641d-3239-5cd9-b87c-57fe08386936",
+      "title": "Penne all'Arrabbiata",
+      "description": "Penne in a fiery tomato and chili sauce. \"Arrabbiata\" means \"angry\" in Italian.",
+      "servings": 4,
+      "prepTimeSeconds": 300,
+      "cookTimeSeconds": 900,
+      "difficulty": 2,
+      "cuisine": "Italian",
+      "rating": 4.5,
+      "imageUrl": "https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "vegetarian",
+        "vegan",
+        "dairy-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Penne",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Crushed tomatoes",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Dried chili flakes",
+          "quantity": 1,
+          "unit": "tsp"
+        },
+        {
+          "name": "Onion, finely diced",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Sunflower oil",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Fresh parsley, chopped",
+          "quantity": 2,
+          "unit": "tbsp"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Soften the onion and chili flakes in the oil.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 2,
+          "description": "Add the tomatoes and simmer until thick.",
+          "durationSeconds": 900
+        },
+        {
+          "step": 3,
+          "description": "Cook the penne until al dente, then stir it into the sauce with the parsley.",
+          "durationSeconds": 660
+        }
+      ]
+    },
+    {
+      "id": "8df4c4ac-ff1f-55b6-ba54-5224d4295939",
+      "title": "Spicy Chicken Skewers with Rice",
+      "description": "Smoky paprika chicken skewers served on fluffy rice with a fresh tomato salsa.",
+      "servings": 4,
+      "prepTimeSeconds": 1500,
+      "cookTimeSeconds": 720,
+      "difficulty": 2,
+      "cuisine": "Turkish",
+      "rating": 4.6,
+      "imageUrl": "https://images.pexels.com/photos/2641886/pexels-photo-2641886.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "gluten-free",
+        "dairy-free",
+        "nut-free",
+        "halal"
+      ],
+      "ingredients": [
+        {
+          "name": "Chicken thighs, cubed",
+          "quantity": 600,
+          "unit": "g"
+        },
+        {
+          "name": "Smoked paprika",
+          "quantity": 2,
+          "unit": "tsp"
+        },
+        {
+          "name": "Ground cumin",
+          "quantity": 1,
+          "unit": "tsp"
+        },
+        {
+          "name": "Lemon juice",
+          "quantity": 30,
+          "unit": "ml"
+        },
+        {
+          "name": "Long-grain rice",
+          "quantity": 1.5,
+          "unit": "cup"
+        },
+        {
+          "name": "Red onion, diced",
+          "quantity": 0.5,
+          "unit": null
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Rub the chicken with paprika, cumin and lemon juice, then rest.",
+          "durationSeconds": 1200
+        },
+        {
+          "step": 2,
+          "description": "Thread the chicken onto skewers.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 3,
+          "description": "Cook the rice in salted water.",
+          "durationSeconds": 900
+        },
+        {
+          "step": 4,
+          "description": "Grill the skewers, turning often, until charred and cooked through.",
+          "durationSeconds": 720
+        }
+      ]
+    },
+    {
+      "id": "ebc7b88e-1e7e-5c41-966d-b205db0773d1",
+      "title": "Fluffy Buttermilk Pancakes",
+      "description": "Tall, soft pancakes with maple syrup and fresh strawberries. Weekend breakfast sorted.",
+      "servings": 2,
+      "prepTimeSeconds": 600,
+      "cookTimeSeconds": 600,
+      "difficulty": 1,
+      "cuisine": "American",
+      "rating": null,
+      "imageUrl": "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "vegetarian",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Plain flour",
+          "quantity": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Buttermilk",
+          "quantity": 250,
+          "unit": "ml"
+        },
+        {
+          "name": "Egg",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Sugar",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Baking powder",
+          "quantity": 2,
+          "unit": "tsp"
+        },
+        {
+          "name": "Butter, melted",
+          "quantity": 30,
+          "unit": "g"
+        },
+        {
+          "name": "Strawberries",
+          "quantity": 6,
+          "unit": null
+        },
+        {
+          "name": "Maple syrup",
+          "quantity": 2,
+          "unit": "tbsp"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Whisk the flour, sugar and baking powder in a bowl.",
+          "durationSeconds": 60
+        },
+        {
+          "step": 2,
+          "description": "Beat in the buttermilk, egg and melted butter until just combined.",
+          "durationSeconds": 90
+        },
+        {
+          "step": 3,
+          "description": "Cook ladles of batter in a hot pan, flipping when bubbles appear.",
+          "durationSeconds": 600
+        },
+        {
+          "step": 4,
+          "description": "Stack and top with strawberries and maple syrup.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "dacd591e-0195-5b56-b3fc-e59900f77bbb",
+      "title": "Chicken Burrito",
+      "description": "A big flour tortilla packed with spiced chicken, rice, black beans and peppers.",
+      "servings": 2,
+      "prepTimeSeconds": 900,
+      "cookTimeSeconds": 900,
+      "difficulty": 1,
+      "cuisine": "Mexican",
+      "rating": 4.0,
+      "imageUrl": "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "nut-free",
+        "halal"
+      ],
+      "ingredients": [
+        {
+          "name": "Large flour tortillas",
+          "quantity": 2,
+          "unit": null
+        },
+        {
+          "name": "Chicken breast, sliced",
+          "quantity": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Cooked rice",
+          "quantity": 1,
+          "unit": "cup"
+        },
+        {
+          "name": "Black beans, drained",
+          "quantity": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Bell pepper, sliced",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Sour cream",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Lime",
+          "quantity": 0.5,
+          "unit": null
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Fry the chicken and pepper until golden.",
+          "durationSeconds": null
+        },
+        {
+          "step": 2,
+          "description": "Warm the beans and rice.",
+          "durationSeconds": null
+        },
+        {
+          "step": 3,
+          "description": "Fill the tortillas, add sour cream and a squeeze of lime, then roll tight.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "4d1093af-1a0a-513f-8bef-545c9379a094",
+      "title": "Thai Shrimp Noodle Soup",
+      "description": "Rice noodles and juicy shrimp in a spicy, fragrant broth with lime and chili.",
+      "servings": 4,
+      "prepTimeSeconds": 900,
+      "cookTimeSeconds": 900,
+      "difficulty": 2,
+      "cuisine": "Thai",
+      "rating": 4.7,
+      "imageUrl": "https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "pescatarian",
+        "gluten-free",
+        "dairy-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Rice noodles",
+          "quantity": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Raw shrimp, peeled",
+          "quantity": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Fish stock",
+          "quantity": 1000,
+          "unit": "ml"
+        },
+        {
+          "name": "Fish sauce",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Red chili, sliced",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Lime",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Fresh coriander",
+          "quantity": 1,
+          "unit": "cup"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Bring the stock and fish sauce to a simmer.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 2,
+          "description": "Soak the rice noodles in hot water until soft.",
+          "durationSeconds": 480
+        },
+        {
+          "step": 3,
+          "description": "Poach the shrimp in the broth until pink.",
+          "durationSeconds": 180
+        },
+        {
+          "step": 4,
+          "description": "Divide the noodles into bowls, ladle over the broth and top with chili, lime and coriander.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "928b868a-b4e3-5b2d-9e3e-23caed178b60",
+      "title": "Avocado Toast with Poached Egg",
+      "description": "Crushed avocado on toasted sourdough with a soft poached egg and chili flakes.",
+      "servings": 1,
+      "prepTimeSeconds": 300,
+      "cookTimeSeconds": 240,
+      "difficulty": 1,
+      "cuisine": "Australian",
+      "rating": 4.2,
+      "imageUrl": "https://images.pexels.com/photos/704569/pexels-photo-704569.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "vegetarian",
+        "dairy-free",
+        "nut-free"
+      ],
+      "ingredients": [
+        {
+          "name": "Sourdough slice",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Ripe avocado",
+          "quantity": 0.5,
+          "unit": null
+        },
+        {
+          "name": "Egg",
+          "quantity": 1,
+          "unit": null
+        },
+        {
+          "name": "Lemon juice",
+          "quantity": 1,
+          "unit": "tsp"
+        },
+        {
+          "name": "Dried chili flakes",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Toast the sourdough.",
+          "durationSeconds": 120
+        },
+        {
+          "step": 2,
+          "description": "Mash the avocado with lemon juice and spread it on the toast.",
+          "durationSeconds": 60
+        },
+        {
+          "step": 3,
+          "description": "Poach the egg in barely simmering water.",
+          "durationSeconds": 180
+        },
+        {
+          "step": 4,
+          "description": "Set the egg on top and finish with chili flakes.",
+          "durationSeconds": null
+        }
+      ]
+    },
+    {
+      "id": "9068e5a2-109b-5228-a174-7687dfe04af7",
+      "title": "Butter Chicken with Naan",
+      "description": "Tender chicken in a rich, mildly spiced tomato and cream sauce, served with warm naan bread for scooping.",
+      "servings": 6,
+      "prepTimeSeconds": 1800,
+      "cookTimeSeconds": 2400,
+      "difficulty": 3,
+      "cuisine": "Indian",
+      "rating": 4.9,
+      "imageUrl": "https://images.pexels.com/photos/7625056/pexels-photo-7625056.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "nut-free",
+        "halal"
+      ],
+      "ingredients": [
+        {
+          "name": "Chicken thighs, cubed",
+          "quantity": 1,
+          "unit": "kg"
+        },
+        {
+          "name": "Plain yogurt",
+          "quantity": 150,
+          "unit": "g"
+        },
+        {
+          "name": "Garam masala",
+          "quantity": 2,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Tomato passata",
+          "quantity": 400,
+          "unit": "ml"
+        },
+        {
+          "name": "Double cream",
+          "quantity": 150,
+          "unit": "ml"
+        },
+        {
+          "name": "Butter",
+          "quantity": 50,
+          "unit": "g"
+        },
+        {
+          "name": "Naan breads",
+          "quantity": 6,
+          "unit": null
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Marinate the chicken in yogurt and garam masala.",
+          "durationSeconds": 3600
+        },
+        {
+          "step": 2,
+          "description": "Brown the chicken in half the butter.",
+          "durationSeconds": 600
+        },
+        {
+          "step": 3,
+          "description": "Add the passata and simmer until the sauce thickens.",
+          "durationSeconds": 1200
+        },
+        {
+          "step": 4,
+          "description": "Stir in the cream and the rest of the butter.",
+          "durationSeconds": 120
+        },
+        {
+          "step": 5,
+          "description": "Warm the naan and serve alongside.",
+          "durationSeconds": 90
+        }
+      ]
+    },
+    {
+      "id": "5bbf99de-b98d-5efa-8bd4-8c64a87f77d3",
+      "title": "Pan-Seared Steak with Peppercorn Sauce",
+      "description": "A thick-cut steak seared hard and rested, with a creamy cracked-pepper sauce and roasted vegetables.",
+      "servings": 2,
+      "prepTimeSeconds": 600,
+      "cookTimeSeconds": 1200,
+      "difficulty": 3,
+      "cuisine": "French",
+      "rating": 4.8,
+      "imageUrl": "https://images.pexels.com/photos/769289/pexels-photo-769289.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+      "dietaryAttributes": [
+        "gluten-free",
+        "nut-free",
+        "low-carb"
+      ],
+      "ingredients": [
+        {
+          "name": "Sirloin steaks",
+          "quantity": 2,
+          "unit": null
+        },
+        {
+          "name": "Cracked black peppercorns",
+          "quantity": 1,
+          "unit": "tbsp"
+        },
+        {
+          "name": "Beef stock",
+          "quantity": 120,
+          "unit": "ml"
+        },
+        {
+          "name": "Double cream",
+          "quantity": 100,
+          "unit": "ml"
+        },
+        {
+          "name": "Butter",
+          "quantity": 30,
+          "unit": "g"
+        },
+        {
+          "name": "Mixed vegetables",
+          "quantity": 300,
+          "unit": "g"
+        },
+        {
+          "name": "Flaky salt",
+          "quantity": 1,
+          "unit": "pinch"
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "description": "Bring the steaks to room temperature and season well.",
+          "durationSeconds": 1800
+        },
+        {
+          "step": 2,
+          "description": "Sear in a very hot pan, 3 minutes a side.",
+          "durationSeconds": 360
+        },
+        {
+          "step": 3,
+          "description": "Rest the steaks on a board.",
+          "durationSeconds": 300
+        },
+        {
+          "step": 4,
+          "description": "Pour the stock, cream and peppercorns into the pan and reduce.",
+          "durationSeconds": 240
+        },
+        {
+          "step": 5,
+          "description": "Slice the steak and serve with the sauce and vegetables.",
+          "durationSeconds": null
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": 2,
+    "pageSize": 10,
+    "totalItems": 20,
+    "totalPages": 2,
+    "hasNext": false,
+    "nextPage": null,
+    "previousPage": 1
+  }
+}
