@@ -52,10 +52,10 @@ internal fun createRecipesApi(
     networkConfig: FakeNetworkConfig,
 ): RecipesApi {
     val fakeServer = FakeRecipesInterceptor(json, networkConfig) {
-        context.assets.open(CATALOG_ASSET).bufferedReader().use { it.readText() }
+        CATALOG_ASSETS.map { asset -> context.assets.open(asset).bufferedReader().use { it.readText() } }
     }
     val recipesClient = client.newBuilder().addInterceptor(fakeServer).build()
     return retrofit.newBuilder().client(recipesClient).build().create(RecipesApi::class.java)
 }
 
-private const val CATALOG_ASSET = "recipes_page_1.json"
+private val CATALOG_ASSETS = listOf("recipes_page_1.json", "recipes_page_2.json")

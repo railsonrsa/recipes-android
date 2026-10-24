@@ -13,7 +13,7 @@ class FakeRecipesInterceptorTest {
     private val client = OkHttpClient.Builder()
         .addInterceptor(
             FakeRecipesInterceptor(createJson(), FakeNetworkConfig()) {
-                File("src/main/assets/recipes_page_1.json").readText()
+                listOf(File("src/main/assets/recipes_page_1.json").readText())
             },
         )
         .build()

@@ -14,16 +14,17 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import java.io.IOException
 
 /**
- * The fake server: answers `GET /recipes` from the asset and never calls `chain.proceed()`.
+ * The fake server: answers `GET /recipes` from the assets and never calls `chain.proceed()`.
+ * [readAssets] gives one JSON page per asset; their recipes make one catalog, in order.
  * See docs/specs/data.md, "Fake endpoint".
  */
 internal class FakeRecipesInterceptor(
     private val json: Json,
     private val networkConfig: FakeNetworkConfig,
-    readAsset: () -> String,
+    readAssets: () -> List<String>,
 ) : Interceptor {
 
-    private val catalog by lazy { json.decodeFromString<RecipePageDto>(readAsset()).data }
+    private val catalog by lazy { readAssets().flatMap { json.decodeFromString<RecipePageDto>(it).data } }
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()

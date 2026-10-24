@@ -33,9 +33,6 @@ class OfflineFirstRecipeRepositoryTest {
     private val networkConfig = FakeNetworkConfig()
     private lateinit var repository: OfflineFirstRecipeRepository
 
-    /** Pages of 4, so the 10 recipes of the asset come in 3 pages. */
-    private lateinit var pagesOf4: OfflineFirstRecipeRepository
-
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -49,12 +46,6 @@ class OfflineFirstRecipeRepositoryTest {
             api = api,
             recipeSearchDao = database.recipeSearchDao(),
             recipeDao = database.recipeDao(),
-        )
-        pagesOf4 = OfflineFirstRecipeRepository(
-            api = api,
-            recipeSearchDao = database.recipeSearchDao(),
-            recipeDao = database.recipeDao(),
-            pageSize = 4,
         )
     }
 
@@ -71,13 +62,13 @@ class OfflineFirstRecipeRepositoryTest {
     }
 
     @Test
-    fun `refresh saves the catalog in the server's order`() = runTest {
+    fun `refresh saves page 1 of the catalog in the server's order`() = runTest {
         val outcome = repository.refresh(SearchQuery.Catalog)
 
         val result = repository.observeSearch(SearchQuery.Catalog).first()
         assertThat(outcome).isEqualTo(CallOutcome.Success)
-        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
-        assertThat(result?.hasMore).isFalse()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(page1Titles).inOrder()
+        assertThat(result?.hasMore).isTrue()
     }
 
     @Test
@@ -99,7 +90,7 @@ class OfflineFirstRecipeRepositoryTest {
 
         repository.refresh(SearchQuery.Catalog)
 
-        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(page1Titles.size)
     }
 
     @Test
@@ -107,7 +98,7 @@ class OfflineFirstRecipeRepositoryTest {
         networkConfig.mode = FakeNetworkMode.Slow
 
         assertThat(repository.refresh(SearchQuery.Catalog)).isEqualTo(CallOutcome.Success)
-        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(page1Titles.size)
     }
 
     @Test
@@ -130,7 +121,7 @@ class OfflineFirstRecipeRepositoryTest {
         }
 
         assertThat(outcomes).containsExactlyEntriesIn(failingModes)
-        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(page1Titles.size)
     }
 
     @Test
@@ -141,7 +132,7 @@ class OfflineFirstRecipeRepositoryTest {
 
         assertThat(repository.observeSearch(SearchQuery(text = "pao")).first()?.recipes?.map { it.title })
             .containsExactly("Pão de Queijo (Brazilian Cheese Bread)")
-        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(page1Titles.size)
     }
 
     @Test
@@ -196,49 +187,38 @@ class OfflineFirstRecipeRepositoryTest {
 
     @Test
     fun `the saved result has the server's total, not only the loaded recipes`() = runTest {
-        pagesOf4.refresh(SearchQuery.Catalog)
+        repository.refresh(SearchQuery.Catalog)
 
-        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
-        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(4)).inOrder()
-        assertThat(result?.totalItems).isEqualTo(10)
+        val result = repository.observeSearch(SearchQuery.Catalog).first()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(page1Titles).inOrder()
+        assertThat(result?.totalItems).isEqualTo(20)
         assertThat(result?.hasMore).isTrue()
     }
 
     @Test
-    fun `next page appends after the saved recipes`() = runTest {
-        pagesOf4.refresh(SearchQuery.Catalog)
+    fun `next page appends page 2, the last one of the catalog`() = runTest {
+        repository.refresh(SearchQuery.Catalog)
 
-        val outcome = pagesOf4.loadNextPage(SearchQuery.Catalog)
+        val outcome = repository.loadNextPage(SearchQuery.Catalog)
 
-        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        val result = repository.observeSearch(SearchQuery.Catalog).first()
         assertThat(outcome).isEqualTo(CallOutcome.Success)
-        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(8)).inOrder()
-        assertThat(result?.hasMore).isTrue()
-    }
-
-    @Test
-    fun `next page moves the remote key on, so the one after it is the last`() = runTest {
-        pagesOf4.refresh(SearchQuery.Catalog)
-        pagesOf4.loadNextPage(SearchQuery.Catalog)
-
-        pagesOf4.loadNextPage(SearchQuery.Catalog)
-
-        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
-        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles).inOrder()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(page1Titles + page2Titles).inOrder()
         assertThat(result?.hasMore).isFalse()
-        assertThat(result?.totalItems).isEqualTo(10)
+        assertThat(result?.totalItems).isEqualTo(20)
     }
 
     @Test
     fun `next page of a search with nothing more makes no call`() = runTest {
         repository.refresh(SearchQuery.Catalog)
+        repository.loadNextPage(SearchQuery.Catalog)
         // A call would fail, so a success proves none was made.
         networkConfig.mode = FakeNetworkMode.NoNetwork
 
         val outcome = repository.loadNextPage(SearchQuery.Catalog)
 
         assertThat(outcome).isEqualTo(CallOutcome.Success)
-        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(catalogTitles.size)
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes).hasSize(20)
     }
 
     @Test
@@ -253,50 +233,50 @@ class OfflineFirstRecipeRepositoryTest {
 
     @Test
     fun `a failed next page keeps the saved recipes`() = runTest {
-        pagesOf4.refresh(SearchQuery.Catalog)
+        repository.refresh(SearchQuery.Catalog)
         networkConfig.mode = FakeNetworkMode.ServerError
 
-        val outcome = pagesOf4.loadNextPage(SearchQuery.Catalog)
+        val outcome = repository.loadNextPage(SearchQuery.Catalog)
 
-        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
+        val result = repository.observeSearch(SearchQuery.Catalog).first()
         assertThat(outcome).isEqualTo(CallOutcome.ServerError)
-        assertThat(result?.recipes).hasSize(4)
+        assertThat(result?.recipes).hasSize(10)
         assertThat(result?.hasMore).isTrue()
     }
 
     @Test
     fun `next page after a failed one asks for the same page again`() = runTest {
-        pagesOf4.refresh(SearchQuery.Catalog)
+        repository.refresh(SearchQuery.Catalog)
         networkConfig.mode = FakeNetworkMode.ServerError
-        pagesOf4.loadNextPage(SearchQuery.Catalog)
+        repository.loadNextPage(SearchQuery.Catalog)
         networkConfig.mode = FakeNetworkMode.Normal
 
-        pagesOf4.loadNextPage(SearchQuery.Catalog)
+        repository.loadNextPage(SearchQuery.Catalog)
 
-        assertThat(pagesOf4.observeSearch(SearchQuery.Catalog).first()?.recipes?.map { it.title })
-            .containsExactlyElementsIn(catalogTitles.take(8)).inOrder()
+        assertThat(repository.observeSearch(SearchQuery.Catalog).first()?.recipes?.map { it.title })
+            .containsExactlyElementsIn(page1Titles + page2Titles).inOrder()
     }
 
     @Test
     fun `refresh after a next page starts again from page 1`() = runTest {
-        pagesOf4.refresh(SearchQuery.Catalog)
-        pagesOf4.loadNextPage(SearchQuery.Catalog)
+        repository.refresh(SearchQuery.Catalog)
+        repository.loadNextPage(SearchQuery.Catalog)
 
-        pagesOf4.refresh(SearchQuery.Catalog)
+        repository.refresh(SearchQuery.Catalog)
 
-        val result = pagesOf4.observeSearch(SearchQuery.Catalog).first()
-        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(catalogTitles.take(4)).inOrder()
+        val result = repository.observeSearch(SearchQuery.Catalog).first()
+        assertThat(result?.recipes?.map { it.title }).containsExactlyElementsIn(page1Titles).inOrder()
         assertThat(result?.hasMore).isTrue()
     }
 
     @Test
     fun `next page of one search leaves the other searches alone`() = runTest {
-        pagesOf4.refresh(SearchQuery.Catalog)
-        pagesOf4.refresh(SearchQuery(text = "cheese"))
+        repository.refresh(SearchQuery.Catalog)
+        repository.refresh(SearchQuery(text = "cheese"))
 
-        pagesOf4.loadNextPage(SearchQuery.Catalog)
+        repository.loadNextPage(SearchQuery.Catalog)
 
-        assertThat(pagesOf4.observeSearch(SearchQuery(text = "cheese")).first()?.recipes).hasSize(2)
+        assertThat(repository.observeSearch(SearchQuery(text = "cheese")).first()?.recipes).hasSize(2)
     }
 
     @Test
@@ -354,7 +334,7 @@ class OfflineFirstRecipeRepositoryTest {
     }
 }
 
-private val catalogTitles = listOf(
+private val page1Titles = listOf(
     "Classic Margherita Pizza",
     "Chickpea Coconut Curry",
     "Grilled Lemon Herb Chicken",
@@ -366,6 +346,19 @@ private val catalogTitles = listOf(
     "Pão de Queijo (Brazilian Cheese Bread)",
     "Slow-Roasted Moroccan-Spiced Lamb Shoulder with Preserved Lemon, Green Olives and Fresh Herb Couscous " +
         "for a Big Family Sunday Gathering",
+)
+
+private val page2Titles = listOf(
+    "Tomato Bruschetta",
+    "Spaghetti with Cherry Tomatoes and Spinach",
+    "Penne all'Arrabbiata",
+    "Spicy Chicken Skewers with Rice",
+    "Fluffy Buttermilk Pancakes",
+    "Chicken Burrito",
+    "Thai Shrimp Noodle Soup",
+    "Avocado Toast with Poached Egg",
+    "Butter Chicken with Naan",
+    "Pan-Seared Steak with Peppercorn Sauce",
 )
 
 private val failingModes = mapOf(
