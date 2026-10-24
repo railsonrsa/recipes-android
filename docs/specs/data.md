@@ -111,7 +111,7 @@ HttpLoggingInterceptor → FakeNetworkModeInterceptor → FakeRecipesInterceptor
 
 - `FakeNetworkModeInterceptor` knows nothing about recipes. It applies the current fake network mode: it waits, throws, or answers an error. In **Normal**, **Slow** and **Empty catalogue** it waits and passes the call on.
 - `FakeRecipesInterceptor` never calls `chain.proceed()`. So Retrofit, the converter and the logger all run for real.
-- It parses the URL and calls a pure function, `FakeRecipeSearch.run(recipes, params)`, which can be tested without OkHttp. The asset is parsed once and kept in memory.
+- It parses the URL and calls a pure function, `FakeRecipeSearch.run(recipes, params)`, which can be tested without OkHttp. The two assets (`recipes_page_1.json`, `recipes_page_2.json`) are parsed once into one catalog of 20 and kept in memory.
 - Both only throw `IOException` subclasses. Any other exception crashes OkHttp's dispatcher.
 - `HttpLoggingInterceptor` logs `BODY` in debug builds and `NONE` in release builds.
 

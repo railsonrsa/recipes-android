@@ -32,7 +32,7 @@ Package prefix: `com.railson.recipes`.
 | `:core:format` | Pure Kotlin. Turns recipe values into text: `Duration.formatTime()` and `formatQuantity(quantity, unit)` | `format/` |
 | `:core:network` | `OkHttpClient`, `Retrofit`, `Json`, `HttpLoggingInterceptor`, `FakeNetworkConfig`, `FakeNetworkModeInterceptor` | `client/`, `fake/`, `di/` |
 | `:recipes:domain` | Pure Kotlin. `Recipe` and its types, `SearchQuery` and its text normalization (shared by the move rule, the fake server and the cache key), `SearchResult`, `CallOutcome`, the `RecipeRepository` interface, the use cases | `model/`, `repository/`, `usecase/` |
-| `:recipes:data` | Room, `RecipesApi` (Retrofit), DTOs, `FakeRecipesInterceptor`, `FakeRecipeSearch`, the asset JSON, `RecipeRepository` implementation | `remote/`, `fake/`, `local/{database,dao,entity}`, `mapper/`, `repository/`, `di/` |
+| `:recipes:data` | Room, `RecipesApi` (Retrofit), DTOs, `FakeRecipesInterceptor`, `FakeRecipeSearch`, the asset JSONs, `RecipeRepository` implementation | `remote/`, `fake/`, `local/{database,dao,entity}`, `mapper/`, `repository/`, `di/` |
 | `:recipes:ui` | How recipe values show on screen in every feature: the diet tag display order, label and color, the difficulty label and bar count | |
 | `:feature:recipe-list` | List screen and filter sheet | `navigation/`, `list/`, `filter/`, `components/`, `di/` |
 | `:feature:recipe-detail` | Detail screen | `navigation/`, `detail/`, `components/`, `di/` |
